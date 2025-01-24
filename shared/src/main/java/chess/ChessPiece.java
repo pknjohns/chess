@@ -1,6 +1,5 @@
 package chess;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
@@ -64,10 +63,10 @@ public class ChessPiece {
         int startCol = myPosition.getColumn();
 
         //find out how far we can move left, right, up down
-        int left = startCol - 1;
-        int right = 8 - startCol;
-        int down = startRow - 1;
-        int up = 8 - startRow;
+//        int left = startCol - 1;
+//        int right = 8 - startCol;
+//        int down = startRow - 1;
+//        int up = 8 - startRow;
 
         for (PieceType piece : PieceType.values()) {
             if (currentPiece.getPieceType() == piece && piece == PieceType.BISHOP) {
