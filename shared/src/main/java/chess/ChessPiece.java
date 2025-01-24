@@ -73,6 +73,10 @@ public class ChessPiece {
 
                 //create ChessMove objects we can make (independent of check, stalemate, or checkmate)
                 int i = 1;
+                int hit1 = 0;
+                int hit2 = 0;
+                int hit3 = 0;
+                int hit4 = 0;
                 while (i < 8) {
 
                     int newRowUp = startRow + i;
@@ -81,24 +85,68 @@ public class ChessPiece {
                     int newColLeft = startCol - i;
 
                     if (newRowUp <= 8 && newColRight <= 8) {
-                        ChessPosition newPosition = new ChessPosition((startRow + i), startCol + i);
-                        ChessMove newMove = new ChessMove(myPosition, newPosition, null);
-                        moves.add(newMove);
+                        ChessPosition newPosition = new ChessPosition(newRowUp, newColRight);
+
+                        if (hit1 == 0) {
+                            if (board.getPiece(newPosition) != null) {
+                                hit1 = 1;
+                                if (board.getPiece(newPosition).getTeamColor() != currentPiece.getTeamColor()) {
+                                    ChessMove newMove = new ChessMove(myPosition, newPosition, null);
+                                    moves.add(newMove);
+                                }
+                            } else {
+                                ChessMove newMove = new ChessMove(myPosition, newPosition, null);
+                                moves.add(newMove);
+                            }
+                        }
                     }
                     if (newRowUp <= 8 && newColLeft >= 1) {
-                        ChessPosition newPosition = new ChessPosition((startRow + i), startCol - i);
-                        ChessMove newMove = new ChessMove(myPosition, newPosition, null);
-                        moves.add(newMove);
+                        ChessPosition newPosition = new ChessPosition(newRowUp, newColLeft);
+
+                        if (hit2 == 0) {
+                            if (board.getPiece(newPosition) != null) {
+                                hit2 = 1;
+                                if (board.getPiece(newPosition).getTeamColor() != currentPiece.getTeamColor()) {
+                                    ChessMove newMove = new ChessMove(myPosition, newPosition, null);
+                                    moves.add(newMove);
+                                }
+                            } else {
+                                ChessMove newMove = new ChessMove(myPosition, newPosition, null);
+                                moves.add(newMove);
+                            }
+                        }
                     }
                     if (newRowDown >= 1  && newColRight <= 8) {
-                        ChessPosition newPosition = new ChessPosition(startRow - i, startCol + i);
-                        ChessMove newMove = new ChessMove(myPosition, newPosition, null);
-                        moves.add(newMove);
+                        ChessPosition newPosition = new ChessPosition(newRowDown, newColRight);
+
+                        if (hit3 == 0) {
+                            if (board.getPiece(newPosition) != null) {
+                                hit3 = 1;
+                                if (board.getPiece(newPosition).getTeamColor() != currentPiece.getTeamColor()) {
+                                    ChessMove newMove = new ChessMove(myPosition, newPosition, null);
+                                    moves.add(newMove);
+                                }
+                            } else {
+                                ChessMove newMove = new ChessMove(myPosition, newPosition, null);
+                                moves.add(newMove);
+                            }
+                        }
                     }
                     if (newRowDown >= 1  && newColLeft >= 1) {
-                        ChessPosition newPosition = new ChessPosition(startRow - i, startCol - i);
-                        ChessMove newMove = new ChessMove(myPosition, newPosition, null);
-                        moves.add(newMove);
+                        ChessPosition newPosition = new ChessPosition(newRowDown, newColLeft);
+
+                        if (hit4 == 0) {
+                            if (board.getPiece(newPosition) != null) {
+                                hit4 = 1;
+                                if (board.getPiece(newPosition).getTeamColor() != currentPiece.getTeamColor()) {
+                                    ChessMove newMove = new ChessMove(myPosition, newPosition, null);
+                                    moves.add(newMove);
+                                }
+                            } else {
+                                ChessMove newMove = new ChessMove(myPosition, newPosition, null);
+                                moves.add(newMove);
+                            }
+                        }
                     }
                     i++;
                 }
