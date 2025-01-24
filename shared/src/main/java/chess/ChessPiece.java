@@ -60,12 +60,6 @@ public class ChessPiece {
         int startRow = myPosition.getRow();
         int startCol = myPosition.getColumn();
 
-        //find out how far we can move left, right, up down
-//        int left = startCol - 1;
-//        int right = 8 - startCol;
-//        int down = startRow - 1;
-//        int up = 8 - startRow;
-
         int i = 1;
 
         for (PieceType piece : PieceType.values()) {
@@ -219,6 +213,64 @@ public class ChessPiece {
                                     moves.add(newMove);
                                 }
                             }
+                        }
+                    }
+                }
+            }
+
+            if (currentPiece.getPieceType() == piece && piece == PieceType.PAWN) {
+                if (currentPiece.getTeamColor() == ChessGame.TeamColor.WHITE) {
+
+                    int newRow = startRow + 1;
+                    ChessPosition newPosition = new ChessPosition(newRow, startCol);
+
+                    if (startRow == 2) { //check if pawn is at starting line
+                        ChessPosition iNewPosition = new ChessPosition(startRow + 2, startCol);
+
+                        if (board.getPiece(iNewPosition) == null && board.getPiece(newPosition) == null) {
+                            ChessMove startMove = new ChessMove(myPosition, iNewPosition, null);
+                            moves.add(startMove);
+                        }
+                    }
+
+                    if (board.getPiece(newPosition) == null) {
+                        if (newRow == 8) {
+                            List<PieceType> promotions = Arrays.asList(PieceType.ROOK, PieceType.KNIGHT, PieceType.BISHOP, PieceType.QUEEN);
+
+                            for (PieceType promotion : promotions) {
+                                ChessMove newMove = new ChessMove(myPosition, newPosition, promotion);
+                                moves.add(newMove);
+                            }
+                        } else {
+                            ChessMove newMove = new ChessMove(myPosition, newPosition, null);
+                            moves.add(newMove);
+                        }
+                    }
+
+                    // BLACK team logic
+                } else {
+                    int newRow = startRow - 1;
+                    ChessPosition newPosition = new ChessPosition(newRow, startCol);
+
+                    if (startRow == 7) {
+                        ChessPosition iNewPosition = new ChessPosition(startRow - 2, startCol);
+                        if (board.getPiece(iNewPosition) == null && board.getPiece(newPosition) == null) {
+                            ChessMove startMove = new ChessMove(myPosition, iNewPosition, null);
+                            moves.add(startMove);
+                        }
+                    }
+
+                    if (board.getPiece(newPosition) == null) {
+                        if (newRow == 1) {
+                            List<PieceType> promotions = Arrays.asList(PieceType.ROOK, PieceType.KNIGHT, PieceType.BISHOP, PieceType.QUEEN);
+
+                            for (PieceType promotion : promotions) {
+                                ChessMove newMove = new ChessMove(myPosition, newPosition, promotion);
+                                moves.add(newMove);
+                            }
+                        } else {
+                            ChessMove newMove = new ChessMove(myPosition, newPosition, null);
+                            moves.add(newMove);
                         }
                     }
                 }
