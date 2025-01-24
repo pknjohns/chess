@@ -219,24 +219,31 @@ public class ChessPiece {
             }
 
             if (currentPiece.getPieceType() == piece && piece == PieceType.PAWN) {
-                if (currentPiece.getTeamColor() == ChessGame.TeamColor.WHITE) {
 
+                // make list with all promotion options for player
+                List<PieceType> promotions = Arrays.asList(PieceType.ROOK, PieceType.KNIGHT, PieceType.BISHOP, PieceType.QUEEN);
+
+                // white team logic
+                if (currentPiece.getTeamColor() == ChessGame.TeamColor.WHITE) {
+                    // find next position pawn can move to
                     int newRow = startRow + 1;
                     ChessPosition newPosition = new ChessPosition(newRow, startCol);
 
-                    if (startRow == 2) { //check if pawn is at starting line
-                        ChessPosition iNewPosition = new ChessPosition(startRow + 2, startCol);
-
-                        if (board.getPiece(iNewPosition) == null && board.getPiece(newPosition) == null) {
-                            ChessMove startMove = new ChessMove(myPosition, iNewPosition, null);
-                            moves.add(startMove);
-                        }
-                    }
-
+                    // check that space in front of pawn is empty so it can move
                     if (board.getPiece(newPosition) == null) {
-                        if (newRow == 8) {
-                            List<PieceType> promotions = Arrays.asList(PieceType.ROOK, PieceType.KNIGHT, PieceType.BISHOP, PieceType.QUEEN);
+                        // check if pawn is on white starting line
+                        if (startRow == 2) {
+                            ChessPosition iNewPosition = new ChessPosition(startRow + 2, startCol);
 
+                            // check that space 2 ahead of pawn is empty
+                            if (board.getPiece(iNewPosition) == null) {
+                                ChessMove startMove = new ChessMove(myPosition, iNewPosition, null);
+                                moves.add(startMove);
+                            }
+                        }
+
+                        // check if pawn has reached end of board and earned a promotion
+                        if (newRow == 8) {
                             for (PieceType promotion : promotions) {
                                 ChessMove newMove = new ChessMove(myPosition, newPosition, promotion);
                                 moves.add(newMove);
@@ -244,26 +251,51 @@ public class ChessPiece {
                         } else {
                             ChessMove newMove = new ChessMove(myPosition, newPosition, null);
                             moves.add(newMove);
+                        }
+                    }
+
+                    // check if pawn can capture a piece
+                    List<Integer> captSpots = Arrays.asList(-1,1);
+                    for (int captSpot : captSpots) {
+                        int captCol = startCol + captSpot;
+                        if (captCol < 9 && captCol > 0) {
+                            ChessPosition captPosition = new ChessPosition(newRow, captCol);
+                            if (board.getPiece(captPosition) != null && board.getPiece(captPosition).getTeamColor() != currentPiece.getTeamColor()) {
+                                // check if pawn also gets promoted during capture
+                                if (newRow == 8) {
+                                    for (PieceType promotion : promotions) {
+                                        ChessMove captMove = new ChessMove(myPosition, captPosition, promotion);
+                                        moves.add(captMove);
+                                    }
+                                } else {
+                                    ChessMove captMove = new ChessMove(myPosition, captPosition, null);
+                                    moves.add(captMove);
+                                }
+                            }
                         }
                     }
 
                     // BLACK team logic
                 } else {
+                    // find next position pawn can move to
                     int newRow = startRow - 1;
                     ChessPosition newPosition = new ChessPosition(newRow, startCol);
 
-                    if (startRow == 7) {
-                        ChessPosition iNewPosition = new ChessPosition(startRow - 2, startCol);
-                        if (board.getPiece(iNewPosition) == null && board.getPiece(newPosition) == null) {
-                            ChessMove startMove = new ChessMove(myPosition, iNewPosition, null);
-                            moves.add(startMove);
-                        }
-                    }
-
+                    // check that space in front of pawn is empty so it can move
                     if (board.getPiece(newPosition) == null) {
-                        if (newRow == 1) {
-                            List<PieceType> promotions = Arrays.asList(PieceType.ROOK, PieceType.KNIGHT, PieceType.BISHOP, PieceType.QUEEN);
+                        // check if pawn is on starting line for black
+                        if (startRow == 7) {
+                            ChessPosition iNewPosition = new ChessPosition(startRow - 2, startCol);
 
+                            // check that space 2 ahead of pawn is empty
+                            if (board.getPiece(iNewPosition) == null) {
+                                ChessMove startMove = new ChessMove(myPosition, iNewPosition, null);
+                                moves.add(startMove);
+                            }
+                        }
+
+                        // check if pawn reached the end of board and earns a promotion
+                        if (newRow == 1) {
                             for (PieceType promotion : promotions) {
                                 ChessMove newMove = new ChessMove(myPosition, newPosition, promotion);
                                 moves.add(newMove);
@@ -271,6 +303,30 @@ public class ChessPiece {
                         } else {
                             ChessMove newMove = new ChessMove(myPosition, newPosition, null);
                             moves.add(newMove);
+                        }
+                    }
+
+                    // check if pawn can capture a piece
+                    List<Integer> captSpots = Arrays.asList(-1,1);
+                    // look left and right
+                    for (int captSpot : captSpots) {
+                        int captCol = startCol + captSpot;
+                        // check if potential capture spots are actually on chess board
+                        if (captCol < 9 && captCol > 0) {
+                            ChessPosition captPosition = new ChessPosition(newRow, captCol);
+                            // check if an opponent's piece is in the capture spots
+                            if (board.getPiece(captPosition) != null && board.getPiece(captPosition).getTeamColor() != currentPiece.getTeamColor()) {
+                                // check if pawn gets promoted during capture
+                                if (newRow == 1) {
+                                    for (PieceType promotion : promotions) {
+                                        ChessMove captMove = new ChessMove(myPosition, captPosition, promotion);
+                                        moves.add(captMove);
+                                    }
+                                } else {
+                                    ChessMove captMove = new ChessMove(myPosition, captPosition, null);
+                                    moves.add(captMove);
+                                }
+                            }
                         }
                     }
                 }
