@@ -116,7 +116,7 @@ public class ChessBoard {
         // pawns
         ChessPiece bPawn = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
         for(int i = 1; i <= 8; i++) {
-            ChessPosition pawnPos = new ChessPosition(8,i);
+            ChessPosition pawnPos = new ChessPosition(7,i);
             addPiece(pawnPos,bPawn);
         }
     }
@@ -141,4 +141,5 @@ public class ChessBoard {
                 "squares=" + Arrays.toString(squares) +
                 '}';
     }
+
 }
