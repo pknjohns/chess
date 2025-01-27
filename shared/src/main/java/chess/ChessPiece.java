@@ -52,6 +52,7 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
+
         ChessPiece currentPiece = board.getPiece(myPosition);
 
         HashSet<ChessMove> moves = new HashSet<>();
@@ -73,6 +74,13 @@ public class ChessPiece {
         }
     }
 
+
+    /**
+     * Calculates all positions a bishop can move to
+     * @param board ChessBoard object that tracks where pieces are and their team
+     * @param myPosition ChessPosition object that helps us find current piece
+     * @return HashSet of ChessPosition objects saying where bishop can move to
+     */
     private Collection<ChessMove> bishopMoves(ChessBoard board, ChessPosition myPosition) {
         ChessPiece currentPiece = board.getPiece(myPosition);
 
@@ -165,6 +173,12 @@ public class ChessPiece {
         return moves;
     }
 
+    /**
+     * Calculates all positions a king can move to
+     * @param board ChessBoard object that tracks where pieces are and their team
+     * @param myPosition ChessPosition object that helps us find current piece
+     * @return HashSet of ChessPosition objects saying where king can move to
+     */
     private Collection<ChessMove> kingMoves(ChessBoard board, ChessPosition myPosition) {
         ChessPiece currentPiece = board.getPiece(myPosition);
 
@@ -201,6 +215,12 @@ public class ChessPiece {
         return moves;
     }
 
+    /**
+     * Calculates all positions a knight can move to
+     * @param board ChessBoard object that tracks where pieces are and their team
+     * @param myPosition ChessPosition object that helps us find current piece
+     * @return HashSet of ChessPosition objects saying where knight can move to
+     */
     private Collection<ChessMove> knightMoves(ChessBoard board, ChessPosition myPosition) {
         ChessPiece currentPiece = board.getPiece(myPosition);
 
@@ -258,6 +278,12 @@ public class ChessPiece {
         return moves;
     }
 
+    /**
+     * Calculates all positions a pawn can move to
+     * @param board ChessBoard object that tracks where pieces are and their team
+     * @param myPosition ChessPosition object that helps us find current piece
+     * @return HashSet of ChessPosition objects saying where pawn can move to
+     */
     private Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition) {
         ChessPiece currentPiece = board.getPiece(myPosition);
 
@@ -381,6 +407,12 @@ public class ChessPiece {
         return moves;
     }
 
+    /**
+     * Calculates all positions a queen can move to
+     * @param board ChessBoard object that tracks where pieces are and their team
+     * @param myPosition ChessPosition object that helps us find current piece
+     * @return HashSet of ChessPosition objects saying where queen can move to
+     */
     private Collection<ChessMove> queenMoves(ChessBoard board, ChessPosition myPosition) {
         ChessPiece currentPiece = board.getPiece(myPosition);
 
@@ -544,6 +576,12 @@ public class ChessPiece {
         return moves;
     }
 
+    /**
+     * Calculates all positions a rook can move to
+     * @param board ChessBoard object that tracks where pieces are and their team
+     * @param myPosition ChessPosition object that helps us find current piece
+     * @return HashSet of ChessPosition objects saying where rook can move to
+     */
     private Collection<ChessMove> rookMoves(ChessBoard board, ChessPosition myPosition) {
         ChessPiece currentPiece = board.getPiece(myPosition);
 
