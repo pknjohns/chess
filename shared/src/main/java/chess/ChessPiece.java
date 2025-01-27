@@ -63,80 +63,10 @@ public class ChessPiece {
         for (PieceType piece : PieceType.values()) {
             if (currentPiece.getPieceType() == PieceType.BISHOP) {
                 return bishopMoves(board, myPosition);
-            }
-
-            if (currentPiece.getPieceType() == piece && piece == PieceType.KING) {
+            } else if (currentPiece.getPieceType() == piece && piece == PieceType.KING) {
                 return kingMoves(board, myPosition);
-//                List<Integer> steps = Arrays.asList(-1,0,1);
-//                for (int step1 : steps) {
-//                    int newRow = startRow + step1;
-//                    if (newRow < 9 && newRow > 0) {
-//                        for (int step2 : steps) {
-//                            int newCol = startCol + step2;
-//                            if (newCol < 9 && newCol > 0) {
-//                                ChessPosition newPosition = new ChessPosition(newRow, newCol);
-//                                if (!newPosition.equals(myPosition)) {
-//                                    if (board.getPiece(newPosition) != null) {
-//                                        if (board.getPiece(newPosition).getTeamColor() != currentPiece.getTeamColor()) {
-//                                            ChessMove newMove = new ChessMove(myPosition, newPosition, null);
-//                                            moves.add(newMove);
-//                                        }
-//                                    } else {
-//                                        ChessMove newMove = new ChessMove(myPosition, newPosition, null);
-//                                        moves.add(newMove);
-//                                    }
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
-            }
-
-            if (currentPiece.getPieceType() == piece && piece == PieceType.KNIGHT) {
-                List<Integer> lilSteps = Arrays.asList(-1,1);
-                List<Integer> bigSteps = Arrays.asList(-2,2);
-
-                for (int big : bigSteps) {
-                    int newRow = startRow + big;
-                    if (newRow < 9 && newRow > 0) {
-                        for (int lil : lilSteps) {
-                            int newCol = startCol + lil;
-                            if (newCol < 9 && newCol > 0) {
-                                ChessPosition newPosition = new ChessPosition(newRow, newCol);
-                                if (board.getPiece(newPosition) != null) {
-                                    if (board.getPiece(newPosition).getTeamColor() != currentPiece.getTeamColor()) {
-                                        ChessMove newMove = new ChessMove(myPosition, newPosition, null);
-                                        moves.add(newMove);
-                                    }
-                                } else {
-                                    ChessMove newMove = new ChessMove(myPosition, newPosition, null);
-                                    moves.add(newMove);
-                                }
-                            }
-                        }
-                    }
-                }
-
-                for (int lil : lilSteps) {
-                    int newRow = startRow + lil;
-                    if (newRow < 9 && newRow > 0) {
-                        for (int big : bigSteps) {
-                            int newCol = startCol + big;
-                            if (newCol < 9 && newCol > 0) {
-                                ChessPosition newPosition = new ChessPosition(newRow, newCol);
-                                if (board.getPiece(newPosition) != null) {
-                                    if (board.getPiece(newPosition).getTeamColor() != currentPiece.getTeamColor()) {
-                                        ChessMove newMove = new ChessMove(myPosition, newPosition, null);
-                                        moves.add(newMove);
-                                    }
-                                } else {
-                                    ChessMove newMove = new ChessMove(myPosition, newPosition, null);
-                                    moves.add(newMove);
-                                }
-                            }
-                        }
-                    }
-                }
+            } else if (currentPiece.getPieceType() == piece && piece == PieceType.KNIGHT) {
+                return knightMoves(board, myPosition);
             }
 
             if (currentPiece.getPieceType() == piece && piece == PieceType.PAWN) {
@@ -613,7 +543,62 @@ public class ChessPiece {
         return moves;
     }
 
+    private Collection<ChessMove> knightMoves(ChessBoard board, ChessPosition myPosition) {
+        ChessPiece currentPiece = board.getPiece(myPosition);
 
+        HashSet<ChessMove> moves = new HashSet<>();
+
+        // get start position info
+        int startRow = myPosition.getRow();
+        int startCol = myPosition.getColumn();
+
+        List<Integer> lilSteps = Arrays.asList(-1,1);
+        List<Integer> bigSteps = Arrays.asList(-2,2);
+
+        for (int big : bigSteps) {
+            int newRow = startRow + big;
+            if (newRow < 9 && newRow > 0) {
+                for (int lil : lilSteps) {
+                    int newCol = startCol + lil;
+                    if (newCol < 9 && newCol > 0) {
+                        ChessPosition newPosition = new ChessPosition(newRow, newCol);
+                        if (board.getPiece(newPosition) != null) {
+                            if (board.getPiece(newPosition).getTeamColor() != currentPiece.getTeamColor()) {
+                                ChessMove newMove = new ChessMove(myPosition, newPosition, null);
+                                moves.add(newMove);
+                            }
+                        } else {
+                            ChessMove newMove = new ChessMove(myPosition, newPosition, null);
+                            moves.add(newMove);
+                        }
+                    }
+                }
+            }
+        }
+
+        for (int lil : lilSteps) {
+            int newRow = startRow + lil;
+            if (newRow < 9 && newRow > 0) {
+                for (int big : bigSteps) {
+                    int newCol = startCol + big;
+                    if (newCol < 9 && newCol > 0) {
+                        ChessPosition newPosition = new ChessPosition(newRow, newCol);
+                        if (board.getPiece(newPosition) != null) {
+                            if (board.getPiece(newPosition).getTeamColor() != currentPiece.getTeamColor()) {
+                                ChessMove newMove = new ChessMove(myPosition, newPosition, null);
+                                moves.add(newMove);
+                            }
+                        } else {
+                            ChessMove newMove = new ChessMove(myPosition, newPosition, null);
+                            moves.add(newMove);
+                        }
+                    }
+                }
+            }
+        }
+
+        return moves;
+    }
 
     @Override
     public boolean equals(Object o) {
