@@ -105,12 +105,16 @@ public class ChessPiece {
             // store new row and col locations
             int newRow = startRow;
             int newCol = startCol;
+            boolean blocked = false;
 
             // as long as new ChessPosition is within range:
             // limits are 1 and 8 instead of 0 and 9 because we update newRow and newCol AFTER we check if they're in range
-            while (newRow > 1 && newRow < 8 && newCol > 1 && newCol < 8) {
+            while (!blocked) { //FIX THIS LOGIC SO PIECES AT EDGES OF BOARD WILL WORK
                 newRow += direction[0];
                 newCol += direction[1];
+
+                // check if we're still in-bounds or not
+                if (newRow < 1 || newRow > 8 || newCol < 1 || newCol > 8) break;
 
                 // make new ChessPosition and find piece there
                 ChessPosition newPosition = new ChessPosition(newRow, newCol);
@@ -123,7 +127,7 @@ public class ChessPiece {
                         moves.add(new ChessMove(myPosition, newPosition, null));
                     }
                     // we've hit a piece and can't continue along this diagonal, so break
-                    break;
+                    blocked = true;
                 } else {
                     // empty space, add newPosition to moves
                     moves.add(new ChessMove(myPosition, newPosition, null));
@@ -374,164 +378,14 @@ public class ChessPiece {
      * @return HashSet of ChessPosition objects saying where queen can move to
      */
     private Collection<ChessMove> queenMoves(ChessBoard board, ChessPosition myPosition) {
-        ChessPiece currentPiece = board.getPiece(myPosition);
 
-        HashSet<ChessMove> moves = new HashSet<>();
+        Collection<ChessMove> diagMoves = bishopMoves(board, myPosition);
 
-        // get start position info
-        int startRow = myPosition.getRow();
-        int startCol = myPosition.getColumn();
+        Collection<ChessMove> strtMoves = rookMoves(board, myPosition);
 
-        List<Integer> negRows = Arrays.asList(-1,-2,-3,-4,-5,-6,-7);
-        List<Integer> posRows = Arrays.asList(1,2,3,4,5,6,7);
-        List<Integer> negCols = Arrays.asList(-1,-2,-3,-4,-5,-6,-7);
-        List<Integer> posCols = Arrays.asList(1,2,3,4,5,6,7);
+        HashSet<ChessMove> moves = new HashSet<>(diagMoves);
 
-        // diagonal movement logic
-        // start with down diagonals
-        for (int negRow : negRows) {
-            int newRow = startRow + negRow;
-            if (newRow < 9 && newRow > 0) {
-                // check down-left diagonals
-                int negCol = startCol + negRow;
-                if (negCol < 9 && negCol > 0) {
-                    ChessPosition newPosition = new ChessPosition(newRow, negCol);
-                    if (board.getPiece(newPosition) != null) {
-                        if (board.getPiece(newPosition).getTeamColor() != currentPiece.getTeamColor()) {
-                            ChessMove newMove = new ChessMove(myPosition, newPosition, null);
-                            moves.add(newMove);
-                        }
-                        break;
-                    } else {
-                        ChessMove newMove = new ChessMove(myPosition, newPosition, null);
-                        moves.add(newMove);
-                    }
-                }
-
-                // check down-right diagonals
-                int posCol = startCol + negRow * -1;
-                if (posCol < 9 && posCol > 0) {
-                    ChessPosition newPosition = new ChessPosition(newRow, posCol);
-                    if (board.getPiece(newPosition) != null) {
-                        if (board.getPiece(newPosition).getTeamColor() != currentPiece.getTeamColor()) {
-                            ChessMove newMove = new ChessMove(myPosition, newPosition, null);
-                            moves.add(newMove);
-                        }
-                        break;
-                    } else {
-                        ChessMove newMove = new ChessMove(myPosition, newPosition, null);
-                        moves.add(newMove);
-                    }
-                }
-            }
-        }
-
-        // up diagonals
-        for (int posRow : posRows) {
-            int newRow = startRow + posRow;
-            if (newRow < 9 && newRow > 0) {
-                // check up-left diagonals
-                int negCol = startCol + posRow * -1;
-                if (negCol < 9 && negCol > 0) {
-                    ChessPosition newPosition = new ChessPosition(newRow, negCol);
-                    if (board.getPiece(newPosition) != null) {
-                        if (board.getPiece(newPosition).getTeamColor() != currentPiece.getTeamColor()) {
-                            ChessMove newMove = new ChessMove(myPosition, newPosition, null);
-                            moves.add(newMove);
-                        }
-                        break;
-                    } else {
-                        ChessMove newMove = new ChessMove(myPosition, newPosition, null);
-                        moves.add(newMove);
-                    }
-                }
-
-                // check up-right diagonals
-                int posCol = startCol + posRow;
-                if (posCol < 9 && posCol > 0) {
-                    ChessPosition newPosition = new ChessPosition(newRow, posCol);
-                    if (board.getPiece(newPosition) != null) {
-                        if (board.getPiece(newPosition).getTeamColor() != currentPiece.getTeamColor()) {
-                            ChessMove newMove = new ChessMove(myPosition, newPosition, null);
-                            moves.add(newMove);
-                        }
-                        break;
-                    } else {
-                        ChessMove newMove = new ChessMove(myPosition, newPosition, null);
-                        moves.add(newMove);
-                    }
-                }
-            }
-        }
-
-        // straight movement logic------------------------------------------------------
-        for (int negRow : negRows) {
-            int newRow = startRow + negRow;
-            if (newRow < 9 && newRow > 0) {
-                ChessPosition newPosition = new ChessPosition(newRow, startCol);
-                if (board.getPiece(newPosition) != null) {
-                    if (board.getPiece(newPosition).getTeamColor() != currentPiece.getTeamColor()) {
-                        ChessMove newMove = new ChessMove(myPosition, newPosition, null);
-                        moves.add(newMove);
-                    }
-                    break;
-                } else {
-                    ChessMove newMove = new ChessMove(myPosition, newPosition, null);
-                    moves.add(newMove);
-                }
-            }
-        }
-
-        for (int posRow : posRows) {
-            int newRow = startRow + posRow;
-            if (newRow < 9 && newRow > 0) {
-                ChessPosition newPosition = new ChessPosition(newRow, startCol);
-                if (board.getPiece(newPosition) != null) {
-                    if (board.getPiece(newPosition).getTeamColor() != currentPiece.getTeamColor()) {
-                        ChessMove newMove = new ChessMove(myPosition, newPosition, null);
-                        moves.add(newMove);
-                    }
-                    break;
-                } else {
-                    ChessMove newMove = new ChessMove(myPosition, newPosition, null);
-                    moves.add(newMove);
-                }
-            }
-        }
-
-        for (int negCol : negCols) {
-            int newCol = startCol + negCol;
-            if (newCol < 9 && newCol > 0) {
-                ChessPosition newPosition = new ChessPosition(startRow, newCol);
-                if (board.getPiece(newPosition) != null) {
-                    if (board.getPiece(newPosition).getTeamColor() != currentPiece.getTeamColor()) {
-                        ChessMove newMove = new ChessMove(myPosition, newPosition, null);
-                        moves.add(newMove);
-                    }
-                    break;
-                } else {
-                    ChessMove newMove = new ChessMove(myPosition, newPosition, null);
-                    moves.add(newMove);
-                }
-            }
-        }
-
-        for (int posCol : posCols) {
-            int newCol = startCol + posCol;
-            if (newCol < 9 && newCol > 0) {
-                ChessPosition newPosition = new ChessPosition(startRow, newCol);
-                if (board.getPiece(newPosition) != null) {
-                    if (board.getPiece(newPosition).getTeamColor() != currentPiece.getTeamColor()) {
-                        ChessMove newMove = new ChessMove(myPosition, newPosition, null);
-                        moves.add(newMove);
-                    }
-                    break;
-                } else {
-                    ChessMove newMove = new ChessMove(myPosition, newPosition, null);
-                    moves.add(newMove);
-                }
-            }
-        }
+        moves.addAll(strtMoves);
 
         return moves;
     }
