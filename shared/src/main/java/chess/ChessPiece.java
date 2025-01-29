@@ -108,8 +108,7 @@ public class ChessPiece {
             boolean blocked = false;
 
             // as long as new ChessPosition is within range:
-            // limits are 1 and 8 instead of 0 and 9 because we update newRow and newCol AFTER we check if they're in range
-            while (!blocked) { //FIX THIS LOGIC SO PIECES AT EDGES OF BOARD WILL WORK
+            while (!blocked) {
                 newRow += direction[0];
                 newCol += direction[1];
 
@@ -179,11 +178,10 @@ public class ChessPiece {
 
                 // if we find a piece at newPosition
                 if (newPiece != null) {
-                    // if the piece isn't on our team, add newPosition to moves, else break
+                    // if the piece isn't on our team, add newPosition to moves
                     if (newPiece.getTeamColor() != currentPiece.getTeamColor()) {
                         moves.add(new ChessMove(myPosition, newPosition, null));
                     }
-                    // we've hit a piece and can't continue along this diagonal, so break
                 } else {
                     // empty space, add newPosition to moves
                     moves.add(new ChessMove(myPosition, newPosition, null));
@@ -234,11 +232,11 @@ public class ChessPiece {
 
                 // if we find a piece at newPosition
                 if (newPiece != null) {
-                    // if the piece isn't on our team, add newPosition to moves, else break
+                    // if the piece isn't on our team, add newPosition to moves
                     if (newPiece.getTeamColor() != currentPiece.getTeamColor()) {
                         moves.add(new ChessMove(myPosition, newPosition, null));
                     }
-                    // we've hit a piece and can't continue along this diagonal, so break
+                    // we've hit a piece and can't continue in this direction
                 } else {
                     // empty space, add newPosition to moves
                     moves.add(new ChessMove(myPosition, newPosition, null));
@@ -256,124 +254,62 @@ public class ChessPiece {
      */
     private Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition) {
         ChessPiece currentPiece = board.getPiece(myPosition);
-
         HashSet<ChessMove> moves = new HashSet<>();
 
-        // get start position info
         int startRow = myPosition.getRow();
         int startCol = myPosition.getColumn();
 
-        // make list with all promotion options for player
+        // Determine movement direction and promotion row based on team color
+        int moveDirection = currentPiece.getTeamColor() == ChessGame.TeamColor.WHITE ? 1 : -1;
+        int startRowForDoubleMove = currentPiece.getTeamColor() == ChessGame.TeamColor.WHITE ? 2 : 7;
+        int promotionRow = currentPiece.getTeamColor() == ChessGame.TeamColor.WHITE ? 8 : 1;
+
+        // Define all promotion options
         List<PieceType> promotions = Arrays.asList(PieceType.ROOK, PieceType.KNIGHT, PieceType.BISHOP, PieceType.QUEEN);
 
-        // white team logic
-        if (currentPiece.getTeamColor() == ChessGame.TeamColor.WHITE) {
-            // find next position pawn can move to
-            int newRow = startRow + 1;
-            ChessPosition newPosition = new ChessPosition(newRow, startCol);
+        // Single forward move
+        int newRow = startRow + moveDirection;
+        ChessPosition newPosition = new ChessPosition(newRow, startCol);
 
-            // check that space in front of pawn is empty so it can move
-            if (board.getPiece(newPosition) == null) {
-                // check if pawn is on white starting line
-                if (startRow == 2) {
-                    ChessPosition iNewPosition = new ChessPosition(startRow + 2, startCol);
-
-                    // check that space 2 ahead of pawn is empty
-                    if (board.getPiece(iNewPosition) == null) {
-                        ChessMove startMove = new ChessMove(myPosition, iNewPosition, null);
-                        moves.add(startMove);
-                    }
+        if (board.getPiece(newPosition) == null) {
+            if (newRow == promotionRow) {
+                // Add promotion moves
+                for (PieceType promotion : promotions) {
+                    moves.add(new ChessMove(myPosition, newPosition, promotion));
                 }
-
-                // check if pawn has reached end of board and earned a promotion
-                if (newRow == 8) {
-                    for (PieceType promotion : promotions) {
-                        ChessMove newMove = new ChessMove(myPosition, newPosition, promotion);
-                        moves.add(newMove);
-                    }
-                } else {
-                    ChessMove newMove = new ChessMove(myPosition, newPosition, null);
-                    moves.add(newMove);
-                }
+            } else {
+                moves.add(new ChessMove(myPosition, newPosition, null));
             }
 
-            // check if pawn can capture a piece
-            List<Integer> captSpots = Arrays.asList(-1,1);
-            for (int captSpot : captSpots) {
-                int captCol = startCol + captSpot;
-                if (captCol < 9 && captCol > 0) {
-                    ChessPosition captPosition = new ChessPosition(newRow, captCol);
-                    if (board.getPiece(captPosition) != null && board.getPiece(captPosition).getTeamColor() != currentPiece.getTeamColor()) {
-                        // check if pawn also gets promoted during capture
-                        if (newRow == 8) {
-                            for (PieceType promotion : promotions) {
-                                ChessMove captMove = new ChessMove(myPosition, captPosition, promotion);
-                                moves.add(captMove);
-                            }
-                        } else {
-                            ChessMove captMove = new ChessMove(myPosition, captPosition, null);
-                            moves.add(captMove);
-                        }
-                    }
-                }
-            }
-
-            // BLACK team logic
-        } else {
-            // find next position pawn can move to
-            int newRow = startRow - 1;
-            ChessPosition newPosition = new ChessPosition(newRow, startCol);
-
-            // check that space in front of pawn is empty so it can move
-            if (board.getPiece(newPosition) == null) {
-                // check if pawn is on starting line for black
-                if (startRow == 7) {
-                    ChessPosition iNewPosition = new ChessPosition(startRow - 2, startCol);
-
-                    // check that space 2 ahead of pawn is empty
-                    if (board.getPiece(iNewPosition) == null) {
-                        ChessMove startMove = new ChessMove(myPosition, iNewPosition, null);
-                        moves.add(startMove);
-                    }
-                }
-
-                // check if pawn reached the end of board and earns a promotion
-                if (newRow == 1) {
-                    for (PieceType promotion : promotions) {
-                        ChessMove newMove = new ChessMove(myPosition, newPosition, promotion);
-                        moves.add(newMove);
-                    }
-                } else {
-                    ChessMove newMove = new ChessMove(myPosition, newPosition, null);
-                    moves.add(newMove);
-                }
-            }
-
-            // check if pawn can capture a piece
-            List<Integer> captSpots = Arrays.asList(-1,1);
-            // look left and right
-            for (int captSpot : captSpots) {
-                int captCol = startCol + captSpot;
-                // check if potential capture spots are actually on chess board
-                if (captCol < 9 && captCol > 0) {
-                    ChessPosition captPosition = new ChessPosition(newRow, captCol);
-                    // check if an opponent's piece is in the capture spots
-                    if (board.getPiece(captPosition) != null && board.getPiece(captPosition).getTeamColor() != currentPiece.getTeamColor()) {
-                        // check if pawn gets promoted during capture
-                        if (newRow == 1) {
-                            for (PieceType promotion : promotions) {
-                                ChessMove captMove = new ChessMove(myPosition, captPosition, promotion);
-                                moves.add(captMove);
-                            }
-                        } else {
-                            ChessMove captMove = new ChessMove(myPosition, captPosition, null);
-                            moves.add(captMove);
-                        }
-                    }
+            // Double forward move
+            if (startRow == startRowForDoubleMove) {
+                ChessPosition doubleMovePosition = new ChessPosition(startRow + 2 * moveDirection, startCol);
+                if (board.getPiece(doubleMovePosition) == null) {
+                    moves.add(new ChessMove(myPosition, doubleMovePosition, null));
                 }
             }
         }
 
+        // Capture moves (left and right diagonals)
+        List<Integer> captureOffsets = Arrays.asList(-1, 1);
+        for (int offset : captureOffsets) {
+            int captureCol = startCol + offset;
+            if (captureCol >= 1 && captureCol <= 8) { // Ensure within board bounds
+                ChessPosition capturePosition = new ChessPosition(newRow, captureCol);
+                ChessPiece targetPiece = board.getPiece(capturePosition);
+
+                if (targetPiece != null && targetPiece.getTeamColor() != currentPiece.getTeamColor()) {
+                    if (newRow == promotionRow) {
+                        // Add promotion moves during capture
+                        for (PieceType promotion : promotions) {
+                            moves.add(new ChessMove(myPosition, capturePosition, promotion));
+                        }
+                    } else {
+                        moves.add(new ChessMove(myPosition, capturePosition, null));
+                    }
+                }
+            }
+        }
         return moves;
     }
 
