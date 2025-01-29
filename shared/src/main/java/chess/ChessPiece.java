@@ -260,9 +260,20 @@ public class ChessPiece {
         int startCol = myPosition.getColumn();
 
         // Determine movement direction and promotion row based on team color
-        int moveDirection = currentPiece.getTeamColor() == ChessGame.TeamColor.WHITE ? 1 : -1;
-        int startRowForDoubleMove = currentPiece.getTeamColor() == ChessGame.TeamColor.WHITE ? 2 : 7;
-        int promotionRow = currentPiece.getTeamColor() == ChessGame.TeamColor.WHITE ? 8 : 1;
+
+        int moveDirection;
+        int startRowForDoubleMove;
+        int promotionRow;
+
+        if (currentPiece.getTeamColor() == ChessGame.TeamColor.WHITE) {
+            moveDirection = 1;
+            startRowForDoubleMove = 2;
+            promotionRow = 8;
+        } else {
+            moveDirection = -1;
+            startRowForDoubleMove = 7;
+            promotionRow = 1;
+        }
 
         // Define all promotion options
         List<PieceType> promotions = Arrays.asList(PieceType.ROOK, PieceType.KNIGHT, PieceType.BISHOP, PieceType.QUEEN);
