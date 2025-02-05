@@ -137,9 +137,41 @@ public class ChessBoard {
 
     @Override
     public String toString() {
-        return "ChessBoard{" +
-                "squares=" + Arrays.toString(squares) +
-                '}';
+        // initialize string builder
+        StringBuilder sb = new StringBuilder();
+        sb.append("Chess Board{");
+
+        // loop through each position in squares
+        int row = 0;
+        while (row < squares.length) {
+            int col = 0;
+            sb.append('[');
+            while (col < squares[row].length) {
+                // get piece at position
+                ChessPiece piece = squares[row][col];
+
+                // check if there's a piece there
+                if (piece == null) {
+                    // if not, add null
+                    sb.append("('null')");
+                } else {
+                    // otherwise, add the piece's details to the string output
+                    sb.append('(');
+                    sb.append(piece);
+                    sb.append('[');
+                    sb.append(row);
+                    sb.append(']');
+                    sb.append('[');
+                    sb.append(col);
+                    sb.append("]),");
+                }
+                col++;
+            }
+            sb.append(']');
+            row++;
+        }
+        sb.append("}");
+        return sb.toString();
     }
 
 }
