@@ -10,9 +10,32 @@ import java.util.Objects;
  * signature of the existing methods.
  */
 public class ChessBoard {
-    private final ChessPiece[][] squares = new ChessPiece[8][8];
+    private ChessPiece[][] squares = new ChessPiece[8][8];
+
+    /**
+     * Class Constructor
+     */
     public ChessBoard() {
         
+    }
+
+    /**
+     *
+     * Copy constructor
+     *
+     * @param og board that we're making a copy of
+     */
+    public ChessBoard(ChessBoard og) {
+        this.squares = new ChessPiece[8][8];
+        for (int i = 1; i < 9; i++) {
+            for (int j = 1; j < 9; j++) {
+                ChessPosition checkPosition = new ChessPosition(i, j);
+                ChessPiece checkPiece = og.getPiece(checkPosition);
+                if (checkPiece != null) {
+                    addPiece(checkPosition, checkPiece);
+                }
+            }
+        }
     }
 
     /**
@@ -142,13 +165,11 @@ public class ChessBoard {
         sb.append("Chess Board{");
 
         // loop through each position in squares
-        int row = 0;
-        while (row < squares.length) {
-            int col = 0;
+        for (int i = 0; i < 8; i++) {
             sb.append('[');
-            while (col < squares[row].length) {
+            for (int j = 0; j < 8; j++) {
                 // get piece at position
-                ChessPiece piece = squares[row][col];
+                ChessPiece piece = squares[i][j];
 
                 // check if there's a piece there
                 if (piece == null) {
@@ -159,16 +180,14 @@ public class ChessBoard {
                     sb.append('(');
                     sb.append(piece);
                     sb.append('[');
-                    sb.append(row);
+                    sb.append(i);
                     sb.append(']');
                     sb.append('[');
-                    sb.append(col);
+                    sb.append(j);
                     sb.append("]),");
                 }
-                col++;
             }
             sb.append(']');
-            row++;
         }
         sb.append("}");
         return sb.toString();
