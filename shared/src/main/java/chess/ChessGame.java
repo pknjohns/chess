@@ -31,11 +31,7 @@ public class ChessGame {
      * @param team the team whose turn it is
      */
     public void setTeamTurn(TeamColor team) {
-        if (turn == team) {
-            turn = TeamColor.BLACK;
-        } else {
-            turn = TeamColor.WHITE;
-        }
+        turn = team;
     }
 
     /**
@@ -60,8 +56,8 @@ public class ChessGame {
         if (gameBoard.getPiece(startPosition) != null) {
             // get piece at startPosition
             ChessPiece startPiece = gameBoard.getPiece(startPosition);
-            TeamColor clr = startPiece.getTeamColor();
-            //TeamColor opponentClr = TeamColor.values()[(clr.ordinal() + 1) % 2];
+            // get color of startPiece
+            TeamColor startClr = startPiece.getTeamColor();
 
             // make a copy of the gameBoard
             ChessBoard ogGameBoard = new ChessBoard(gameBoard);
@@ -78,7 +74,7 @@ public class ChessGame {
                 makeAnyMove(gameBoard, move);
 
                 // check if making the move puts king in check
-                if (isInCheck(clr)) {
+                if (isInCheck(startClr)) {
                     // if move puts kin gin check, add to badMove list
                     badMoves.add(move);
                 }
@@ -107,30 +103,33 @@ public class ChessGame {
 
         ChessPosition start = move.getStartPosition();
         ChessPiece currentPiece = gameBoard.getPiece(start);
-        TeamColor clr = currentPiece.getTeamColor();
+        if (currentPiece != null) {
+            TeamColor clr = currentPiece.getTeamColor();
 
-        ChessPosition end = move.getEndPosition();
-        //ChessPiece endPiece = gameBoard.getPiece(end);
+            ChessPosition end = move.getEndPosition();
+            //ChessPiece endPiece = gameBoard.getPiece(end);
 
-        // make sure it's the turn of the person trying to make the move
-        if (turn == clr) {
-            // if the attempted move is valid, make the move
-            if (validMoves(start).contains(move)) {
+            // make sure it's the turn of the person trying to make the move
+            if (getTeamTurn() == clr) {
+                // if the attempted move is valid, make the move
+                if (validMoves(start).contains(move)) {
 
-                // check if there is a promotion piece/ currentPiece = pawn
-                if (move.getPromotionPiece() != null) {
-                    currentPiece = new ChessPiece(clr, move.getPromotionPiece());
+                    // check if there is a promotion piece/ currentPiece = pawn
+                    if (move.getPromotionPiece() != null) {
+                        currentPiece = new ChessPiece(clr, move.getPromotionPiece());
+                    }
+
+                    // add/move piece to end/ new position
+                    gameBoard.addPiece(end, currentPiece);
+                    // remove piece from start position
+                    gameBoard.addPiece(start, null);
+
+                    // change whose turn it is after move is made
+                    setTeamTurn(getOpponentsColor(clr));
+
+                } else {
+                    throw new InvalidMoveException("Invalid move: " + move);
                 }
-
-                // add/move piece to end/ new position
-                gameBoard.addPiece(end, currentPiece);
-                // remove piece from start position
-                gameBoard.addPiece(start, null);
-
-//                // check if end position is empty
-//                if (endPiece == null) {
-//                don't think I need to do this^^^ because validMoves/ pieceMoves already calculate if I can capture there or not
-//                }
             } else {
                 throw new InvalidMoveException("Invalid move: " + move);
             }
@@ -151,11 +150,8 @@ public class ChessGame {
         // should also do this after piece at startPosition has been moved in case the king was moved
         ChessPosition kingPosition = findKing(teamColor);
 
-        // find opponent's color
-        TeamColor opponentClr = TeamColor.values()[(teamColor.ordinal() + 1) % 2];
-
         // find all the opponent's possible moves
-        Collection<ChessMove> opponentMoves = findTeamMoves(opponentClr);
+        Collection<ChessMove> opponentMoves = findTeamMoves(getOpponentsColor(teamColor));
 
         // check if kingPosition is in opponentMoves
         for (ChessMove oMove : opponentMoves) {
@@ -304,5 +300,16 @@ public class ChessGame {
         board.addPiece(end, currentPiece);
         // remove piece from start position
         board.addPiece(start, null);
+    }
+
+    /**
+     *
+     * Gets the color of the opponent (opposite team)
+     *
+     * @param clr color of current team
+     * @return color of opponent
+     */
+    private TeamColor getOpponentsColor(TeamColor clr) {
+        return TeamColor.values()[(clr.ordinal() + 1) % 2];
     }
 }
