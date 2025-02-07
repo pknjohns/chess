@@ -1,7 +1,6 @@
 package chess;
 
-import java.util.Collection;
-import java.util.HashSet;
+import java.util.*;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -70,18 +69,25 @@ public class ChessGame {
             // initialize set to hold currentTeam's valid moves
             Collection<ChessMove> goodMoves = startPiece.pieceMoves(gameBoard, startPosition);
 
+            // initialize set to hold bad moves that need to be removed from good moves
+            Collection<ChessMove> badMoves = new ArrayList<>();
+
             // iterate through each move to make sure they're valid
             for (ChessMove move : goodMoves) {
                 // make the move
                 makeAnyMove(gameBoard, move);
 
+                // check if making the move puts king in check
                 if (isInCheck(clr)) {
-                    goodMoves.remove(move);
+                    // if move puts kin gin check, add to badMove list
+                    badMoves.add(move);
                 }
 
                 // reset gameBoard to way it was before the move was made
                 gameBoard = new ChessBoard(ogGameBoard);
             }
+            //remove all bad moves from good moves list
+            goodMoves.removeAll(badMoves);
             return goodMoves;
         } else {
             // if no piece is found at startPosition, return null
