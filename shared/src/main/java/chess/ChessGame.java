@@ -50,7 +50,6 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        //throw new RuntimeException("Not implemented");
 
         // check if there's a piece at startPosition
         if (gameBoard.getPiece(startPosition) != null) {
@@ -145,9 +144,9 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        //throw new RuntimeException("Not implemented");
 
-        // should also do this after piece at startPosition has been moved in case the king was moved
+        // make king and find king's position and moves
+        //ChessPiece king = new ChessPiece(teamColor, ChessPiece.PieceType.KING);
         ChessPosition kingPosition = findKing(teamColor);
 
         // find all the opponent's possible moves
@@ -155,8 +154,7 @@ public class ChessGame {
 
         // check if kingPosition is in opponentMoves
         for (ChessMove oMove : opponentMoves) {
-            ChessPosition opponentEndPosition = oMove.getEndPosition();
-            if (kingPosition.equals(opponentEndPosition)) {
+            if (kingPosition.equals(oMove.getEndPosition())) {
                 return true;
             }
         }
@@ -170,8 +168,12 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        //throw new RuntimeException("Not implemented");
-        return false;
+
+
+        // See if king is in check
+        // See if any of the team/s pieces have valid moves
+        // if both are true then it's in checkmate
+        return isInCheck(teamColor) && findValidTeamMoves(teamColor).isEmpty();
     }
 
     /**
@@ -273,6 +275,43 @@ public class ChessGame {
             }
         }
         return teamMoves;
+    }
+
+    private Collection<ChessMove> findValidTeamMoves(TeamColor teamColor) {
+
+//        // find all possible moves the team can make
+//        Collection<ChessMove> possibleTeamMoves = findTeamMoves(teamColor);
+//
+//        // initialize set to hold all valid moves, if any
+//        HashSet<ChessMove> validTeamMoves = new HashSet<>();
+//
+//        // iterate through each move to see if they're valid
+//        for (ChessMove pMove : possibleTeamMoves) {
+//
+//            // find start positive of potential valid move
+//            ChessPosition spMove = pMove.getStartPosition();
+//            Collection<ChessMove> possibleValidMoves = validMoves(spMove);
+//
+//        }
+
+        HashSet<ChessMove> validTeamMoves = new HashSet<>();
+
+        // tracker to see if we've looked at all the team's pieces yet
+        int k = 0;
+        for (int i = 1; i < 9; i++) {
+            for (int j = 1; j < 9; j++) {
+                ChessPosition newPosition = new ChessPosition(i,j);
+                ChessPiece newPiece = gameBoard.getPiece(newPosition);
+                if (newPiece != null && k < 16) {
+                    if (newPiece.getTeamColor() == teamColor) {
+                        validTeamMoves.addAll(validMoves(newPosition));
+                        k++;
+                    }
+                }
+            }
+        }
+
+        return validTeamMoves;
     }
 
     /**
