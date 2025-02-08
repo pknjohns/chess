@@ -169,7 +169,6 @@ public class ChessGame {
      */
     public boolean isInCheckmate(TeamColor teamColor) {
 
-
         // See if king is in check
         // See if any of the team/s pieces have valid moves
         // if both are true then it's in checkmate
@@ -184,8 +183,11 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        //throw new RuntimeException("Not implemented");
-        return false;
+
+        // See if king is NOT in check
+        // see if there are any valid moves the team has
+        // if king isn't in check and there aren't any valid moves, then stalemate
+        return !isInCheck(teamColor) && findValidTeamMoves(teamColor).isEmpty();
     }
 
     /**
