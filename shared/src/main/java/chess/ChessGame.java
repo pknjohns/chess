@@ -252,6 +252,40 @@ public class ChessGame {
     }
 
     /**
+     *
+     * function to find the positions of all a team's pieces on the board
+     *
+     * @param teamColor color of the team whose pieces we're looking for
+     * @return collection containing the positions of all the team's pieces on the board
+     */
+    private Collection<ChessPosition> findTeamPositions(TeamColor teamColor) {
+        HashSet<ChessPosition> teamPositions = new HashSet<>();
+
+        // tracker to see if we've looked at all the team's pieces yet (doesn't work if team has lost pieces, but that's ok)
+        int k = 0;
+        // look at every row
+        for (int i = 1; i < 9; i++) {
+            // look at every column
+            for (int j = 1; j < 9; j++) {
+                // create new position
+                ChessPosition newPosition = new ChessPosition(i, j);
+                // get piece at newPosition
+                ChessPiece newPiece = gameBoard.getPiece(newPosition);
+                // if there actually is a piece there, and we haven't already found all the team's pieces
+                if (newPiece != null && k < 16) {
+                    // if the piece's color matches the team's color, add it to the collection and increase piece tracker
+                    if (newPiece.getTeamColor() == teamColor) {
+                        teamPositions.add(newPosition);
+                        k++;
+                    }
+                }
+            }
+        }
+        // return collection of positions of all team's pieces
+        return teamPositions;
+    }
+
+    /**
      * Gets all the moves the opponent can make
      * Don't need to check if they're valid moves because if other team puts themselves in check then opponent will just win, so doesn't matter if they put themselves in check or not
      *
@@ -259,22 +293,15 @@ public class ChessGame {
      * @return collection of ChessMoves the team can make
      */
     private Collection<ChessMove> findTeamMoves(TeamColor teamColor) {
+        // initialize collection to hold all the team's possible moves
         HashSet<ChessMove> teamMoves = new HashSet<>();
 
-        // tracker to see if we've looked at all the team's pieces yet
-        int k = 0;
-        for (int i = 1; i < 9; i++) {
-            for (int j = 1; j < 9; j++) {
-                ChessPosition newPosition = new ChessPosition(i,j);
-                ChessPiece newPiece = gameBoard.getPiece(newPosition);
-                if (newPiece != null && k < 16) {
-                    if (newPiece.getTeamColor() == teamColor) {
-                        Collection<ChessMove> pieceMove = newPiece.pieceMoves(gameBoard, newPosition); //validMoves(newPosition)
-                        teamMoves.addAll(pieceMove);
-                        k++;
-                    }
-                }
-            }
+        // look at each position of the team's pieces
+        for (ChessPosition position : findTeamPositions(teamColor)) {
+            // get the team's piece at that position
+            ChessPiece teamPiece = gameBoard.getPiece(position);
+            // add all the moves that piece can possibly make
+            teamMoves.addAll(teamPiece.pieceMoves(gameBoard, position));
         }
         return teamMoves;
     }
