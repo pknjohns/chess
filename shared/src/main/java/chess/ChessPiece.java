@@ -82,58 +82,15 @@ public class ChessPiece {
      */
     private Collection<ChessMove> bishopMoves(ChessBoard board, ChessPosition myPosition) {
 
-        // find ChessPiece (bishop) we're looking at
-        ChessPiece currentPiece = board.getPiece(myPosition);
-
-        // create object to store all valid moves for bishop
-        HashSet<ChessMove> moves = new HashSet<>();
-
-        // get start position info
-        int startRow = myPosition.getRow();
-        int startCol = myPosition.getColumn();
-
-        // create array of directions/ diagonals
+        // create array of directions bishop can move in
         int[][] directions = {
                 {1,1},  // top right diagonal
                 {1,-1}, // top left diagonal
                 {-1,1}, // bottom right diagonal
                 {-1,-1} // bottom left diagonal
         };
-
-        // Iterate through diagonals
-        for (int[] direction : directions) {
-            // store new row and col locations
-            int newRow = startRow;
-            int newCol = startCol;
-            boolean blocked = false;
-
-            // as long as new ChessPosition is within range:
-            while (!blocked) {
-                newRow += direction[0];
-                newCol += direction[1];
-
-                // check if we're still in-bounds or not
-                if (newRow < 1 || newRow > 8 || newCol < 1 || newCol > 8) break;
-
-                // make new ChessPosition and find piece there
-                ChessPosition newPosition = new ChessPosition(newRow, newCol);
-                ChessPiece newPiece = board.getPiece(newPosition);
-
-                // if we find a piece at newPosition
-                if (newPiece != null) {
-                    // if the piece isn't on our team, add newPosition to moves, else break
-                    if (newPiece.getTeamColor() != currentPiece.getTeamColor()) {
-                        moves.add(new ChessMove(myPosition, newPosition, null));
-                    }
-                    // we've hit a piece and can't continue along this diagonal, so break
-                    blocked = true;
-                } else {
-                    // empty space, add newPosition to moves
-                    moves.add(new ChessMove(myPosition, newPosition, null));
-                }
-            }
-        }
-        return moves;
+        // call getMoves and return result
+        return getMoves(board, myPosition, directions);
     }
 
     /**
@@ -351,32 +308,72 @@ public class ChessPiece {
      */
     private Collection<ChessMove> rookMoves(ChessBoard board, ChessPosition myPosition) {
 
-        // find ChessPiece (rook) we're looking at
-        ChessPiece currentPiece = board.getPiece(myPosition);
-
-        // create object to store all valid moves for bishop
-        HashSet<ChessMove> moves = new HashSet<>();
-
-        // get start position info
-        int startRow = myPosition.getRow();
-        int startCol = myPosition.getColumn();
-
-        // create array of directions
+        // create array of directions rook can move in
         int[][] directions = {
                 {0,1},  // right
                 {0,-1}, // left
                 {1,0}, // up
                 {-1,0} // down
         };
+        // getMoves and return result
+        return getMoves(board, myPosition, directions);
 
-        // Iterate through directions
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessPiece that = (ChessPiece) o;
+        return pieceColor == that.pieceColor && type == that.type;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(pieceColor, type);
+    }
+
+    @Override
+    public String toString() {
+        return "ChessPiece{" +
+                "pieceColor=" + pieceColor +
+                ", type=" + type +
+                '}';
+    }
+
+    //------------------------------------------------------------------------------------------------
+    // Custom Methods
+    //------------------------------------------------------------------------------------------------
+
+    /**
+     *
+     * finds all possible moves a piece can make based on the directions it can move in
+     *
+     * @param board board the piece is on
+     * @param myPosition position the piece is at
+     * @param directions the directions the piece can move in
+     * @return collection of possible moves the piece can make
+     */
+    private Collection<ChessMove> getMoves(ChessBoard board, ChessPosition myPosition, int[][] directions) {
+        // find ChessPiece we're looking at
+        ChessPiece currentPiece = board.getPiece(myPosition);
+
+        // create object to store all possible moves for piece
+        HashSet<ChessMove> moves = new HashSet<>();
+
+        // get start position info
+        int startRow = myPosition.getRow();
+        int startCol = myPosition.getColumn();
+
+        // Iterate through provided directions
         for (int[] direction : directions) {
             // store new row and col locations
             int newRow = startRow;
             int newCol = startCol;
             boolean blocked = false;
 
-            // check if we've hit anything in this direction yet
+            // as long as new ChessPosition is within range:
             while (!blocked) {
                 newRow += direction[0];
                 newCol += direction[1];
@@ -403,27 +400,5 @@ public class ChessPiece {
             }
         }
         return moves;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        ChessPiece that = (ChessPiece) o;
-        return pieceColor == that.pieceColor && type == that.type;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(pieceColor, type);
-    }
-
-    @Override
-    public String toString() {
-        return "ChessPiece{" +
-                "pieceColor=" + pieceColor +
-                ", type=" + type +
-                '}';
     }
 }

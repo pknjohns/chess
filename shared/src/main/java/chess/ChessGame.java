@@ -213,6 +213,7 @@ public class ChessGame {
     //------------------------------------------------------------------------------------------------
 
     /**
+     *
      * Finds the position of a team's king
      *
      * @param teamColor team to look for king
@@ -286,6 +287,7 @@ public class ChessGame {
     }
 
     /**
+     *
      * Gets all the moves the opponent can make
      * Don't need to check if they're valid moves because if other team puts themselves in check then opponent will just win, so doesn't matter if they put themselves in check or not
      *
