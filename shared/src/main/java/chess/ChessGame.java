@@ -306,40 +306,22 @@ public class ChessGame {
         return teamMoves;
     }
 
+    /**
+     *
+     * finds all the valid moves a team can make
+     *
+     * @param teamColor color of the team we want to find the valid moves for
+     * @return collection of all valid moves the team can make
+     */
     private Collection<ChessMove> findValidTeamMoves(TeamColor teamColor) {
-
-//        // find all possible moves the team can make
-//        Collection<ChessMove> possibleTeamMoves = findTeamMoves(teamColor);
-//
-//        // initialize set to hold all valid moves, if any
-//        HashSet<ChessMove> validTeamMoves = new HashSet<>();
-//
-//        // iterate through each move to see if they're valid
-//        for (ChessMove pMove : possibleTeamMoves) {
-//
-//            // find start positive of potential valid move
-//            ChessPosition spMove = pMove.getStartPosition();
-//            Collection<ChessMove> possibleValidMoves = validMoves(spMove);
-//
-//        }
 
         HashSet<ChessMove> validTeamMoves = new HashSet<>();
 
-        // tracker to see if we've looked at all the team's pieces yet
-        int k = 0;
-        for (int i = 1; i < 9; i++) {
-            for (int j = 1; j < 9; j++) {
-                ChessPosition newPosition = new ChessPosition(i,j);
-                ChessPiece newPiece = gameBoard.getPiece(newPosition);
-                if (newPiece != null && k < 16) {
-                    if (newPiece.getTeamColor() == teamColor) {
-                        validTeamMoves.addAll(validMoves(newPosition));
-                        k++;
-                    }
-                }
-            }
+        // look at each position of the team's pieces
+        for (ChessPosition position : findTeamPositions(teamColor)) {
+            // add all the valid moves the piece at that location can make
+            validTeamMoves.addAll(validMoves(position));
         }
-
         return validTeamMoves;
     }
 
