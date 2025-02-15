@@ -101,51 +101,13 @@ public class ChessPiece {
      */
     private Collection<ChessMove> kingMoves(ChessBoard board, ChessPosition myPosition) {
 
-
-        // find ChessPiece (king) we're looking at
-        ChessPiece currentPiece = board.getPiece(myPosition);
-
-        // create object to store all valid moves for bishop
-        HashSet<ChessMove> moves = new HashSet<>();
-
-        // get start position info
-        int startRow = myPosition.getRow();
-        int startCol = myPosition.getColumn();
-
         // Define all possible king moves
         int[][] directions = {
                 {-1, -1}, {-1, 1}, {-1, 0}, {1, -1}, {1, 1},
                 {1, 0}, {0, -1}, {0, 1}
         };
-
-        // Iterate through directions
-        for (int[] direction : directions) {
-            // store new row and col locations
-            int newRow = startRow;
-            int newCol = startCol;
-
-            newRow += direction[0];
-            newCol += direction[1];
-
-            // check if we're still in-bounds or not
-            if (newRow > 0 && newRow < 9 && newCol > 0 && newCol < 9) {
-                // make new ChessPosition and find piece there
-                ChessPosition newPosition = new ChessPosition(newRow, newCol);
-                ChessPiece newPiece = board.getPiece(newPosition);
-
-                // if we find a piece at newPosition
-                if (newPiece != null) {
-                    // if the piece isn't on our team, add newPosition to moves
-                    if (newPiece.getTeamColor() != currentPiece.getTeamColor()) {
-                        moves.add(new ChessMove(myPosition, newPosition, null));
-                    }
-                } else {
-                    // empty space, add newPosition to moves
-                    moves.add(new ChessMove(myPosition, newPosition, null));
-                }
-            }
-        }
-        return moves;
+        // call getMoves and return result
+        return getMoves(board, myPosition, directions);
     }
 
     /**
@@ -396,6 +358,11 @@ public class ChessPiece {
                 } else {
                     // empty space, add newPosition to moves
                     moves.add(new ChessMove(myPosition, newPosition, null));
+                }
+                // if piece isn't long range (can't go forever in any one direction) then want to break loop
+                List<PieceType> longRange = Arrays.asList(PieceType.BISHOP, PieceType.ROOK, PieceType.QUEEN);
+                if (!longRange.contains(currentPiece.getPieceType())) {
+                    blocked = true;
                 }
             }
         }
