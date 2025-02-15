@@ -118,51 +118,13 @@ public class ChessPiece {
      */
     private Collection<ChessMove> knightMoves(ChessBoard board, ChessPosition myPosition) {
 
-        // find ChessPiece (knight) we're looking at
-        ChessPiece currentPiece = board.getPiece(myPosition);
-
-        // create object to store all valid moves for bishop
-        HashSet<ChessMove> moves = new HashSet<>();
-
-        // get start position info
-        int startRow = myPosition.getRow();
-        int startCol = myPosition.getColumn();
-
         // Define all possible knight moves
         int[][] directions = {
                 {-2, -1}, {-2, 1}, {2, -1}, {2, 1},
                 {-1, -2}, {-1, 2}, {1, -2}, {1, 2}
         };
-
-        // Iterate through directions
-        for (int[] direction : directions) {
-            // store new row and col locations
-            int newRow = startRow;
-            int newCol = startCol;
-
-            newRow += direction[0];
-            newCol += direction[1];
-
-            // check if we're still in-bounds or not
-            if (newRow > 0 && newRow < 9 && newCol > 0 && newCol < 9) {
-                // make new ChessPosition and find piece there
-                ChessPosition newPosition = new ChessPosition(newRow, newCol);
-                ChessPiece newPiece = board.getPiece(newPosition);
-
-                // if we find a piece at newPosition
-                if (newPiece != null) {
-                    // if the piece isn't on our team, add newPosition to moves
-                    if (newPiece.getTeamColor() != currentPiece.getTeamColor()) {
-                        moves.add(new ChessMove(myPosition, newPosition, null));
-                    }
-                    // we've hit a piece and can't continue in this direction
-                } else {
-                    // empty space, add newPosition to moves
-                    moves.add(new ChessMove(myPosition, newPosition, null));
-                }
-            }
-        }
-        return moves;
+        // call getMoves and return result
+        return getMoves(board, myPosition, directions);
     }
 
     /**
