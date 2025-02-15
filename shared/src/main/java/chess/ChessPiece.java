@@ -213,14 +213,19 @@ public class ChessPiece {
      */
     private Collection<ChessMove> queenMoves(ChessBoard board, ChessPosition myPosition) {
 
+        // create collection to hold all the queen's possible diagonal moves
         Collection<ChessMove> diagonalMoves = bishopMoves(board, myPosition);
 
+        // create collection to hold all the queen's possible straight moves
         Collection<ChessMove> straightMoves = rookMoves(board, myPosition);
 
+        // initialize array (with diagonalMoves) to hold all queen's moves
         HashSet<ChessMove> moves = new HashSet<>(diagonalMoves);
 
+        // add straight moves to queen's list of moves
         moves.addAll(straightMoves);
 
+        // return all the possible moves in a single collection
         return moves;
     }
 
@@ -239,7 +244,7 @@ public class ChessPiece {
                 {1,0}, // up
                 {-1,0} // down
         };
-        // getMoves and return result
+        // call getMoves and return result
         return getMoves(board, myPosition, directions);
 
     }
