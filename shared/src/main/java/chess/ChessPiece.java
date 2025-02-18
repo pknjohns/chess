@@ -134,74 +134,44 @@ public class ChessPiece {
      * @return HashSet of ChessPosition objects saying where pawn can move to
      */
     private Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition) {
-        ChessPiece currentPiece = board.getPiece(myPosition);
+
+        // initialize set to hold all the possible moves the pawn can make
         HashSet<ChessMove> moves = new HashSet<>();
 
+        // get the pawn we're looking at
+        ChessPiece currentPiece = board.getPiece(myPosition);
+
+        // get the starting row and col of the pawn's position
         int startRow = myPosition.getRow();
         int startCol = myPosition.getColumn();
 
-        // Determine movement direction and promotion row based on team color
-
+        // Determine movement direction, start row, and promotion row based on team color
         int moveDirection;
         int startRowForDoubleMove;
         int promotionRow;
 
-        if (currentPiece.getTeamColor() == ChessGame.TeamColor.WHITE) {
+        if (currentPiece.getTeamColor() == ChessGame.TeamColor.WHITE) { // if team is white
             moveDirection = 1;
             startRowForDoubleMove = 2;
             promotionRow = 8;
-        } else {
+        } else { // if team is black
             moveDirection = -1;
             startRowForDoubleMove = 7;
             promotionRow = 1;
         }
 
-        // Define all promotion options
-        List<PieceType> promotions = Arrays.asList(PieceType.ROOK, PieceType.KNIGHT, PieceType.BISHOP, PieceType.QUEEN);
-
-        // Single forward move
         int newRow = startRow + moveDirection;
         ChessPosition newPosition = new ChessPosition(newRow, startCol);
 
+        // look at forward moves of pawn
+        // check that there is nothing in front of the pawn
         if (board.getPiece(newPosition) == null) {
-            if (newRow == promotionRow) {
-                // Add promotion moves
-                for (PieceType promotion : promotions) {
-                    moves.add(new ChessMove(myPosition, newPosition, promotion));
-                }
-            } else {
-                moves.add(new ChessMove(myPosition, newPosition, null));
-            }
-
-            // Double forward move
-            if (startRow == startRowForDoubleMove) {
-                ChessPosition doubleMovePosition = new ChessPosition(startRow + 2 * moveDirection, startCol);
-                if (board.getPiece(doubleMovePosition) == null) {
-                    moves.add(new ChessMove(myPosition, doubleMovePosition, null));
-                }
-            }
+            moves.addAll(getPawnMoves(board, myPosition, newPosition, promotionRow, startRowForDoubleMove, moveDirection));
         }
 
-        // Capture moves (left and right diagonals)
-        List<Integer> captureOffsets = Arrays.asList(-1, 1);
-        for (int offset : captureOffsets) {
-            int captureCol = startCol + offset;
-            if (captureCol >= 1 && captureCol <= 8) { // Ensure within board bounds
-                ChessPosition capturePosition = new ChessPosition(newRow, captureCol);
-                ChessPiece targetPiece = board.getPiece(capturePosition);
+        // get capture moves of pawn
+        moves.addAll(getPawnCaptureMoves(board, myPosition, promotionRow, moveDirection));
 
-                if (targetPiece != null && targetPiece.getTeamColor() != currentPiece.getTeamColor()) {
-                    if (newRow == promotionRow) {
-                        // Add promotion moves during capture
-                        for (PieceType promotion : promotions) {
-                            moves.add(new ChessMove(myPosition, capturePosition, promotion));
-                        }
-                    } else {
-                        moves.add(new ChessMove(myPosition, capturePosition, null));
-                    }
-                }
-            }
-        }
         return moves;
     }
 
@@ -308,7 +278,9 @@ public class ChessPiece {
                 newCol += direction[1];
 
                 // check if we're still in-bounds or not
-                if (newRow < 1 || newRow > 8 || newCol < 1 || newCol > 8) break;
+                if (newRow < 1 || newRow > 8 || newCol < 1 || newCol > 8) {
+                    break;
+                }
 
                 // make new ChessPosition and find piece there
                 ChessPosition newPosition = new ChessPosition(newRow, newCol);
@@ -330,6 +302,93 @@ public class ChessPiece {
                 List<PieceType> longRange = Arrays.asList(PieceType.BISHOP, PieceType.ROOK, PieceType.QUEEN);
                 if (!longRange.contains(currentPiece.getPieceType())) {
                     blocked = true;
+                }
+            }
+        }
+        return moves;
+    }
+
+    /**
+     *
+     * gets all possible moves for a pawn
+     *
+     * @param board the board the pawn is on
+     * @param myPosition the pawn's starting position
+     * @param newPosition the pawn's possible ending position
+     * @param promotionRow the pawn's promotion row
+     * @param startRow the pawn's starting row at beginning of game
+     * @return the possible moves the pawn can make
+     */
+    private Collection<ChessMove> getPawnMoves(ChessBoard board, ChessPosition myPosition, ChessPosition newPosition, int promotionRow, int startRow, int moveDirection) {
+
+        // initialize set to hold all the possible moves the pawn can make
+        HashSet<ChessMove> moves = new HashSet<>();
+
+        // Define all promotion options
+        List<PieceType> promotions = Arrays.asList(PieceType.ROOK, PieceType.KNIGHT, PieceType.BISHOP, PieceType.QUEEN);
+
+        // get row of end/ new position
+        int newRow = newPosition.getRow();
+
+        // check if the move gives us a promotion
+        if (newRow == promotionRow) {
+            // Add promotion moves
+            for (PieceType promotion : promotions) {
+                moves.add(new ChessMove(myPosition, newPosition, promotion));
+            }
+        } else {
+            moves.add(new ChessMove(myPosition, newPosition, null));
+        }
+
+        // Double forward move
+        if (myPosition.getRow() == startRow) {
+            ChessPosition doubleMovePosition = new ChessPosition(startRow + 2 * moveDirection, myPosition.getColumn());
+            if (board.getPiece(doubleMovePosition) == null) {
+                moves.add(new ChessMove(myPosition, doubleMovePosition, null));
+            }
+        }
+        return moves;
+    }
+
+    /**
+     *
+     * gets all the possible capture moves a pawn can make
+     *
+     * @param board board the pawn is on
+     * @param myPosition position the pawn is at
+     * @param promotionRow the row the pawn gets promoted on
+     * @param moveDirection the direction the pawn moves in
+     * @return collection of the pawn's capture moves
+     */
+    private Collection<ChessMove> getPawnCaptureMoves(ChessBoard board, ChessPosition myPosition, int promotionRow, int moveDirection) {
+        // initialize set to hold all the possible moves the pawn can make
+        HashSet<ChessMove> moves = new HashSet<>();
+
+        // Define all promotion options
+        List<PieceType> promotions = Arrays.asList(PieceType.ROOK, PieceType.KNIGHT, PieceType.BISHOP, PieceType.QUEEN);
+
+        List<Integer> captureOffsets = Arrays.asList(-1, 1);
+
+        ChessPiece currentPiece = board.getPiece(myPosition);
+
+        int newRow = myPosition.getRow() + moveDirection;
+        int startCol = myPosition.getColumn();
+
+        for (int offset : captureOffsets) {
+            int captureCol = startCol + offset;
+            if (captureCol >= 1 && captureCol <= 8) { // Ensure within board bounds
+                ChessPosition capturePosition = new ChessPosition(newRow, captureCol);
+                ChessPiece targetPiece = board.getPiece(capturePosition);
+
+                if (targetPiece != null && targetPiece.getTeamColor() != currentPiece.getTeamColor()) {
+                    if (newRow == promotionRow) {
+                        // Add promotion moves during capture
+                        for (PieceType promotion : promotions) {
+                            moves.add(new ChessMove(myPosition, capturePosition, promotion));
+                        }
+                    } else {
+                        moves.add(new ChessMove(myPosition, capturePosition, null));
+                    }
                 }
             }
         }

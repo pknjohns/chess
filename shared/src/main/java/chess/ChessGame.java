@@ -289,7 +289,9 @@ public class ChessGame {
     /**
      *
      * Gets all the moves the opponent can make
-     * Don't need to check if they're valid moves because if other team puts themselves in check then opponent will just win, so doesn't matter if they put themselves in check or not
+     * Don't need to check if they're valid moves
+     * because it doesn't matter if they put themselves in check
+     * when capturing current team's king because they will have already won
      *
      * @param teamColor team to get moves for
      * @return collection of ChessMoves the team can make
