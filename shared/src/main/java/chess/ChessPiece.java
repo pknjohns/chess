@@ -319,7 +319,8 @@ public class ChessPiece {
      * @param startRow the pawn's starting row at beginning of game
      * @return the possible moves the pawn can make
      */
-    private Collection<ChessMove> getPawnMoves(ChessBoard board, ChessPosition myPosition, ChessPosition newPosition, int promotionRow, int startRow, int moveDirection) {
+    private Collection<ChessMove> getPawnMoves(ChessBoard board, ChessPosition myPosition, ChessPosition newPosition,
+                                               int promotionRow, int startRow, int moveDirection) {
 
         // initialize set to hold all the possible moves the pawn can make
         HashSet<ChessMove> moves = new HashSet<>();
