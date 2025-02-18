@@ -376,19 +376,21 @@ public class ChessPiece {
 
         for (int offset : captureOffsets) {
             int captureCol = startCol + offset;
-            if (captureCol >= 1 && captureCol <= 8) { // Ensure within board bounds
-                ChessPosition capturePosition = new ChessPosition(newRow, captureCol);
-                ChessPiece targetPiece = board.getPiece(capturePosition);
+            if (captureCol < 1 || captureCol > 8) { // Ensure within board bounds
+                break;
+            }
 
-                if (targetPiece != null && targetPiece.getTeamColor() != currentPiece.getTeamColor()) {
-                    if (newRow == promotionRow) {
-                        // Add promotion moves during capture
-                        for (PieceType promotion : promotions) {
-                            moves.add(new ChessMove(myPosition, capturePosition, promotion));
-                        }
-                    } else {
-                        moves.add(new ChessMove(myPosition, capturePosition, null));
+            ChessPosition capturePosition = new ChessPosition(newRow, captureCol);
+            ChessPiece targetPiece = board.getPiece(capturePosition);
+
+            if (targetPiece != null && targetPiece.getTeamColor() != currentPiece.getTeamColor()) {
+                if (newRow == promotionRow) {
+                    // Add promotion moves during capture
+                    for (PieceType promotion : promotions) {
+                        moves.add(new ChessMove(myPosition, capturePosition, promotion));
                     }
+                } else {
+                    moves.add(new ChessMove(myPosition, capturePosition, null));
                 }
             }
         }
