@@ -11,6 +11,7 @@ import model.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+//import javax.xml.crypto.Data;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -120,5 +121,24 @@ class DataAccessTest {
 
         var actual = dataAccess.listGames();
         assertGameCollectionEqual(expected, actual);
+    }
+
+    @ParameterizedTest
+    @ValueSource(classes = {MemoryDataAccess.class})
+    void deleteAllGames(Class<? extends DataAccess> dbClass) throws DataAccessException {
+        DataAccess dataAccess = getDataAccess(dbClass);
+
+        var game1 = new GameData(1234, "white", "black", "test", new ChessGame());
+        var game2 = new GameData(5678, "white", "black", "test", new ChessGame());
+        var game3 = new GameData(2345, "white", "black", "test", new ChessGame());
+
+        dataAccess.addGame(game1);
+        dataAccess.addGame(game2);
+        dataAccess.addGame(game3);
+
+        dataAccess.deleteAllGames();
+
+        var actual = dataAccess.listGames();
+        assertEquals(0, actual.size(), "Actual size is not 0 as expected");
     }
 }
