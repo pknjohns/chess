@@ -1,6 +1,7 @@
 package dataacess;
 
 // import data access exception
+import chess.ChessGame;
 import dataaccess.*;
 
 // import model classes
@@ -32,6 +33,10 @@ class DataAccessTest {
         assertEquals(expected.size(), actual.size(), "Expected and Actual are not the same length");
         assertEquals(new HashSet<>(expected), new HashSet<>(actual), "Expected and Actual elements are not the same");
     }
+
+    //-----------------------------------------------------------
+    // Tests for user-related DataAccess methods
+    //-----------------------------------------------------------
 
     @ParameterizedTest
     @ValueSource(classes = {MemoryDataAccess.class})
@@ -75,5 +80,18 @@ class DataAccessTest {
 
         var actual = dataAccess.listUsers();
         assertEquals(0, actual.size());
+    }
+
+    //-----------------------------------------------------------
+    // Tests for game-related DataAccess methods
+    //-----------------------------------------------------------
+
+    @ParameterizedTest
+    @ValueSource(classes = {MemoryDataAccess.class})
+    void addGame(Class<? extends DataAccess> dbClass) throws DataAccessException {
+        DataAccess dataAccess = getDataAccess(dbClass);
+
+        var game = new GameData(1234, "white", "black", "test", new ChessGame());
+        assertDoesNotThrow(() -> dataAccess.addGame(game));
     }
 }

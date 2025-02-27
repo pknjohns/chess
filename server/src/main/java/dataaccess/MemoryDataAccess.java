@@ -1,7 +1,7 @@
 package dataaccess;
 
 import model.*;
-import org.eclipse.jetty.server.Authentication;
+//import org.eclipse.jetty.server.Authentication;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -23,6 +23,11 @@ public class MemoryDataAccess implements DataAccess {
 
     public void deleteAllUsers() {
         users.clear();
+    }
+
+    public GameData addGame(GameData game) {
+        games.put(game.gameID(), game);
+        return game;
     }
 
     public void deleteAllGames() {
