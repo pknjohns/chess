@@ -4,9 +4,7 @@ package dataacess;
 import dataaccess.*;
 
 // import model classes
-import model.AuthData;
-import model.GameData;
-import model.UserData;
+import model.*;
 
 // import test attributes
 import org.junit.jupiter.params.ParameterizedTest;
@@ -76,6 +74,6 @@ class DataAccessTest {
         dataAccess.deleteAllUsers();
 
         var actual = dataAccess.listUsers();
-        //assert
+        assertEquals(0, actual.size());
     }
 }
