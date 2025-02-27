@@ -26,7 +26,13 @@ class DataAccessTest {
     //------------------------------------------------------
 
     private DataAccess getDataAccess(Class<? extends DataAccess> databaseClass) throws DataAccessException {
-        DataAccess db = new MemoryDataAccess();
+        DataAccess db;
+
+        if (databaseClass.equals(MemoryDataAccess.class)) {
+            db = new MemoryDataAccess();
+        } else {
+            db = new MemoryDataAccess(); // placeholder for when we add the MySqlDatabase
+        }
 
         db.deleteAllUsers();
         db.deleteAllGames();
@@ -176,5 +182,24 @@ class DataAccessTest {
 
         var actual = dataAccess.listTokens();
         assertTokenCollectionEqual(expected, actual);
+    }
+
+    @ParameterizedTest
+    @ValueSource(classes = {MemoryDataAccess.class})
+    void deleteAllTokens(Class<? extends DataAccess> dbClass) throws DataAccessException {
+        DataAccess dataAccess = getDataAccess(dbClass);
+
+        var token1 = new AuthData("1234", "PK");
+        var token2 = new AuthData("2345", "PP");
+        var token3 = new AuthData("3456", "KK");
+
+        dataAccess.addToken(token1);
+        dataAccess.addToken(token2);
+        dataAccess.addToken(token3);
+
+        dataAccess.deleteAllTokens();
+
+        var actual = dataAccess.listTokens();
+        assertEquals(0, actual.size(), "Actual size is not 0 as expected");
     }
 }
