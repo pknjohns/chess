@@ -19,5 +19,7 @@ public interface DataAccess {
 
     AuthData addToken(AuthData token) throws DataAccessException;
 
+    Collection<AuthData> listTokens() throws DataAccessException;
+
     void deleteAllTokens() throws DataAccessException;
 }

@@ -43,6 +43,10 @@ public class MemoryDataAccess implements DataAccess {
         return token;
     }
 
+    public Collection<AuthData> listTokens() {
+        return tokens.values();
+    }
+
     public void deleteAllTokens() {
         tokens.clear();
     }

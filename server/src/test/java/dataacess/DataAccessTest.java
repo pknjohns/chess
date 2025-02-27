@@ -44,6 +44,11 @@ class DataAccessTest {
         assertEquals(new HashSet<>(expected), new HashSet<>(actual), "Expected and Actual elements are not the same");
     }
 
+    public static void assertTokenCollectionEqual(Collection<AuthData> expected, Collection<AuthData> actual) {
+        assertEquals(expected.size(), actual.size(), "Expected and Actual are not the same length");
+        assertEquals(new HashSet<>(expected), new HashSet<>(actual), "Expected and Actual elements are not the same");
+    }
+
     //-----------------------------------------------------------
     // Tests for user-related DataAccess methods
     //-----------------------------------------------------------
@@ -153,5 +158,23 @@ class DataAccessTest {
 
         var token = new AuthData("1234","PK");
         assertDoesNotThrow(()-> dataAccess.addToken(token));
+    }
+
+    @ParameterizedTest
+    @ValueSource(classes = {MemoryDataAccess.class})
+    void listTokens(Class<? extends DataAccess> dbClass) throws DataAccessException {
+        DataAccess dataAccess = getDataAccess(dbClass);
+
+        var token1 = new AuthData("1234", "PK");
+        var token2 = new AuthData("2345", "PP");
+        var token3 = new AuthData("3456", "KK");
+
+        List<AuthData> expected = new ArrayList<>();
+        expected.add(dataAccess.addToken(token1));
+        expected.add(dataAccess.addToken(token2));
+        expected.add(dataAccess.addToken(token3));
+
+        var actual = dataAccess.listTokens();
+        assertTokenCollectionEqual(expected, actual);
     }
 }
