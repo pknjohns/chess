@@ -17,5 +17,7 @@ public interface DataAccess {
 
     void deleteAllGames() throws DataAccessException;
 
+    AuthData addToken(AuthData token) throws DataAccessException;
+
     void deleteAllTokens() throws DataAccessException;
 }

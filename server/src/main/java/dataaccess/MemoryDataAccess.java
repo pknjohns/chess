@@ -38,6 +38,11 @@ public class MemoryDataAccess implements DataAccess {
         games.clear();
     }
 
+    public AuthData addToken(AuthData token) {
+        tokens.put(token.authToken(), token);
+        return token;
+    }
+
     public void deleteAllTokens() {
         tokens.clear();
     }

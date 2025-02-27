@@ -141,4 +141,17 @@ class DataAccessTest {
         var actual = dataAccess.listGames();
         assertEquals(0, actual.size(), "Actual size is not 0 as expected");
     }
+
+    //-----------------------------------------------------------
+    // Tests for token-related DataAccess methods
+    //-----------------------------------------------------------
+
+    @ParameterizedTest
+    @ValueSource(classes = {MemoryDataAccess.class})
+    void addToken(Class<? extends DataAccess> dbClass) throws DataAccessException {
+        DataAccess dataAccess = getDataAccess(dbClass);
+
+        var token = new AuthData("1234","PK");
+        assertDoesNotThrow(()-> dataAccess.addToken(token));
+    }
 }
