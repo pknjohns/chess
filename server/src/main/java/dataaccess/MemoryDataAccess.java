@@ -30,6 +30,10 @@ public class MemoryDataAccess implements DataAccess {
         return game;
     }
 
+    public Collection<GameData> listGames() {
+        return games.values();
+    }
+
     public void deleteAllGames() {
         games.clear();
     }

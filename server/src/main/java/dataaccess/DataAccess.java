@@ -13,6 +13,8 @@ public interface DataAccess {
 
     GameData addGame(GameData game) throws DataAccessException;
 
+    Collection<GameData> listGames() throws DataAccessException;
+
     void deleteAllGames() throws DataAccessException;
 
     void deleteAllTokens() throws DataAccessException;

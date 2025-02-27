@@ -20,6 +20,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class DataAccessTest {
 
+    //------------------------------------------------------
+    // custom methods used to make tests work
+    //------------------------------------------------------
+
     private DataAccess getDataAccess(Class<? extends DataAccess> databaseClass) throws DataAccessException {
         DataAccess db = new MemoryDataAccess();
 
@@ -30,6 +34,11 @@ class DataAccessTest {
     }
 
     public static void assertUserCollectionEqual(Collection<UserData> expected, Collection<UserData> actual) {
+        assertEquals(expected.size(), actual.size(), "Expected and Actual are not the same length");
+        assertEquals(new HashSet<>(expected), new HashSet<>(actual), "Expected and Actual elements are not the same");
+    }
+
+    public static void assertGameCollectionEqual(Collection<GameData> expected, Collection<GameData> actual) {
         assertEquals(expected.size(), actual.size(), "Expected and Actual are not the same length");
         assertEquals(new HashSet<>(expected), new HashSet<>(actual), "Expected and Actual elements are not the same");
     }
@@ -93,5 +102,23 @@ class DataAccessTest {
 
         var game = new GameData(1234, "white", "black", "test", new ChessGame());
         assertDoesNotThrow(() -> dataAccess.addGame(game));
+    }
+
+    @ParameterizedTest
+    @ValueSource(classes = {MemoryDataAccess.class})
+    void listGames(Class<? extends DataAccess> dbClass) throws DataAccessException {
+        DataAccess dataAccess = getDataAccess(dbClass);
+
+        var game1 = new GameData(1234, "white", "black", "test", new ChessGame());
+        var game2 = new GameData(5678, "white", "black", "test", new ChessGame());
+        var game3 = new GameData(2345, "white", "black", "test", new ChessGame());
+
+        List<GameData> expected = new ArrayList<>();
+        expected.add(dataAccess.addGame(game1));
+        expected.add(dataAccess.addGame(game2));
+        expected.add(dataAccess.addGame(game3));
+
+        var actual = dataAccess.listGames();
+        assertGameCollectionEqual(expected, actual);
     }
 }
