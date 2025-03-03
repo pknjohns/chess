@@ -49,6 +49,17 @@ class UserDAOTest {
 
     @ParameterizedTest
     @ValueSource(classes= {MemoryUserDAO.class})
+    void getUser(Class<? extends UserDAO> daoClass) throws DataAccessException {
+        UserDAO dataAccess = getUserDataAccess(daoClass);
+
+        var user = new UserData("pk", "1234", "pk@cs.com");
+        dataAccess.addUser(user);
+        UserData result = dataAccess.getUser(user);
+        assertEquals(result, user, "Successfully gets UserData");
+    }
+
+    @ParameterizedTest
+    @ValueSource(classes= {MemoryUserDAO.class})
     void listUsers(Class<? extends UserDAO> daoClass) throws DataAccessException {
         UserDAO dataAccess = getUserDataAccess(daoClass);
 
