@@ -31,14 +31,8 @@ public class Server {
     }
 
     public Object clearHandler(Request req, Response res) throws DataAccessException {
-        try {
-            clearService.clearDB();
-            res.status(200);
-            return "";
-        } catch (DataAccessException e) {
-            res.status(500);
-            System.err.println("Error: Database connection unsuccessful");
-            return "";
-        }
+        clearService.clearDB();
+        res.status(200);
+        return "";
     }
 }
