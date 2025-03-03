@@ -9,7 +9,9 @@ import java.util.HashMap;
 public class MemoryDataAccess implements DataAccess {
     // key in this case is username (string)
     final private HashMap<String, UserData> users = new HashMap<>();
+    // key in this case is gameID (int)
     final private HashMap<Integer, GameData> games = new HashMap<>();
+    // key here is authToken (string)
     final private HashMap<String, AuthData> tokens = new HashMap<>();
 
     public UserData addUser(UserData user) {
