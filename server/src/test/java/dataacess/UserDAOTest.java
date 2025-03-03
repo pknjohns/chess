@@ -39,7 +39,7 @@ class UserDAOTest {
 
 
     @ParameterizedTest
-    @ValueSource(classes = {MemoryDataAccess.class})
+    @ValueSource(classes = {MemoryUserDAO.class})
     void addUser(Class<? extends UserDAO> daoClass) throws DataAccessException {
         UserDAO dataAccess = getUserDataAccess(daoClass);
 
@@ -48,7 +48,7 @@ class UserDAOTest {
     }
 
     @ParameterizedTest
-    @ValueSource(classes= {MemoryDataAccess.class})
+    @ValueSource(classes= {MemoryUserDAO.class})
     void listUsers(Class<? extends UserDAO> daoClass) throws DataAccessException {
         UserDAO dataAccess = getUserDataAccess(daoClass);
 
@@ -66,7 +66,7 @@ class UserDAOTest {
     }
 
     @ParameterizedTest
-    @ValueSource(classes= {MemoryDataAccess.class})
+    @ValueSource(classes= {MemoryUserDAO.class})
     void deleteAllUsers(Class<? extends UserDAO> daoClass) throws DataAccessException {
         UserDAO dataAccess = getUserDataAccess(daoClass);
 
