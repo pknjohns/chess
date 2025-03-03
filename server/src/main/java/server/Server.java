@@ -1,18 +1,25 @@
 package server;
 
+import dataaccess.*;
 import spark.*;
+import service.*;
 
 public class Server {
 
-    public int run(int desiredPort) {
+    private final AuthDAO authDB = new MemoryAuthDAO();
+    private final GameDAO gameDB = new MemoryGameDAO();
+    private final UserDAO userDB = new MemoryUserDAO();
+    ClearService clearService = new ClearService(authDB, gameDB, userDB);
+
+    public int run(int desiredPort) { //exceptions should be caught before the Server (like in the handler)
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("web");
 
         // Register your endpoints and handle exceptions here.
 
-        //This line initializes the server and can be removed once you have a functioning endpoint 
-        Spark.init();
+        // register clear endpoint
+        Spark.delete("/db", this::clearHandler);
 
         Spark.awaitInitialization();
         return Spark.port();
@@ -21,5 +28,11 @@ public class Server {
     public void stop() {
         Spark.stop();
         Spark.awaitStop();
+    }
+
+    public Object clearHandler(Request req, Response res) throws DataAccessException {
+        clearService.clearDB();
+        res.status(200);
+        return "";
     }
 }
