@@ -2,11 +2,11 @@ package service;
 
 import dataaccess.*;
 
-import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class UserServiceTest {
@@ -46,4 +46,21 @@ public class UserServiceTest {
         UserData result = userService.findUsername(user2);
         assertNull(result);
     }
+
+    @Test
+    void doCreateUser() throws DataAccessException {
+        UserData user1 = new UserData("pk", "1234", "pk@cs.com");
+        userService.createUser(user1);
+        int result = userDB.listUsers().size();
+        assertEquals(1, result);
+    }
+
+    @Test
+    void doCreateAuth() throws DataAccessException {
+        String username = "pk";
+        userService.createAuth(username);
+        int result = authDB.listTokens().size();
+        assertEquals(1, result);
+    }
+
 }
