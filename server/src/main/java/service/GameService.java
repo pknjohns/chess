@@ -51,13 +51,13 @@ public class GameService {
         if (auth == null) {
             throw new UnauthorizedException("Bad token");
         } else {
-            if (Objects.equals(teamColor, "white")) {
+            if (Objects.equals(teamColor, "WHITE")) {
                 if (gameDB.getGame(gameID).whiteUsername() == null) {
                     gameDB.updateGameWhitePlayer(gameID, auth.username());
                 } else {
                     throw new AlreadyTakenException("Someone else is already white");
                 }
-            } else if (Objects.equals(teamColor, "black")) {
+            } else if (Objects.equals(teamColor, "BLACK")) {
                 if (gameDB.getGame(gameID).blackUsername() == null) {
                     gameDB.updateGameBlackPlayer(gameID, auth.username());
                 } else {

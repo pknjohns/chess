@@ -30,6 +30,7 @@ public class Server {
         Spark.delete("/session", this::logoutHandler);
         Spark.get("/game", this::listGamesHandler);
         Spark.post("/game", this::createGameHandler);
+        Spark.put("/game", this::joinGameHandler);
 
         Spark.awaitInitialization();
         return Spark.port();
@@ -126,6 +127,25 @@ public class Server {
         } catch (DataAccessException e) {
             res.status(500);
             return new Gson().toJson(exceptionMessageGenerator(e));
+        }
+    }
+
+    public Object joinGameHandler(Request req, Response res) {
+        try {
+            String authToken = req.headers("Authorization");
+            JoinRequest joinReq = new Gson().fromJson(req.body(), JoinRequest.class);
+            gameService.joinGame(authToken, joinReq.playerColor(), joinReq.gameID());
+            res.status(200);
+            return "{}";
+        } catch(BadRequestException e) {
+            res.status(400);
+            return new Gson().toJson(exceptionMessageGenerator(e)); //make full error message and return json object
+        } catch(AlreadyTakenException e) {
+            res.status(403);
+            return new Gson().toJson(exceptionMessageGenerator(e)); //make full error message and return json object
+        } catch (Exception e) {
+            res.status(500);
+            return new Gson().toJson(exceptionMessageGenerator(e)); //make full error message and return json object
         }
     }
 
