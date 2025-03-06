@@ -17,6 +17,6 @@ public class ClearService {
     public void clearDB() throws DataAccessException {
         userDB.deleteAllUsers();
         gameDB.deleteAllGames();
-        authDB.deleteAllTokens();
+        authDB.deleteAllAuths();
     }
 }

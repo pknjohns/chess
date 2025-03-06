@@ -1,12 +1,12 @@
 package service;
 
-import dataaccess.AuthDAO;
-import dataaccess.DataAccessException;
-import dataaccess.UserDAO;
+import dataaccess.*;
+
 import model.AuthData;
 import model.RegisterRequest;
 import model.RegisterResult;
 import model.UserData;
+
 import java.util.UUID;
 
 public class UserService {
@@ -19,13 +19,33 @@ public class UserService {
         this.userDB = userDB;
     }
 
-//    public RegisterResult registerUser(RegisterRequest request) throws DataAccessException{
-//
-//        return null;
-//    }
+    public RegisterResult registerUser(RegisterRequest request) throws AlreadyTakenException, BadRequestException, DataAccessException {
+        String username = request.username();
+        String password = request.password();
+        String email = request.email();
 
-    public UserData findUsername(UserData user) throws DataAccessException {
-        return userDB.getUser(user);
+        if (username == null) {
+            throw new BadRequestException("Missing username");
+        } else if (password == null) {
+            throw new BadRequestException("Missing password");
+        } else if (email == null) {
+            throw new BadRequestException("Missing email");
+        }
+
+        if (userDB.getUser(username) == null) { //username is available
+            UserData user = new UserData(username, password, email);
+            String token = generateToken();
+            AuthData auth = new AuthData(token, username);
+            userDB.addUser(user);
+            authDB.addAuth(auth);
+            return new RegisterResult(token, username);
+        } else {
+            throw new AlreadyTakenException("Username is already in use");
+        }
+    }
+
+    public UserData findUsername(String username) throws DataAccessException {
+        return userDB.getUser(username);
     }
 
     public void createUser(UserData user) throws DataAccessException {
@@ -38,7 +58,7 @@ public class UserService {
 
     public void createAuth(String username) throws DataAccessException {
         AuthData auth = new AuthData(generateToken(), username);
-        authDB.addToken(auth);
+        authDB.addAuth(auth);
     }
 
 }

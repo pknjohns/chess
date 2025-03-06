@@ -28,7 +28,7 @@ class AuthDAOTest {
             db = new MemoryAuthDAO(); // placeholder for when we add the MySqlDatabase
         }
 
-        db.deleteAllTokens();
+        db.deleteAllAuths();
         return db;
     }
 
@@ -43,7 +43,20 @@ class AuthDAOTest {
         AuthDAO dataAccess = getAuthDataAccess(dbClass);
 
         var token = new AuthData("1234","PK");
-        assertDoesNotThrow(()-> dataAccess.addToken(token));
+        assertDoesNotThrow(()-> dataAccess.addAuth(token));
+    }
+
+    @ParameterizedTest
+    @ValueSource(classes = {MemoryAuthDAO.class})
+    void getToken(Class<? extends AuthDAO> dbClass) throws DataAccessException {
+        AuthDAO dataAccess = getAuthDataAccess(dbClass);
+
+        String token = "1234";
+        var auth = new AuthData("1234","PK");
+        dataAccess.addAuth(auth);
+        AuthData result = dataAccess.getAuth(token);
+        assertEquals(auth, result);
+
     }
 
     @ParameterizedTest
@@ -56,11 +69,11 @@ class AuthDAOTest {
         var token3 = new AuthData("3456", "KK");
 
         List<AuthData> expected = new ArrayList<>();
-        expected.add(dataAccess.addToken(token1));
-        expected.add(dataAccess.addToken(token2));
-        expected.add(dataAccess.addToken(token3));
+        expected.add(dataAccess.addAuth(token1));
+        expected.add(dataAccess.addAuth(token2));
+        expected.add(dataAccess.addAuth(token3));
 
-        var actual = dataAccess.listTokens();
+        var actual = dataAccess.listAuths();
         assertTokenCollectionEqual(expected, actual);
     }
 
@@ -73,13 +86,13 @@ class AuthDAOTest {
         var token2 = new AuthData("2345", "PP");
         var token3 = new AuthData("3456", "KK");
 
-        dataAccess.addToken(token1);
-        dataAccess.addToken(token2);
-        dataAccess.addToken(token3);
+        dataAccess.addAuth(token1);
+        dataAccess.addAuth(token2);
+        dataAccess.addAuth(token3);
 
-        dataAccess.deleteAllTokens();
+        dataAccess.deleteAllAuths();
 
-        var actual = dataAccess.listTokens();
+        var actual = dataAccess.listAuths();
         assertEquals(0, actual.size(), "Actual size is not 0 as expected");
     }
 }

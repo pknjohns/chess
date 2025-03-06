@@ -36,14 +36,14 @@ public class ClearServiceTest {
         var token2 = new AuthData("2345", "PP");
         var token3 = new AuthData("3456", "KK");
 
-        authDB.addToken(token1);
-        authDB.addToken(token2);
-        authDB.addToken(token3);
+        authDB.addAuth(token1);
+        authDB.addAuth(token2);
+        authDB.addAuth(token3);
 
         ClearService service = new ClearService(authDB, gameDB, userDB);
         service.clearDB();
         assertEquals(0, userDB.listUsers().size());
         assertEquals(0, gameDB.listGames().size());
-        assertEquals(0, authDB.listTokens().size());
+        assertEquals(0, authDB.listAuths().size());
     }
 }

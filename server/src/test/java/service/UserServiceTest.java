@@ -2,6 +2,9 @@ package service;
 
 import dataaccess.*;
 
+import model.AuthData;
+import model.RegisterRequest;
+import model.RegisterResult;
 import model.UserData;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,16 +27,18 @@ public class UserServiceTest {
 
     @BeforeEach
     public void setup() throws DataAccessException {
-        authDB.deleteAllTokens();
+        authDB.deleteAllAuths();
         userDB.deleteAllUsers();
     }
 
     @Test
     void doFindUser() throws DataAccessException {
-        UserData user = new UserData("pk", "1234", "pk@cs.com");
+        String username = "pk";
+
+        UserData user = new UserData(username, "1234", "pk@cs.com");
         userDB.addUser(user);
 
-        UserData result = userService.findUsername(user);
+        UserData result = userService.findUsername(username);
         assertEquals(user, result);
     }
 
@@ -42,8 +47,8 @@ public class UserServiceTest {
         UserData user1 = new UserData("pk", "1234", "pk@cs.com");
         userDB.addUser(user1);
 
-        UserData user2 = new UserData("kk", "5678", "kk@cs.com");
-        UserData result = userService.findUsername(user2);
+        String username2 = "kk";
+        UserData result = userService.findUsername(username2);
         assertNull(result);
     }
 
@@ -59,8 +64,72 @@ public class UserServiceTest {
     void doCreateAuth() throws DataAccessException {
         String username = "pk";
         userService.createAuth(username);
-        int result = authDB.listTokens().size();
+        int result = authDB.listAuths().size();
         assertEquals(1, result);
     }
 
+    @Test
+    void doRegisterUser() throws AlreadyTakenException, BadRequestException, DataAccessException {
+        String username = "kk";
+        String password = "1234";
+        String email = ".com";
+
+        RegisterRequest request = new RegisterRequest(username, password, email);
+        RegisterResult result = userService.registerUser(request);
+
+        UserData expectedUser = new UserData(username, password, email);
+        String expectedToken = result.authToken();
+        AuthData expectedAuth = new AuthData(expectedToken, username);
+
+        UserData actualUser = userDB.getUser(username);
+        AuthData actualAuth = authDB.getAuth(expectedToken);
+
+        assertEquals(expectedUser, actualUser);
+        assertEquals(expectedAuth, actualAuth);
+    }
+
+    @Test
+    void noRegisterUserBadRequestNoEmail() {
+        String username = "kk";
+        String password = "1234";
+        String email = null;
+
+        RegisterRequest request = new RegisterRequest(username, password, email);
+
+        assertThrows(BadRequestException.class, () -> userService.registerUser(request));
+    }
+
+    @Test
+    void noRegisterUserBadRequestNoUsername() {
+        String username = null;
+        String password = "1234";
+        String email = ".com";
+
+        RegisterRequest request = new RegisterRequest(username, password, email);
+
+        assertThrows(BadRequestException.class, () -> userService.registerUser(request));
+    }
+
+    @Test
+    void noRegisterUserBadRequestNoPassword() {
+        String username = "kk";
+        String password = null;
+        String email = ".com";
+
+        RegisterRequest request = new RegisterRequest(username, password, email);
+
+        assertThrows(BadRequestException.class, () -> userService.registerUser(request));
+    }
+
+    @Test
+    void noRegisterUserAlreadyTaken() throws AlreadyTakenException, BadRequestException, DataAccessException {
+        String username = "kk";
+        String password = "1234";
+        String email = ".com";
+
+        RegisterRequest request = new RegisterRequest(username, password, email);
+        userService.registerUser(request);
+
+        assertThrows(AlreadyTakenException.class, () -> userService.registerUser(request));
+    }
 }

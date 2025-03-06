@@ -52,9 +52,11 @@ class UserDAOTest {
     void doGetUser(Class<? extends UserDAO> daoClass) throws DataAccessException {
         UserDAO dataAccess = getUserDataAccess(daoClass);
 
-        var user = new UserData("pk", "1234", "pk@cs.com");
+        String username = "pk";
+        var user = new UserData(username, "1234", "pk@cs.com");
         dataAccess.addUser(user);
-        UserData result = dataAccess.getUser(user);
+
+        UserData result = dataAccess.getUser(username);
         assertEquals(result, user, "Successfully gets UserData");
     }
 
@@ -63,9 +65,8 @@ class UserDAOTest {
     void noGetUser(Class<? extends UserDAO> daoClass) throws DataAccessException {
         UserDAO dataAccess = getUserDataAccess(daoClass);
 
-        var user = new UserData("pk", "1234", "pk@cs.com");
-        //dataAccess.addUser(user);
-        UserData result = dataAccess.getUser(user);
+        String username = "pk";
+        UserData result = dataAccess.getUser(username);
         assertNull(result, "No user found");
     }
 
@@ -74,9 +75,13 @@ class UserDAOTest {
     void listUsers(Class<? extends UserDAO> daoClass) throws DataAccessException {
         UserDAO dataAccess = getUserDataAccess(daoClass);
 
-        var user1 = new UserData("pk", "1234", "pk@cs.com");
-        var user2 = new UserData("kk", "5678", "kk@cs.com");
-        var user3 = new UserData("pp", "1234", "cs.com");
+        String username1 = "pk";
+        String username2 = "kk";
+        String username3 = "pp";
+
+        var user1 = new UserData(username1, "1234", "pk@cs.com");
+        var user2 = new UserData(username2, "5678", "kk@cs.com");
+        var user3 = new UserData(username3, "1234", "cs.com");
 
         List<UserData> expected = new ArrayList<>();
         expected.add(dataAccess.addUser(user1));

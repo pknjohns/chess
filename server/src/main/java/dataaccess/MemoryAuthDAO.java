@@ -9,16 +9,20 @@ public class MemoryAuthDAO implements AuthDAO {
     // key here is authToken (string)
     final private HashMap<String, AuthData> tokens = new HashMap<>();
 
-    public AuthData addToken(AuthData token) {
+    public AuthData getAuth(String token) {
+        return tokens.get(token);
+    }
+
+    public AuthData addAuth(AuthData token) {
         tokens.put(token.authToken(), token);
         return token;
     }
 
-    public Collection<AuthData> listTokens() {
+    public Collection<AuthData> listAuths() {
         return tokens.values();
     }
 
-    public void deleteAllTokens() {
+    public void deleteAllAuths() {
         tokens.clear();
     }
 }

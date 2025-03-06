@@ -5,9 +5,12 @@ import model.AuthData;
 import java.util.Collection;
 
 public interface AuthDAO {
-    AuthData addToken(AuthData token) throws DataAccessException;
 
-    Collection<AuthData> listTokens() throws DataAccessException;
+    AuthData getAuth(String token) throws  DataAccessException;
 
-    void deleteAllTokens() throws DataAccessException;
+    AuthData addAuth(AuthData token) throws DataAccessException;
+
+    Collection<AuthData> listAuths() throws DataAccessException;
+
+    void deleteAllAuths() throws DataAccessException;
 }
