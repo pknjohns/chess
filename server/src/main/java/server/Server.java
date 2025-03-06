@@ -2,12 +2,11 @@ package server;
 
 import com.google.gson.Gson;
 import dataaccess.*;
-import model.LoginRequest;
-import model.LoginResult;
-import model.RegisterRequest;
-import model.RegisterResult;
+import model.*;
 import spark.*;
 import service.*;
+
+import java.util.Collection;
 
 public class Server {
 
@@ -15,6 +14,7 @@ public class Server {
     private final GameDAO gameDB = new MemoryGameDAO();
     private final UserDAO userDB = new MemoryUserDAO();
     ClearService clearService = new ClearService(authDB, gameDB, userDB);
+    GameService gameService = new GameService(authDB, gameDB);
     UserService userService = new UserService(authDB, userDB);
 
     public int run(int desiredPort) { //exceptions should be caught before the Server (like in the handler)
@@ -27,6 +27,7 @@ public class Server {
         Spark.post("/user", this::registerHandler);
         Spark.post("/session", this::loginHandler);
         Spark.delete("/session", this::logoutHandler);
+        Spark.get("/game", this::listGamesHandler);
 
         Spark.awaitInitialization();
         return Spark.port();
@@ -82,6 +83,21 @@ public class Server {
             userService.logoutUser(authToken);
             res.status(200);
             return "{}";
+        } catch (UnauthorizedException e) {
+            res.status(401);
+            return new Gson().toJson(exceptionMessageGenerator(e));
+        } catch (DataAccessException e) {
+            res.status(500);
+            return new Gson().toJson(exceptionMessageGenerator(e));
+        }
+    }
+
+    public Object listGamesHandler(Request req, Response res) {
+        String authToken = req.headers("Authorization");
+        try {
+            Collection<GameData> games = gameService.listGames(authToken);
+            res.status(200);
+            return new Gson().toJson(games);
         } catch (UnauthorizedException e) {
             res.status(401);
             return new Gson().toJson(exceptionMessageGenerator(e));
