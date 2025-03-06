@@ -7,6 +7,7 @@ import spark.*;
 import service.*;
 
 import java.util.Collection;
+import java.util.HashMap;
 
 public class Server {
 
@@ -95,9 +96,11 @@ public class Server {
     public Object listGamesHandler(Request req, Response res) {
         String authToken = req.headers("Authorization");
         try {
-            Collection<GameData> games = gameService.listGames(authToken);
+            Collection<ListGameData> games = gameService.listGames(authToken);
+            HashMap<String, Collection<ListGameData>> resMap = new HashMap<>();
+            resMap.put("games",games);
             res.status(200);
-            return new Gson().toJson(games);
+            return new Gson().toJson(resMap);
         } catch (UnauthorizedException e) {
             res.status(401);
             return new Gson().toJson(exceptionMessageGenerator(e));
@@ -107,7 +110,9 @@ public class Server {
         }
     }
 
-    public String exceptionMessageGenerator(Exception e) {
-        return "Error: " + e.getMessage();
+    public HashMap<String, String> exceptionMessageGenerator(Exception e) {
+        HashMap<String, String> resMap = new HashMap<>();
+        resMap.put("message", "Error: " + e.getMessage());
+        return resMap;
     }
 }

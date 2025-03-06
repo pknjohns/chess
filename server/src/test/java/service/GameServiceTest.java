@@ -3,6 +3,7 @@ package service;
 import chess.ChessGame;
 import dataaccess.*;
 import model.GameData;
+import model.ListGameData;
 import model.RegisterRequest;
 import model.RegisterResult;
 import org.junit.jupiter.api.BeforeAll;
@@ -52,7 +53,7 @@ public class GameServiceTest {
         RegisterRequest request = new RegisterRequest(username, password, email);
         RegisterResult result = userService.registerUser(request);
 
-        Collection<GameData> gameList = gameService.listGames(result.authToken());
+        Collection<ListGameData> gameList = gameService.listGames(result.authToken());
         assertEquals(gameDB.listGames().size(), gameList.size());
     }
 
