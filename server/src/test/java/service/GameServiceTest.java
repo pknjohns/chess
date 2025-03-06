@@ -18,6 +18,7 @@ public class GameServiceTest {
 
     private static AuthDAO authDB;
     private static GameDAO gameDB;
+    private static UserDAO userDB;
     private static GameService gameService;
     private static UserService userService;
 
@@ -25,15 +26,16 @@ public class GameServiceTest {
     public static void init() {
         authDB = new MemoryAuthDAO();
         gameDB = new MemoryGameDAO();
-        UserDAO userDB = new MemoryUserDAO();
-        gameService = new GameService(authDB, gameDB);
-        userService = new UserService(authDB, userDB);
+        userDB = new MemoryUserDAO();
     }
 
     @BeforeEach
     public void setup() throws DataAccessException {
         authDB.deleteAllAuths();
         gameDB.deleteAllGames();
+        userDB.deleteAllUsers();
+        gameService = new GameService(authDB, gameDB);
+        userService = new UserService(authDB, userDB);
     }
 
     @Test
@@ -89,7 +91,7 @@ public class GameServiceTest {
 
         String gameName = "first";
         int newGameID = gameService.createGame(authToken, gameName);
-        assertEquals(2, newGameID);
+        assertEquals(1, newGameID);
         assertEquals(1, gameDB.listGames().size());
     }
 
@@ -104,5 +106,135 @@ public class GameServiceTest {
 
         String gameName = "first";
         assertThrows(UnauthorizedException.class, () -> gameService.createGame("", gameName));
+    }
+
+    @Test
+    public void doJoinGameWhite() throws BadRequestException, AlreadyTakenException, DataAccessException {
+        String username = "kk";
+        String password = "1234";
+        String email = ".com";
+
+        RegisterRequest request = new RegisterRequest(username, password, email);
+        RegisterResult result = userService.registerUser(request);
+        String authToken = result.authToken();
+
+        String gameName = "first";
+        int newGameID = gameService.createGame(authToken, gameName);
+        gameService.joinGame(authToken, "white",newGameID);
+        assertEquals("kk", gameDB.getGame(newGameID).whiteUsername());
+    }
+
+    @Test
+    public void noJoinGameWhiteAlreadyTaken() throws BadRequestException, AlreadyTakenException, DataAccessException {
+        String username = "kk";
+        String password = "1234";
+        String email = ".com";
+
+        RegisterRequest request = new RegisterRequest(username, password, email);
+        RegisterResult result = userService.registerUser(request);
+        String authToken = result.authToken();
+
+        String gameName = "first";
+        int newGameID = gameService.createGame(authToken, gameName);
+        gameService.joinGame(authToken, "white",newGameID);
+
+        String username1 = "pp";
+        String password1 = "1234";
+        String email1 = ".com";
+
+        RegisterRequest request1 = new RegisterRequest(username1, password1, email1);
+        RegisterResult result1 = userService.registerUser(request1);
+        String authToken1 = result1.authToken();
+
+        assertThrows(AlreadyTakenException.class, () -> gameService.joinGame(authToken1, "white", newGameID));
+    }
+
+    @Test
+    public void noJoinGameWhiteBadToken() throws BadRequestException, AlreadyTakenException, DataAccessException {
+        String username = "kk";
+        String password = "1234";
+        String email = ".com";
+
+        RegisterRequest request = new RegisterRequest(username, password, email);
+        RegisterResult result = userService.registerUser(request);
+        String authToken = result.authToken();
+
+        String gameName = "first";
+        int newGameID = gameService.createGame(authToken, gameName);
+
+        assertThrows(UnauthorizedException.class, () -> gameService.joinGame("", "white",newGameID));
+    }
+
+    @Test
+    public void noJoinGameBadColor() throws BadRequestException, AlreadyTakenException, DataAccessException {
+        String username = "kk";
+        String password = "1234";
+        String email = ".com";
+
+        RegisterRequest request = new RegisterRequest(username, password, email);
+        RegisterResult result = userService.registerUser(request);
+        String authToken = result.authToken();
+
+        String gameName = "first";
+        int newGameID = gameService.createGame(authToken, gameName);
+
+        assertThrows(BadRequestException.class, () -> gameService.joinGame(authToken, "pink",newGameID));
+    }
+
+    @Test
+    public void doJoinGameBlack() throws BadRequestException, AlreadyTakenException, DataAccessException {
+        String username = "kk";
+        String password = "1234";
+        String email = ".com";
+
+        RegisterRequest request = new RegisterRequest(username, password, email);
+        RegisterResult result = userService.registerUser(request);
+        String authToken = result.authToken();
+
+        String gameName = "first";
+        int newGameID = gameService.createGame(authToken, gameName);
+        gameService.joinGame(authToken, "black",newGameID);
+        assertEquals("kk", gameDB.getGame(newGameID).blackUsername());
+    }
+
+    @Test
+    public void noJoinGameBlackAlreadyTaken() throws BadRequestException, AlreadyTakenException, DataAccessException {
+        String username = "kk";
+        String password = "1234";
+        String email = ".com";
+
+        RegisterRequest request = new RegisterRequest(username, password, email);
+        RegisterResult result = userService.registerUser(request);
+        String authToken = result.authToken();
+
+        String gameName = "first";
+        int newGameID = gameService.createGame(authToken, gameName);
+        gameService.joinGame(authToken, "black",newGameID);
+
+        String username1 = "pp";
+        String password1 = "1234";
+        String email1 = ".com";
+
+        RegisterRequest request1 = new RegisterRequest(username1, password1, email1);
+        RegisterResult result1 = userService.registerUser(request1);
+        String authToken1 = result1.authToken();
+
+        assertThrows(AlreadyTakenException.class, () -> gameService.joinGame(authToken1, "black", newGameID));
+    }
+
+    @Test
+    public void noJoinGameBlackBadToken() throws BadRequestException, AlreadyTakenException, DataAccessException {
+        String username = "kk";
+        String password = "1234";
+        String email = ".com";
+
+        RegisterRequest request = new RegisterRequest(username, password, email);
+        RegisterResult result = userService.registerUser(request);
+        String authToken = result.authToken();
+
+        String gameName = "first";
+        int newGameID = gameService.createGame(authToken, gameName);
+
+        assertThrows(UnauthorizedException.class, () -> gameService.joinGame("", "black",newGameID));
     }
 }

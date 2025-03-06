@@ -1,15 +1,13 @@
 package service;
 
-import dataaccess.AuthDAO;
-import dataaccess.DataAccessException;
-import dataaccess.GameDAO;
-import dataaccess.UnauthorizedException;
+import dataaccess.*;
 import model.AuthData;
 import model.GameData;
 import model.ListGameData;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Objects;
 
 public class GameService {
 
@@ -45,6 +43,29 @@ public class GameService {
             GameData game = new GameData(nextID, null, null, gameName, null);
             gameDB.addGame(game);
             return nextID++;
+        }
+    }
+
+    public void joinGame(String authToken, String teamColor, int gameID) throws AlreadyTakenException, BadRequestException, UnauthorizedException, DataAccessException {
+        AuthData auth = authDB.getAuth(authToken);
+        if (auth == null) {
+            throw new UnauthorizedException("Bad token");
+        } else {
+            if (Objects.equals(teamColor, "white")) {
+                if (gameDB.getGame(gameID).whiteUsername() == null) {
+                    gameDB.updateGameWhitePlayer(gameID, auth.username());
+                } else {
+                    throw new AlreadyTakenException("Someone else is already white");
+                }
+            } else if (Objects.equals(teamColor, "black")) {
+                if (gameDB.getGame(gameID).blackUsername() == null) {
+                    gameDB.updateGameBlackPlayer(gameID, auth.username());
+                } else {
+                    throw new AlreadyTakenException("Someone else is already black");
+                }
+            } else {
+                throw new BadRequestException("Invalid team color. Please choose white or black as your team color");
+            }
         }
     }
 }
