@@ -50,6 +50,8 @@ public class GameService {
         AuthData auth = authDB.getAuth(authToken);
         if (auth == null) {
             throw new UnauthorizedException("Bad token");
+        } else if (gameID < 1) {
+            throw new BadRequestException("Invalid gameID");
         } else {
             if (Objects.equals(teamColor, "WHITE")) {
                 if (gameDB.getGame(gameID).whiteUsername() == null) {

@@ -120,7 +120,7 @@ public class GameServiceTest {
 
         String gameName = "first";
         int newGameID = gameService.createGame(authToken, gameName);
-        gameService.joinGame(authToken, "white",newGameID);
+        gameService.joinGame(authToken, "WHITE",newGameID);
         assertEquals("kk", gameDB.getGame(newGameID).whiteUsername());
     }
 
@@ -136,7 +136,7 @@ public class GameServiceTest {
 
         String gameName = "first";
         int newGameID = gameService.createGame(authToken, gameName);
-        gameService.joinGame(authToken, "white",newGameID);
+        gameService.joinGame(authToken, "WHITE",newGameID);
 
         String username1 = "pp";
         String password1 = "1234";
@@ -146,7 +146,7 @@ public class GameServiceTest {
         RegisterResult result1 = userService.registerUser(request1);
         String authToken1 = result1.authToken();
 
-        assertThrows(AlreadyTakenException.class, () -> gameService.joinGame(authToken1, "white", newGameID));
+        assertThrows(AlreadyTakenException.class, () -> gameService.joinGame(authToken1, "WHITE", newGameID));
     }
 
     @Test
@@ -162,7 +162,7 @@ public class GameServiceTest {
         String gameName = "first";
         int newGameID = gameService.createGame(authToken, gameName);
 
-        assertThrows(UnauthorizedException.class, () -> gameService.joinGame("", "white",newGameID));
+        assertThrows(UnauthorizedException.class, () -> gameService.joinGame("", "WHITE",newGameID));
     }
 
     @Test
@@ -193,7 +193,7 @@ public class GameServiceTest {
 
         String gameName = "first";
         int newGameID = gameService.createGame(authToken, gameName);
-        gameService.joinGame(authToken, "black",newGameID);
+        gameService.joinGame(authToken, "BLACK",newGameID);
         assertEquals("kk", gameDB.getGame(newGameID).blackUsername());
     }
 
@@ -209,7 +209,7 @@ public class GameServiceTest {
 
         String gameName = "first";
         int newGameID = gameService.createGame(authToken, gameName);
-        gameService.joinGame(authToken, "black",newGameID);
+        gameService.joinGame(authToken, "BLACK",newGameID);
 
         String username1 = "pp";
         String password1 = "1234";
@@ -219,7 +219,7 @@ public class GameServiceTest {
         RegisterResult result1 = userService.registerUser(request1);
         String authToken1 = result1.authToken();
 
-        assertThrows(AlreadyTakenException.class, () -> gameService.joinGame(authToken1, "black", newGameID));
+        assertThrows(AlreadyTakenException.class, () -> gameService.joinGame(authToken1, "BLACK", newGameID));
     }
 
     @Test
@@ -235,6 +235,6 @@ public class GameServiceTest {
         String gameName = "first";
         int newGameID = gameService.createGame(authToken, gameName);
 
-        assertThrows(UnauthorizedException.class, () -> gameService.joinGame("", "black",newGameID));
+        assertThrows(UnauthorizedException.class, () -> gameService.joinGame("", "BLACK",newGameID));
     }
 }

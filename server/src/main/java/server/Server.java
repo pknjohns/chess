@@ -140,6 +140,9 @@ public class Server {
         } catch(BadRequestException e) {
             res.status(400);
             return new Gson().toJson(exceptionMessageGenerator(e)); //make full error message and return json object
+        } catch (UnauthorizedException e) {
+            res.status(401);
+            return new Gson().toJson(exceptionMessageGenerator(e));
         } catch(AlreadyTakenException e) {
             res.status(403);
             return new Gson().toJson(exceptionMessageGenerator(e)); //make full error message and return json object
