@@ -59,6 +59,15 @@ public class UserService {
         }
     }
 
+    public void logoutUser(String authToken) throws UnauthorizedException, DataAccessException{
+        AuthData auth = authDB.getAuth(authToken);
+        if (auth == null) {
+            throw new UnauthorizedException("Bad token");
+        } else {
+            authDB.deleteAuth(authToken);
+        }
+    }
+
     public UserData findUsername(String username) throws DataAccessException {
         return userDB.getUser(username);
     }

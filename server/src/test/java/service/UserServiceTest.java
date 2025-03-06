@@ -168,4 +168,31 @@ public class UserServiceTest {
         LoginRequest lRequest = new LoginRequest(username, "");
         assertThrows(UnauthorizedException.class, () -> userService.loginUser(lRequest));
     }
+
+    @Test
+    void doLogoutUser() throws BadRequestException, AlreadyTakenException, UnauthorizedException, DataAccessException {
+        String username = "kk";
+        String password = "1234";
+        String email = ".com";
+
+        RegisterRequest request = new RegisterRequest(username, password, email);
+        RegisterResult result = userService.registerUser(request);
+
+        String authToken = result.authToken();
+        userService.logoutUser(authToken);
+        assertEquals(0, authDB.listAuths().size());
+    }
+
+    @Test
+    void noLogoutUser() throws BadRequestException, AlreadyTakenException, UnauthorizedException, DataAccessException {
+        String username = "kk";
+        String password = "1234";
+        String email = ".com";
+
+        RegisterRequest request = new RegisterRequest(username, password, email);
+        userService.registerUser(request);
+        String authToken = "4567";
+
+        assertThrows(UnauthorizedException.class, () -> userService.logoutUser(authToken));
+    }
 }

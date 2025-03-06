@@ -10,6 +10,8 @@ public interface AuthDAO {
 
     AuthData addAuth(AuthData token) throws DataAccessException;
 
+    void deleteAuth(String authToken) throws DataAccessException;
+
     Collection<AuthData> listAuths() throws DataAccessException;
 
     void deleteAllAuths() throws DataAccessException;

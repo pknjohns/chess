@@ -39,7 +39,7 @@ class AuthDAOTest {
 
     @ParameterizedTest
     @ValueSource(classes = {MemoryAuthDAO.class})
-    void addToken(Class<? extends AuthDAO> dbClass) throws DataAccessException {
+    void addAuth(Class<? extends AuthDAO> dbClass) throws DataAccessException {
         AuthDAO dataAccess = getAuthDataAccess(dbClass);
 
         var token = new AuthData("1234","PK");
@@ -48,7 +48,7 @@ class AuthDAOTest {
 
     @ParameterizedTest
     @ValueSource(classes = {MemoryAuthDAO.class})
-    void getToken(Class<? extends AuthDAO> dbClass) throws DataAccessException {
+    void getAuth(Class<? extends AuthDAO> dbClass) throws DataAccessException {
         AuthDAO dataAccess = getAuthDataAccess(dbClass);
 
         String token = "1234";
@@ -56,12 +56,11 @@ class AuthDAOTest {
         dataAccess.addAuth(auth);
         AuthData result = dataAccess.getAuth(token);
         assertEquals(auth, result);
-
     }
 
     @ParameterizedTest
     @ValueSource(classes = {MemoryAuthDAO.class})
-    void listTokens(Class<? extends AuthDAO> dbClass) throws DataAccessException {
+    void listAuths(Class<? extends AuthDAO> dbClass) throws DataAccessException {
         AuthDAO dataAccess = getAuthDataAccess(dbClass);
 
         var token1 = new AuthData("1234", "PK");
@@ -79,7 +78,19 @@ class AuthDAOTest {
 
     @ParameterizedTest
     @ValueSource(classes = {MemoryAuthDAO.class})
-    void deleteAllTokens(Class<? extends AuthDAO> dbClass) throws DataAccessException {
+    void deleteAuth(Class<? extends AuthDAO> dbClass) throws DataAccessException {
+        AuthDAO dataAccess = getAuthDataAccess(dbClass);
+        AuthData auth = new AuthData("1234", "PK");
+
+        dataAccess.addAuth(auth);
+
+        dataAccess.deleteAuth("1234");
+        assertEquals(0, dataAccess.listAuths().size());
+    }
+
+    @ParameterizedTest
+    @ValueSource(classes = {MemoryAuthDAO.class})
+    void deleteAllAuths(Class<? extends AuthDAO> dbClass) throws DataAccessException {
         AuthDAO dataAccess = getAuthDataAccess(dbClass);
 
         var token1 = new AuthData("1234", "PK");
