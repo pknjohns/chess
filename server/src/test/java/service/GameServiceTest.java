@@ -76,4 +76,33 @@ public class GameServiceTest {
 
         assertThrows(UnauthorizedException.class, () -> gameService.listGames(""));
     }
+
+    @Test
+    public void doCreateGame() throws UnauthorizedException, DataAccessException, BadRequestException, AlreadyTakenException {
+        String username = "kk";
+        String password = "1234";
+        String email = ".com";
+
+        RegisterRequest request = new RegisterRequest(username, password, email);
+        RegisterResult result = userService.registerUser(request);
+        String authToken = result.authToken();
+
+        String gameName = "first";
+        int newGameID = gameService.createGame(authToken, gameName);
+        assertEquals(2, newGameID);
+        assertEquals(1, gameDB.listGames().size());
+    }
+
+    @Test
+    public void noCreateGame() throws UnauthorizedException, DataAccessException, BadRequestException, AlreadyTakenException {
+        String username = "kk";
+        String password = "1234";
+        String email = ".com";
+
+        RegisterRequest request = new RegisterRequest(username, password, email);
+        userService.registerUser(request);
+
+        String gameName = "first";
+        assertThrows(UnauthorizedException.class, () -> gameService.createGame("", gameName));
+    }
 }

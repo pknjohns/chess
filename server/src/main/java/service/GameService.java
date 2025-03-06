@@ -15,6 +15,7 @@ public class GameService {
 
     private final AuthDAO authDB;
     private final GameDAO gameDB;
+    private int nextID = 1;
 
     public GameService(AuthDAO authDB, GameDAO gameDB) {
         this.authDB = authDB;
@@ -33,6 +34,17 @@ public class GameService {
                 listedGames.add(listedGame);
             }
             return listedGames;
+        }
+    }
+
+    public int createGame(String authToken, String gameName) throws UnauthorizedException, DataAccessException {
+        AuthData auth = authDB.getAuth(authToken);
+        if (auth == null) {
+            throw new UnauthorizedException("Bad token");
+        } else {
+            GameData game = new GameData(nextID, null, null, gameName, null);
+            gameDB.addGame(game);
+            return nextID++;
         }
     }
 }

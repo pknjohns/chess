@@ -29,6 +29,7 @@ public class Server {
         Spark.post("/session", this::loginHandler);
         Spark.delete("/session", this::logoutHandler);
         Spark.get("/game", this::listGamesHandler);
+        Spark.post("/game", this::createGameHandler);
 
         Spark.awaitInitialization();
         return Spark.port();
@@ -99,6 +100,24 @@ public class Server {
             Collection<ListGameData> games = gameService.listGames(authToken);
             HashMap<String, Collection<ListGameData>> resMap = new HashMap<>();
             resMap.put("games",games);
+            res.status(200);
+            return new Gson().toJson(resMap);
+        } catch (UnauthorizedException e) {
+            res.status(401);
+            return new Gson().toJson(exceptionMessageGenerator(e));
+        } catch (DataAccessException e) {
+            res.status(500);
+            return new Gson().toJson(exceptionMessageGenerator(e));
+        }
+    }
+
+    public Object createGameHandler(Request req, Response res) {
+        try {
+            String authToken = req.headers("Authorization");
+            CreateRequest createReq = new Gson().fromJson(req.body(), CreateRequest.class);
+            int gameID = gameService.createGame(authToken, createReq.gameName());
+            HashMap<String, Integer> resMap = new HashMap<>();
+            resMap.put("gameID",gameID);
             res.status(200);
             return new Gson().toJson(resMap);
         } catch (UnauthorizedException e) {
