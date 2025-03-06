@@ -84,4 +84,30 @@ class GameDAOTest {
         assertEquals(0, actual.size(), "Actual size is not 0 as expected");
     }
 
+    @ParameterizedTest
+    @ValueSource(classes = {MemoryGameDAO.class})
+    void doUpdateGameWhitePlayer(Class<? extends GameDAO> dbClass) throws DataAccessException {
+        GameDAO dataAccess = getGameDataAccess(dbClass);
+        var game1 = new GameData(1234, null, "black", "test", new ChessGame());
+        dataAccess.addGame(game1);
+        int expectedLen = dataAccess.listGames().size();
+        dataAccess.updateGameWhitePlayer(1234, "white");
+        int actualLen = dataAccess.listGames().size();
+        assertEquals(expectedLen, actualLen);
+        assertEquals("white",dataAccess.getGame(1234).whiteUsername());
+    }
+
+    @ParameterizedTest
+    @ValueSource(classes = {MemoryGameDAO.class})
+    void doUpdateGameBlackPlayer(Class<? extends GameDAO> dbClass) throws DataAccessException {
+        GameDAO dataAccess = getGameDataAccess(dbClass);
+        var game1 = new GameData(1234, "white", null, "test", new ChessGame());
+        dataAccess.addGame(game1);
+        int expectedLen = dataAccess.listGames().size();
+        dataAccess.updateGameBlackPlayer(1234, "black");
+        int actualLen = dataAccess.listGames().size();
+        assertEquals(expectedLen, actualLen);
+        assertEquals("black",dataAccess.getGame(1234).blackUsername());
+    }
+
 }
