@@ -9,9 +9,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -19,7 +17,6 @@ public class GameServiceTest {
 
     private static AuthDAO authDB;
     private static GameDAO gameDB;
-    private static UserDAO userDB;
     private static GameService gameService;
     private static UserService userService;
 
@@ -27,13 +24,13 @@ public class GameServiceTest {
     public static void init() {
         authDB = new MemoryAuthDAO();
         gameDB = new MemoryGameDAO();
-        userDB = new MemoryUserDAO();
+        UserDAO userDB = new MemoryUserDAO();
         gameService = new GameService(authDB, gameDB);
         userService = new UserService(authDB, userDB);
     }
 
     @BeforeEach
-    public void setup() throws DataAccessException, BadRequestException, AlreadyTakenException {
+    public void setup() throws DataAccessException {
         authDB.deleteAllAuths();
         gameDB.deleteAllGames();
     }
