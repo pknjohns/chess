@@ -2,11 +2,9 @@ package service;
 
 import dataaccess.*;
 
-import model.AuthData;
-import model.RegisterRequest;
-import model.RegisterResult;
-import model.UserData;
+import model.*;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public class UserService {
@@ -41,6 +39,23 @@ public class UserService {
             return new RegisterResult(token, username);
         } else {
             throw new AlreadyTakenException("Username is already in use");
+        }
+    }
+
+    public LoginResult loginUser(LoginRequest request) throws UnauthorizedException, DataAccessException {
+        String username = request.username();
+        String password = request.password();
+
+        UserData user = userDB.getUser(username);
+        if (user == null) {
+            throw new UnauthorizedException("Unregistered username");
+        } else if (!Objects.equals(user.password(), password)) {
+            throw new UnauthorizedException("Incorrect password");
+        } else {
+            String authToken = generateToken();
+            AuthData auth = new AuthData(authToken, username);
+            authDB.addAuth(auth);
+            return new LoginResult(authToken, username);
         }
     }
 

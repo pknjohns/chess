@@ -2,6 +2,8 @@ package server;
 
 import com.google.gson.Gson;
 import dataaccess.*;
+import model.LoginRequest;
+import model.LoginResult;
 import model.RegisterRequest;
 import model.RegisterResult;
 import spark.*;
@@ -21,11 +23,9 @@ public class Server {
         Spark.staticFiles.location("web");
 
         // Register your endpoints and handle exceptions here.
-
-        // register clear endpoint
         Spark.delete("/db", this::clearHandler);
-
         Spark.post("/user", this::registerHandler);
+        Spark.post("/session", this::loginHandler);
 
         Spark.awaitInitialization();
         return Spark.port();
@@ -57,6 +57,21 @@ public class Server {
         } catch (Exception e) {
             res.status(500);
             return new Gson().toJson(exceptionMessageGenerator(e)); //make full error message and return json object
+        }
+    }
+
+    public Object loginHandler(Request req, Response res) {
+        LoginRequest request = new Gson().fromJson(req.body(), LoginRequest.class);
+        try {
+            LoginResult result = userService.loginUser(request);
+            res.status(200);
+            return new Gson().toJson(result);
+        } catch (UnauthorizedException e) {
+            res.status(401);
+            return new Gson().toJson(exceptionMessageGenerator(e));
+        } catch (DataAccessException e) {
+            res.status(500);
+            return new Gson().toJson(exceptionMessageGenerator(e));
         }
     }
 

@@ -2,10 +2,7 @@ package service;
 
 import dataaccess.*;
 
-import model.AuthData;
-import model.RegisterRequest;
-import model.RegisterResult;
-import model.UserData;
+import model.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -131,5 +128,44 @@ public class UserServiceTest {
         userService.registerUser(request);
 
         assertThrows(AlreadyTakenException.class, () -> userService.registerUser(request));
+    }
+
+    @Test
+    void doLoginUser() throws AlreadyTakenException, BadRequestException, UnauthorizedException, DataAccessException {
+        String username = "kk";
+        String password = "1234";
+        String email = ".com";
+
+        RegisterRequest request = new RegisterRequest(username, password, email);
+        userService.registerUser(request);
+
+        LoginRequest lRequest = new LoginRequest(username, password);
+        assertDoesNotThrow(() -> userService.loginUser(lRequest));
+    }
+
+    @Test
+    void noLoginUserBadUsername() throws AlreadyTakenException, BadRequestException, UnauthorizedException, DataAccessException {
+        String username = "kk";
+        String password = "1234";
+        String email = ".com";
+
+        RegisterRequest request = new RegisterRequest(username, password, email);
+        userService.registerUser(request);
+
+        LoginRequest lRequest = new LoginRequest("ll", "1234");
+        assertThrows(UnauthorizedException.class, () -> userService.loginUser(lRequest));
+    }
+
+    @Test
+    void noLoginUserBadPassword() throws AlreadyTakenException, BadRequestException, UnauthorizedException, DataAccessException {
+        String username = "kk";
+        String password = "1234";
+        String email = ".com";
+
+        RegisterRequest request = new RegisterRequest(username, password, email);
+        userService.registerUser(request);
+
+        LoginRequest lRequest = new LoginRequest(username, "");
+        assertThrows(UnauthorizedException.class, () -> userService.loginUser(lRequest));
     }
 }
