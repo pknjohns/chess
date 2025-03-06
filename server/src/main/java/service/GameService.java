@@ -46,7 +46,11 @@ public class GameService {
         }
     }
 
-    public void joinGame(String authToken, String teamColor, int gameID) throws AlreadyTakenException, BadRequestException, UnauthorizedException, DataAccessException {
+    public void joinGame(
+            String authToken,
+            String teamColor,
+            int gameID) throws AlreadyTakenException, BadRequestException, UnauthorizedException, DataAccessException {
+
         AuthData auth = authDB.getAuth(authToken);
         if (auth == null) {
             throw new UnauthorizedException("Bad token");
