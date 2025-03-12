@@ -26,7 +26,7 @@ class GameDAOTest {
         if (gDAOclass.equals(MemoryGameDAO.class)) {
             db = new MemoryGameDAO();
         } else {
-            db = new MemoryGameDAO(); // placeholder for when we add the MySqlDatabase
+            db = new MySqlGameDAO(); // placeholder for when we add the MySqlDatabase
         }
 
         db.deleteAllGames();
@@ -39,7 +39,7 @@ class GameDAOTest {
     }
 
     @ParameterizedTest
-    @ValueSource(classes = {MemoryGameDAO.class})
+    @ValueSource(classes = {MySqlGameDAO.class, MemoryGameDAO.class})
     void addGame(Class<? extends GameDAO> dbClass) throws DataAccessException {
         GameDAO dataAccess = getGameDataAccess(dbClass);
 
@@ -66,7 +66,7 @@ class GameDAOTest {
     }
 
     @ParameterizedTest
-    @ValueSource(classes = {MemoryGameDAO.class})
+    @ValueSource(classes = {MySqlGameDAO.class, MemoryGameDAO.class})
     void deleteAllGames(Class<? extends GameDAO> dbClass) throws DataAccessException {
         GameDAO dataAccess = getGameDataAccess(dbClass);
 
