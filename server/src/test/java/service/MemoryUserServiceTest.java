@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class UserServiceTest {
+public class MemoryUserServiceTest {
 
     private static AuthDAO authDB;
     private static UserDAO userDB;

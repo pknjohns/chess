@@ -14,7 +14,7 @@ import java.util.Collection;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class GameServiceTest {
+public class MemoryGameServiceTest {
 
     private static AuthDAO authDB;
     private static GameDAO gameDB;

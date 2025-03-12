@@ -40,7 +40,20 @@ public class MySqlUserDAO implements UserDAO {
     }
 
     public Collection<UserData> listUsers() throws DataAccessException {
-        return new ArrayList<>();
+        Collection<UserData> users = new ArrayList<>();
+        try (var conn = DatabaseManager.getConnection()) {
+            String statement = "SELECT username, userData FROM user";
+            try (var ps = conn.prepareStatement(statement)) {
+                try (var rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        users.add(readUser(rs));
+                    }
+                }
+            }
+            return users;
+        } catch (Exception e) {
+            throw new DataAccessException("Unable to read data: " + e.getMessage());
+        }
     }
 
     public void deleteAllUsers() throws DataAccessException {
