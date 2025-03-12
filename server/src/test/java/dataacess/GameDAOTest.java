@@ -60,6 +60,18 @@ class GameDAOTest {
     }
 
     @ParameterizedTest
+    @ValueSource(classes = {MySqlGameDAO.class, MemoryGameDAO.class})
+    void noGetGame(Class<? extends GameDAO> dbClass) throws DataAccessException {
+        GameDAO dataAccess = getGameDataAccess(dbClass);
+
+        GameData game1 = new GameData(1234, "white", "black", "test", null);
+        dataAccess.addGame(game1);
+
+        GameData actual = dataAccess.getGame(2345);
+        assertNull(actual, "No game found");
+    }
+
+    @ParameterizedTest
     @ValueSource(classes = {MemoryGameDAO.class})
     void listGames(Class<? extends GameDAO> dbClass) throws DataAccessException {
         GameDAO dataAccess = getGameDataAccess(dbClass);
