@@ -25,7 +25,7 @@ class UserDAOTest {
         if (daoClass.equals(MemoryUserDAO.class)) {
             userDB = new MemoryUserDAO();
         } else {
-            userDB = new MemoryUserDAO(); // placeholder for when we add the MySqlDatabase
+            userDB = new MySqlUserDAO(); // placeholder for when we add the MySqlDatabase
         }
 
         userDB.deleteAllUsers();
@@ -39,7 +39,7 @@ class UserDAOTest {
 
 
     @ParameterizedTest
-    @ValueSource(classes = {MemoryUserDAO.class})
+    @ValueSource(classes = {MySqlUserDAO.class, MemoryUserDAO.class})
     void addUser(Class<? extends UserDAO> daoClass) throws DataAccessException {
         UserDAO dataAccess = getUserDataAccess(daoClass);
 
@@ -48,7 +48,7 @@ class UserDAOTest {
     }
 
     @ParameterizedTest
-    @ValueSource(classes= {MemoryUserDAO.class})
+    @ValueSource(classes= {MySqlUserDAO.class, MemoryUserDAO.class})
     void doGetUser(Class<? extends UserDAO> daoClass) throws DataAccessException {
         UserDAO dataAccess = getUserDataAccess(daoClass);
 
@@ -61,7 +61,7 @@ class UserDAOTest {
     }
 
     @ParameterizedTest
-    @ValueSource(classes= {MemoryUserDAO.class})
+    @ValueSource(classes= {MySqlUserDAO.class, MemoryUserDAO.class})
     void noGetUser(Class<? extends UserDAO> daoClass) throws DataAccessException {
         UserDAO dataAccess = getUserDataAccess(daoClass);
 
@@ -71,7 +71,7 @@ class UserDAOTest {
     }
 
     @ParameterizedTest
-    @ValueSource(classes= {MemoryUserDAO.class})
+    @ValueSource(classes= {MySqlUserDAO.class, MemoryUserDAO.class})
     void listUsers(Class<? extends UserDAO> daoClass) throws DataAccessException {
         UserDAO dataAccess = getUserDataAccess(daoClass);
 
@@ -93,7 +93,7 @@ class UserDAOTest {
     }
 
     @ParameterizedTest
-    @ValueSource(classes= {MemoryUserDAO.class})
+    @ValueSource(classes= {MySqlUserDAO.class, MemoryUserDAO.class})
     void deleteAllUsers(Class<? extends UserDAO> daoClass) throws DataAccessException {
         UserDAO dataAccess = getUserDataAccess(daoClass);
 
