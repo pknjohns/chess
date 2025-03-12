@@ -1,7 +1,7 @@
 package dataaccess;
 
 import com.google.gson.Gson;
-import model.UserData;
+import model.AuthData;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -10,26 +10,20 @@ import java.util.Collection;
 
 import static java.sql.Types.NULL;
 
-public class MySqlUserDAO implements UserDAO {
+public class MySqlAuthDAO implements AuthDAO {
 
-    public MySqlUserDAO() throws DataAccessException {
-        configureUserDatabase();
+    public MySqlAuthDAO() throws DataAccessException {
+        configureAuthDatabase();
     }
 
-    public UserData addUser(UserData user) throws DataAccessException {
-        String statement = "INSERT INTO users (username, password, email, userData) VALUES (?, ?, ?, ?)";
-        executeUpdate(statement, user.username(), user.password(), user.email(), user);
-        return user;
-    }
-
-    public UserData getUser(String username) throws DataAccessException {
+    public AuthData getAuth(String authToken) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT username, userData FROM users WHERE username=?";
+            var statement = "SELECT authToken, authData FROM auths WHERE authToken=?";
             try (var ps = conn.prepareStatement(statement)) {
-                ps.setString(1, username);
+                ps.setString(1, authToken);
                 try (var rs = ps.executeQuery()) {
                     if (rs.next()) {
-                        return readUser(rs);
+                        return readAuth(rs);
                     }
                 }
             }
@@ -39,25 +33,43 @@ public class MySqlUserDAO implements UserDAO {
         return null;
     }
 
-    public Collection<UserData> listUsers() throws DataAccessException {
-        Collection<UserData> users = new ArrayList<>();
+    public AuthData addAuth(AuthData auth) throws DataAccessException {
+        String statement = "INSERT INTO auths (authToken, username, authData) VALUES (?, ?, ?)";
+        executeUpdate(statement, auth.authToken(), auth.username(), auth);
+        return auth;
+    }
+
+    public Collection<AuthData> listAuths() throws DataAccessException {
+        Collection<AuthData> auths = new ArrayList<>();
         try (var conn = DatabaseManager.getConnection()) {
-            String statement = "SELECT username, userData FROM users";
+            String statement = "SELECT authToken, authData FROM auths";
             try (var ps = conn.prepareStatement(statement)) {
                 try (var rs = ps.executeQuery()) {
                     while (rs.next()) {
-                        users.add(readUser(rs));
+                        auths.add(readAuth(rs));
                     }
                 }
             }
-            return users;
+            return auths;
         } catch (Exception e) {
             throw new DataAccessException("Unable to read data: " + e.getMessage());
         }
     }
 
-    public void deleteAllUsers() throws DataAccessException {
-        String statement = "TRUNCATE users";
+    public void deleteAuth(String authToken) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            String statement = "DELETE FROM auths WHERE authToken=?";
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setString(1, authToken);
+                ps.executeUpdate();
+            }
+        } catch (Exception e) {
+            throw new DataAccessException("Unable to delete data: " + e.getMessage());
+        }
+    }
+
+    public void deleteAllAuths() throws DataAccessException {
+        String statement = "TRUNCATE auths";
         executeUpdate(statement);
     }
 
@@ -65,9 +77,10 @@ public class MySqlUserDAO implements UserDAO {
     // Helper Functions
     //-------------------------------------------------------------------------------------------------------------
 
-    private UserData readUser(ResultSet rs) throws SQLException {
-        String json = rs.getString("userData");
-        return new Gson().fromJson(json, UserData.class);
+
+    private AuthData readAuth(ResultSet rs) throws SQLException {
+        String json = rs.getString("authData");
+        return new Gson().fromJson(json, AuthData.class);
     }
 
     private void executeUpdate(String statement, Object... params) throws DataAccessException {
@@ -78,7 +91,7 @@ public class MySqlUserDAO implements UserDAO {
                     switch (param) {
                         case String p -> ps.setString(i + 1, p);
                         case Integer p -> ps.setInt(i + 1, p);
-                        case UserData p -> ps.setString(i + 1, p.toString());
+                        case AuthData p -> ps.setString(i + 1, p.toString());
                         case null -> ps.setNull(i + 1, NULL);
                         default -> {
                         }
@@ -93,18 +106,17 @@ public class MySqlUserDAO implements UserDAO {
 
     private final String[] createStatements = {
             """
-            CREATE TABLE IF NOT EXISTS  users (
+            CREATE TABLE IF NOT EXISTS  auths (
+              `authToken` VARCHAR(255) NOT NULL,
               `username` VARCHAR(255) NOT NULL,
-              `password` TEXT NOT NULL,
-              `email` TEXT NOT NULL,
-              `userData` TEXT NOT NULL,
-              PRIMARY KEY (`username`),
-              INDEX(username)
+              `authData` TEXT NOT NULL,
+              PRIMARY KEY (`authToken`),
+              INDEX(authToken)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """
     };
 
-    private void configureUserDatabase() throws DataAccessException {
+    private void configureAuthDatabase() throws DataAccessException {
         DatabaseManager.createDatabase();
         try (var conn = DatabaseManager.getConnection()) {
             for (var statement : createStatements) {

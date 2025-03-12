@@ -25,7 +25,7 @@ class AuthDAOTest {
         if (databaseClass.equals(MemoryAuthDAO.class)) {
             db = new MemoryAuthDAO();
         } else {
-            db = new MemoryAuthDAO(); // placeholder for when we add the MySqlDatabase
+            db = new MySqlAuthDAO(); // placeholder for when we add the MySqlDatabase
         }
 
         db.deleteAllAuths();
@@ -38,7 +38,7 @@ class AuthDAOTest {
     }
 
     @ParameterizedTest
-    @ValueSource(classes = {MemoryAuthDAO.class})
+    @ValueSource(classes = {MySqlAuthDAO.class, MemoryAuthDAO.class})
     void addAuth(Class<? extends AuthDAO> dbClass) throws DataAccessException {
         AuthDAO dataAccess = getAuthDataAccess(dbClass);
 
@@ -47,7 +47,7 @@ class AuthDAOTest {
     }
 
     @ParameterizedTest
-    @ValueSource(classes = {MemoryAuthDAO.class})
+    @ValueSource(classes = {MySqlAuthDAO.class, MemoryAuthDAO.class})
     void getAuth(Class<? extends AuthDAO> dbClass) throws DataAccessException {
         AuthDAO dataAccess = getAuthDataAccess(dbClass);
 
@@ -59,7 +59,7 @@ class AuthDAOTest {
     }
 
     @ParameterizedTest
-    @ValueSource(classes = {MemoryAuthDAO.class})
+    @ValueSource(classes = {MySqlAuthDAO.class, MemoryAuthDAO.class})
     void listAuths(Class<? extends AuthDAO> dbClass) throws DataAccessException {
         AuthDAO dataAccess = getAuthDataAccess(dbClass);
 
@@ -77,7 +77,7 @@ class AuthDAOTest {
     }
 
     @ParameterizedTest
-    @ValueSource(classes = {MemoryAuthDAO.class})
+    @ValueSource(classes = {MySqlAuthDAO.class, MemoryAuthDAO.class})
     void deleteAuth(Class<? extends AuthDAO> dbClass) throws DataAccessException {
         AuthDAO dataAccess = getAuthDataAccess(dbClass);
         AuthData auth = new AuthData("1234", "PK");
@@ -89,7 +89,7 @@ class AuthDAOTest {
     }
 
     @ParameterizedTest
-    @ValueSource(classes = {MemoryAuthDAO.class})
+    @ValueSource(classes = {MySqlAuthDAO.class, MemoryAuthDAO.class})
     void deleteAllAuths(Class<? extends AuthDAO> dbClass) throws DataAccessException {
         AuthDAO dataAccess = getAuthDataAccess(dbClass);
 
