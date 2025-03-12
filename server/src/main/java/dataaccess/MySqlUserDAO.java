@@ -1,7 +1,9 @@
 package dataaccess;
 
+import com.google.gson.Gson;
 import model.UserData;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,7 +23,20 @@ public class MySqlUserDAO implements UserDAO {
     }
 
     public UserData getUser(String username) throws DataAccessException {
-        return new UserData(username, "1234", ".com");
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT username, userData FROM user WHERE username=?";
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setString(1, username);
+                try (var rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return readUser(rs);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new DataAccessException("Unable to read data: " + e.getMessage());
+        }
+        return null;
     }
 
     public Collection<UserData> listUsers() throws DataAccessException {
@@ -33,18 +48,10 @@ public class MySqlUserDAO implements UserDAO {
         executeUpdate(statement);
     }
 
-    private final String[] createStatements = {
-            """
-            CREATE TABLE IF NOT EXISTS  user (
-              `username` VARCHAR(255) NOT NULL,
-              `password` TEXT NOT NULL,
-              `email` TEXT NOT NULL,
-              `userData` TEXT NOT NULL,
-              PRIMARY KEY (`username`),
-              INDEX(username)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
-            """
-    };
+    private UserData readUser(ResultSet rs) throws SQLException {
+        String json = rs.getString("userData");
+        return new Gson().fromJson(json, UserData.class);
+    }
 
     private void executeUpdate(String statement, Object... params) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
@@ -66,6 +73,19 @@ public class MySqlUserDAO implements UserDAO {
             throw new DataAccessException("Unable to update database: " + statement + e.getMessage());
         }
     }
+
+    private final String[] createStatements = {
+            """
+            CREATE TABLE IF NOT EXISTS  user (
+              `username` VARCHAR(255) NOT NULL,
+              `password` TEXT NOT NULL,
+              `email` TEXT NOT NULL,
+              `userData` TEXT NOT NULL,
+              PRIMARY KEY (`username`),
+              INDEX(username)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+            """
+    };
 
     private void configureUserDatabase() throws DataAccessException {
         DatabaseManager.createDatabase();
