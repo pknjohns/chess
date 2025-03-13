@@ -12,11 +12,11 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 //import javax.xml.crypto.Data;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+
+import static dataaccess.DAOTestUtil.*;
 
 class GameDAOTest {
     private GameDAO getGameDataAccess(Class<? extends GameDAO> gDAOclass) throws DataAccessException {
@@ -30,11 +30,6 @@ class GameDAOTest {
 
         db.deleteAllGames();
         return db;
-    }
-
-    public static void assertGameCollectionEqual(Collection<GameData> expected, Collection<GameData> actual) {
-        assertEquals(expected.size(), actual.size(), "Expected and Actual are not the same length");
-        assertEquals(new HashSet<>(expected), new HashSet<>(actual), "Expected and Actual elements are not the same");
     }
 
     @ParameterizedTest
@@ -88,7 +83,7 @@ class GameDAOTest {
         expected.add(dataAccess.addGame(game3));
 
         var actual = dataAccess.listGames();
-        assertGameCollectionEqual(expected, actual);
+        assertCollectionEqual(expected, actual);
         dataAccess.deleteAllGames();
     }
 

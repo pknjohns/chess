@@ -1,7 +1,5 @@
 package dataaccess;
 
-// import data access exception
-
 // import model classes
 import model.AuthData;
 
@@ -10,11 +8,11 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+
+import static dataaccess.DAOTestUtil.*;
 
 class AuthDAOTest {
 
@@ -29,11 +27,6 @@ class AuthDAOTest {
 
         db.deleteAllAuths();
         return db;
-    }
-
-    public static void assertTokenCollectionEqual(Collection<AuthData> expected, Collection<AuthData> actual) {
-        assertEquals(expected.size(), actual.size(), "Expected and Actual are not the same length");
-        assertEquals(new HashSet<>(expected), new HashSet<>(actual), "Expected and Actual elements are not the same");
     }
 
     @ParameterizedTest
@@ -74,7 +67,7 @@ class AuthDAOTest {
         expected.add(dataAccess.addAuth(token3));
 
         var actual = dataAccess.listAuths();
-        assertTokenCollectionEqual(expected, actual);
+        assertCollectionEqual(expected, actual);
         dataAccess.deleteAllAuths();
     }
 

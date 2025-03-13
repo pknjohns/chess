@@ -8,11 +8,11 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+
+import static dataaccess.DAOTestUtil.*;
 
 class UserDAOTest {
 
@@ -27,11 +27,6 @@ class UserDAOTest {
 
         userDB.deleteAllUsers();
         return userDB;
-    }
-
-    public static void assertUserCollectionEqual(Collection<UserData> expected, Collection<UserData> actual) {
-        assertEquals(expected.size(), actual.size(), "Expected and Actual are not the same length");
-        assertEquals(new HashSet<>(expected), new HashSet<>(actual), "Expected and Actual elements are not the same");
     }
 
     @ParameterizedTest
@@ -88,7 +83,7 @@ class UserDAOTest {
         expected.add(dataAccess.addUser(user3));
 
         var actual = dataAccess.listUsers();
-        assertUserCollectionEqual(expected, actual);
+        assertCollectionEqual(expected, actual);
         dataAccess.deleteAllUsers();
     }
 
