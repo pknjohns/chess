@@ -15,9 +15,9 @@ public class MySqlUserServiceTest {
     private static UserService userService;
 
     @BeforeAll
-    public static void init() {
-        authDB = new MemoryAuthDAO();
-        userDB = new MemoryUserDAO();
+    public static void init() throws DataAccessException{
+        authDB = new MySqlAuthDAO();
+        userDB = new MySqlUserDAO();
         userService = new UserService(authDB, userDB);
     }
 
