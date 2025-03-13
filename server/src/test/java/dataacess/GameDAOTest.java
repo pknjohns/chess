@@ -127,7 +127,7 @@ class GameDAOTest {
     }
 
     @ParameterizedTest
-    @ValueSource(classes = {MemoryGameDAO.class})
+    @ValueSource(classes = {MySqlGameDAO.class, MemoryGameDAO.class})
     void doUpdateGameBlackPlayer(Class<? extends GameDAO> dbClass) throws DataAccessException {
         GameDAO dataAccess = getGameDataAccess(dbClass);
         var game1 = new GameData(1234, "white", null, "test", new ChessGame());
