@@ -366,4 +366,18 @@ public class ChessGame {
     private TeamColor getOpponentsColor(TeamColor clr) {
         return TeamColor.values()[(clr.ordinal() + 1) % 2];
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessGame chessGame = (ChessGame) o;
+        return Objects.equals(gameBoard, chessGame.gameBoard) && turn == chessGame.turn;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(gameBoard, turn);
+    }
 }
