@@ -24,16 +24,21 @@ public class MySqlGameDAO implements GameDAO {
     }
 
     public void updateGameWhitePlayer(int gameID, String username) throws DataAccessException {
-//        try (var conn = DatabaseManager.getConnection()) {
-//            String statement = "UPDATE games SET whiteUsername=COALESCE(?, whiteUsername) WHERE gameID=?";
-//            try (var ps = conn.prepareStatement(statement)) {
-//                ps.setString(1, username);
-//                ps.setInt(2, gameID);
-//                ps.executeUpdate();
-//            }
-//        } catch (Exception e) {
-//            throw new DataAccessException("Unable to read data: " + e.getMessage());
-//        }
+        try (var conn = DatabaseManager.getConnection()) {
+            String statement = "UPDATE games SET whiteUsername=?, gameData=? WHERE gameID=?";
+            try (var ps = conn.prepareStatement(statement)) {
+                // update gameData
+                GameData oldGame = getGame(gameID);
+                GameData newGame = new GameData(gameID, username, oldGame.blackUsername(), oldGame.gameName(), oldGame.game());
+
+                ps.setString(1, username);
+                ps.setString(2, newGame.toString());
+                ps.setInt(3, gameID);
+                ps.executeUpdate();
+            }
+        } catch (Exception e) {
+            throw new DataAccessException("Unable to read data: " + e.getMessage());
+        }
     }
 
     public void updateGameBlackPlayer(int gameID, String username) throws DataAccessException {
@@ -42,7 +47,7 @@ public class MySqlGameDAO implements GameDAO {
 
     public GameData getGame(int gameID) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
-            String statement = "SELECT gameID, gameData FROM games WHERE gameID=?";
+            String statement = "SELECT gameData FROM games WHERE gameID=?";
             try (var ps = conn.prepareStatement(statement)) {
                 ps.setInt(1, gameID);
                 try (var rs = ps.executeQuery()) {
@@ -51,7 +56,7 @@ public class MySqlGameDAO implements GameDAO {
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             throw new DataAccessException("Unable to read data: " + e.getMessage());
         }
         return null;

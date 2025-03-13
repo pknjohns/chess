@@ -123,7 +123,7 @@ class GameDAOTest {
 
         GameData actualGame = dataAccess.getGame(1234);
         String actualWhiteName = actualGame.whiteUsername();
-        assertEquals("white",actualWhiteName, "whiteUsername successfully updated");
+        assertEquals("white",actualWhiteName, "whiteUsername did not update");
     }
 
     @ParameterizedTest
