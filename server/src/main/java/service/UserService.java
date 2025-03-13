@@ -3,8 +3,8 @@ package service;
 import dataaccess.*;
 
 import model.*;
+import org.mindrot.jbcrypt.BCrypt;
 
-import java.util.Objects;
 import java.util.UUID;
 
 public class UserService {
@@ -31,7 +31,8 @@ public class UserService {
         }
 
         if (userDB.getUser(username) == null) { //username is available
-            UserData user = new UserData(username, password, email);
+            String safePassword = encryptPassword(password);
+            UserData user = new UserData(username, safePassword, email);
             String token = generateToken();
             AuthData auth = new AuthData(token, username);
             userDB.addUser(user);
@@ -47,9 +48,10 @@ public class UserService {
         String password = request.password();
 
         UserData user = userDB.getUser(username);
+        //String safePassword = encryptPassword(password);
         if (user == null) {
             throw new UnauthorizedException("Unregistered username");
-        } else if (!Objects.equals(user.password(), password)) {
+        } else if (!BCrypt.checkpw(password, user.password())) {//Objects.equals(user.password(), safePassword)) {
             throw new UnauthorizedException("Incorrect password");
         } else {
             String authToken = generateToken();
@@ -83,6 +85,10 @@ public class UserService {
     public void createAuth(String username) throws DataAccessException {
         AuthData auth = new AuthData(generateToken(), username);
         authDB.addAuth(auth);
+    }
+
+    String encryptPassword(String password) {
+        return BCrypt.hashpw(password, BCrypt.gensalt());
     }
 
 }

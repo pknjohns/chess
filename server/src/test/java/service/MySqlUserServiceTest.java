@@ -6,6 +6,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mindrot.jbcrypt.BCrypt;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -87,7 +88,9 @@ public class MySqlUserServiceTest {
         UserData actualUser = userDB.getUser(username);
         AuthData actualAuth = authDB.getAuth(expectedToken);
 
-        assertEquals(expectedUser, actualUser);
+        assertEquals(expectedUser.username(), actualUser.username(), "usernames don't match");
+        assertTrue(BCrypt.checkpw(password, actualUser.password()), "password don't match");
+        assertEquals(expectedUser.email(), actualUser.email(), "emails don't match");
         assertEquals(expectedAuth, actualAuth);
     }
 
