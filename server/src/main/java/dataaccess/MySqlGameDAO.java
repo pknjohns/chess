@@ -3,6 +3,7 @@ package dataaccess;
 import com.google.gson.Gson;
 import model.GameData;
 import chess.ChessGame;
+
 import java.util.Collection;
 
 import java.sql.ResultSet;
@@ -49,7 +50,20 @@ public class MySqlGameDAO implements GameDAO {
     }
 
     public Collection<GameData> listGames() throws DataAccessException {
-        return new ArrayList<>();
+        Collection<GameData> games = new ArrayList<>();
+        try (var conn = DatabaseManager.getConnection()) {
+            String statement = "SELECT gameID, gameData FROM games";
+            try (var ps = conn.prepareStatement(statement)) {
+                try (var rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        games.add(readGame(rs));
+                    }
+                }
+            }
+            return games;
+        } catch (Exception e) {
+            throw new DataAccessException("Unable to read data: " + e.getMessage());
+        }
     }
 
     public void deleteAllGames() throws DataAccessException {

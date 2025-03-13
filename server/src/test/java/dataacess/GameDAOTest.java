@@ -72,13 +72,13 @@ class GameDAOTest {
     }
 
     @ParameterizedTest
-    @ValueSource(classes = {MemoryGameDAO.class})
+    @ValueSource(classes = {MySqlGameDAO.class, MemoryGameDAO.class})
     void listGames(Class<? extends GameDAO> dbClass) throws DataAccessException {
         GameDAO dataAccess = getGameDataAccess(dbClass);
 
-        var game1 = new GameData(1234, "white", "black", "test", new ChessGame());
-        var game2 = new GameData(5678, "white", "black", "test", new ChessGame());
-        var game3 = new GameData(2345, "white", "black", "test", new ChessGame());
+        var game1 = new GameData(1234, "white", "black", "test", null);
+        var game2 = new GameData(5678, "white", "black", "test", null);
+        var game3 = new GameData(2345, "white", "black", "test", null);
 
         List<GameData> expected = new ArrayList<>();
         expected.add(dataAccess.addGame(game1));
