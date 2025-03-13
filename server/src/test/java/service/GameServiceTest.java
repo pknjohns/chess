@@ -101,23 +101,18 @@ public class GameServiceTest {
                                     Class<? extends UserDAO> userDaoClassName)
             throws UnauthorizedException, DataAccessException, BadRequestException, AlreadyTakenException {
 
-        AuthDAO authDB = getAuthDataAccess(authDaoClassName);
-        GameDAO gameDB = getGameDataAccess(gameDaoClassName);
-        UserDAO userDB = getUserDataAccess(userDaoClassName);
+        GameServiceTestUtil setup = initializeTest(authDaoClassName, gameDaoClassName, userDaoClassName);
 
-        GameService gameService = new GameService(authDB, gameDB);
-        UserService userService = new UserService(authDB, userDB);
-
-        addData(gameDB);
+        addData(setup.gameDB);
 
         String username = "kk";
         String password = "1234";
         String email = ".com";
 
         RegisterRequest request = new RegisterRequest(username, password, email);
-        userService.registerUser(request);
+        setup.userService.registerUser(request);
 
-        assertThrows(UnauthorizedException.class, () -> gameService.listGames(""));
+        assertThrows(UnauthorizedException.class, () -> setup.gameService.listGames(""));
     }
 
     @ParameterizedTest
@@ -127,25 +122,20 @@ public class GameServiceTest {
                              Class<? extends UserDAO> userDaoClassName)
             throws UnauthorizedException, DataAccessException, BadRequestException, AlreadyTakenException {
 
-        AuthDAO authDB = getAuthDataAccess(authDaoClassName);
-        GameDAO gameDB = getGameDataAccess(gameDaoClassName);
-        UserDAO userDB = getUserDataAccess(userDaoClassName);
-
-        GameService gameService = new GameService(authDB, gameDB);
-        UserService userService = new UserService(authDB, userDB);
+        GameServiceTestUtil setup = initializeTest(authDaoClassName, gameDaoClassName, userDaoClassName);
 
         String username = "kk";
         String password = "1234";
         String email = ".com";
 
         RegisterRequest request = new RegisterRequest(username, password, email);
-        RegisterResult result = userService.registerUser(request);
+        RegisterResult result = setup.userService.registerUser(request);
         String authToken = result.authToken();
 
         String gameName = "first";
-        int newGameID = gameService.createGame(authToken, gameName);
+        int newGameID = setup.gameService.createGame(authToken, gameName);
         assertEquals(1, newGameID);
-        assertEquals(1, gameDB.listGames().size());
+        assertEquals(1, setup.gameDB.listGames().size());
     }
 
     @ParameterizedTest
@@ -155,22 +145,17 @@ public class GameServiceTest {
                              Class<? extends UserDAO> userDaoClassName)
             throws UnauthorizedException, DataAccessException, BadRequestException, AlreadyTakenException {
 
-        AuthDAO authDB = getAuthDataAccess(authDaoClassName);
-        GameDAO gameDB = getGameDataAccess(gameDaoClassName);
-        UserDAO userDB = getUserDataAccess(userDaoClassName);
-
-        GameService gameService = new GameService(authDB, gameDB);
-        UserService userService = new UserService(authDB, userDB);
+        GameServiceTestUtil setup = initializeTest(authDaoClassName, gameDaoClassName, userDaoClassName);
 
         String username = "kk";
         String password = "1234";
         String email = ".com";
 
         RegisterRequest request = new RegisterRequest(username, password, email);
-        userService.registerUser(request);
+        setup.userService.registerUser(request);
 
         String gameName = "first";
-        assertThrows(UnauthorizedException.class, () -> gameService.createGame("", gameName));
+        assertThrows(UnauthorizedException.class, () -> setup.gameService.createGame("", gameName));
     }
 
     @ParameterizedTest
@@ -180,25 +165,20 @@ public class GameServiceTest {
                                 Class<? extends UserDAO> userDaoClassName)
             throws UnauthorizedException, DataAccessException, BadRequestException, AlreadyTakenException {
 
-        AuthDAO authDB = getAuthDataAccess(authDaoClassName);
-        GameDAO gameDB = getGameDataAccess(gameDaoClassName);
-        UserDAO userDB = getUserDataAccess(userDaoClassName);
-
-        GameService gameService = new GameService(authDB, gameDB);
-        UserService userService = new UserService(authDB, userDB);
+        GameServiceTestUtil setup = initializeTest(authDaoClassName, gameDaoClassName, userDaoClassName);
 
         String username = "kk";
         String password = "1234";
         String email = ".com";
 
         RegisterRequest request = new RegisterRequest(username, password, email);
-        RegisterResult result = userService.registerUser(request);
+        RegisterResult result = setup.userService.registerUser(request);
         String authToken = result.authToken();
 
         String gameName = "first";
-        int newGameID = gameService.createGame(authToken, gameName);
-        gameService.joinGame(authToken, "WHITE",newGameID);
-        assertEquals("kk", gameDB.getGame(newGameID).whiteUsername());
+        int newGameID = setup.gameService.createGame(authToken, gameName);
+        setup.gameService.joinGame(authToken, "WHITE",newGameID);
+        assertEquals("kk", setup.gameDB.getGame(newGameID).whiteUsername());
     }
 
     @ParameterizedTest
@@ -208,34 +188,29 @@ public class GameServiceTest {
                                             Class<? extends UserDAO> userDaoClassName)
             throws UnauthorizedException, DataAccessException, BadRequestException, AlreadyTakenException {
 
-        AuthDAO authDB = getAuthDataAccess(authDaoClassName);
-        GameDAO gameDB = getGameDataAccess(gameDaoClassName);
-        UserDAO userDB = getUserDataAccess(userDaoClassName);
-
-        GameService gameService = new GameService(authDB, gameDB);
-        UserService userService = new UserService(authDB, userDB);
+        GameServiceTestUtil setup = initializeTest(authDaoClassName, gameDaoClassName, userDaoClassName);
 
         String username = "kk";
         String password = "1234";
         String email = ".com";
 
         RegisterRequest request = new RegisterRequest(username, password, email);
-        RegisterResult result = userService.registerUser(request);
+        RegisterResult result = setup.userService.registerUser(request);
         String authToken = result.authToken();
 
         String gameName = "first";
-        int newGameID = gameService.createGame(authToken, gameName);
-        gameService.joinGame(authToken, "WHITE",newGameID);
+        int newGameID = setup.gameService.createGame(authToken, gameName);
+        setup.gameService.joinGame(authToken, "WHITE",newGameID);
 
         String username1 = "pp";
         String password1 = "1234";
         String email1 = ".com";
 
         RegisterRequest request1 = new RegisterRequest(username1, password1, email1);
-        RegisterResult result1 = userService.registerUser(request1);
+        RegisterResult result1 = setup.userService.registerUser(request1);
         String authToken1 = result1.authToken();
 
-        assertThrows(AlreadyTakenException.class, () -> gameService.joinGame(authToken1, "WHITE", newGameID));
+        assertThrows(AlreadyTakenException.class, () -> setup.gameService.joinGame(authToken1, "WHITE", newGameID));
     }
 
     @ParameterizedTest
@@ -245,25 +220,20 @@ public class GameServiceTest {
                                         Class<? extends UserDAO> userDaoClassName)
             throws UnauthorizedException, DataAccessException, BadRequestException, AlreadyTakenException {
 
-        AuthDAO authDB = getAuthDataAccess(authDaoClassName);
-        GameDAO gameDB = getGameDataAccess(gameDaoClassName);
-        UserDAO userDB = getUserDataAccess(userDaoClassName);
-
-        GameService gameService = new GameService(authDB, gameDB);
-        UserService userService = new UserService(authDB, userDB);
+        GameServiceTestUtil setup = initializeTest(authDaoClassName, gameDaoClassName, userDaoClassName);
 
         String username = "kk";
         String password = "1234";
         String email = ".com";
 
         RegisterRequest request = new RegisterRequest(username, password, email);
-        RegisterResult result = userService.registerUser(request);
+        RegisterResult result = setup.userService.registerUser(request);
         String authToken = result.authToken();
 
         String gameName = "first";
-        int newGameID = gameService.createGame(authToken, gameName);
+        int newGameID = setup.gameService.createGame(authToken, gameName);
 
-        assertThrows(UnauthorizedException.class, () -> gameService.joinGame("", "WHITE",newGameID));
+        assertThrows(UnauthorizedException.class, () -> setup.gameService.joinGame("", "WHITE",newGameID));
     }
 
     @ParameterizedTest
@@ -273,25 +243,20 @@ public class GameServiceTest {
                                    Class<? extends UserDAO> userDaoClassName)
             throws UnauthorizedException, DataAccessException, BadRequestException, AlreadyTakenException {
 
-        AuthDAO authDB = getAuthDataAccess(authDaoClassName);
-        GameDAO gameDB = getGameDataAccess(gameDaoClassName);
-        UserDAO userDB = getUserDataAccess(userDaoClassName);
-
-        GameService gameService = new GameService(authDB, gameDB);
-        UserService userService = new UserService(authDB, userDB);
+        GameServiceTestUtil setup = initializeTest(authDaoClassName, gameDaoClassName, userDaoClassName);
 
         String username = "kk";
         String password = "1234";
         String email = ".com";
 
         RegisterRequest request = new RegisterRequest(username, password, email);
-        RegisterResult result = userService.registerUser(request);
+        RegisterResult result = setup.userService.registerUser(request);
         String authToken = result.authToken();
 
         String gameName = "first";
-        int newGameID = gameService.createGame(authToken, gameName);
+        int newGameID = setup.gameService.createGame(authToken, gameName);
 
-        assertThrows(BadRequestException.class, () -> gameService.joinGame(authToken, "pink",newGameID));
+        assertThrows(BadRequestException.class, () -> setup.gameService.joinGame(authToken, "pink",newGameID));
     }
 
     @ParameterizedTest
@@ -301,25 +266,20 @@ public class GameServiceTest {
                                 Class<? extends UserDAO> userDaoClassName)
             throws UnauthorizedException, DataAccessException, BadRequestException, AlreadyTakenException {
 
-        AuthDAO authDB = getAuthDataAccess(authDaoClassName);
-        GameDAO gameDB = getGameDataAccess(gameDaoClassName);
-        UserDAO userDB = getUserDataAccess(userDaoClassName);
-
-        GameService gameService = new GameService(authDB, gameDB);
-        UserService userService = new UserService(authDB, userDB);
+        GameServiceTestUtil setup = initializeTest(authDaoClassName, gameDaoClassName, userDaoClassName);
 
         String username = "kk";
         String password = "1234";
         String email = ".com";
 
         RegisterRequest request = new RegisterRequest(username, password, email);
-        RegisterResult result = userService.registerUser(request);
+        RegisterResult result = setup.userService.registerUser(request);
         String authToken = result.authToken();
 
         String gameName = "first";
-        int newGameID = gameService.createGame(authToken, gameName);
-        gameService.joinGame(authToken, "BLACK",newGameID);
-        assertEquals("kk", gameDB.getGame(newGameID).blackUsername());
+        int newGameID = setup.gameService.createGame(authToken, gameName);
+        setup.gameService.joinGame(authToken, "BLACK",newGameID);
+        assertEquals("kk", setup.gameDB.getGame(newGameID).blackUsername());
     }
 
     @ParameterizedTest
@@ -329,34 +289,29 @@ public class GameServiceTest {
                                             Class<? extends UserDAO> userDaoClassName)
             throws UnauthorizedException, DataAccessException, BadRequestException, AlreadyTakenException {
 
-        AuthDAO authDB = getAuthDataAccess(authDaoClassName);
-        GameDAO gameDB = getGameDataAccess(gameDaoClassName);
-        UserDAO userDB = getUserDataAccess(userDaoClassName);
-
-        GameService gameService = new GameService(authDB, gameDB);
-        UserService userService = new UserService(authDB, userDB);
+        GameServiceTestUtil setup = initializeTest(authDaoClassName, gameDaoClassName, userDaoClassName);
 
         String username = "kk";
         String password = "1234";
         String email = ".com";
 
         RegisterRequest request = new RegisterRequest(username, password, email);
-        RegisterResult result = userService.registerUser(request);
+        RegisterResult result = setup.userService.registerUser(request);
         String authToken = result.authToken();
 
         String gameName = "first";
-        int newGameID = gameService.createGame(authToken, gameName);
-        gameService.joinGame(authToken, "BLACK",newGameID);
+        int newGameID = setup.gameService.createGame(authToken, gameName);
+        setup.gameService.joinGame(authToken, "BLACK",newGameID);
 
         String username1 = "pp";
         String password1 = "1234";
         String email1 = ".com";
 
         RegisterRequest request1 = new RegisterRequest(username1, password1, email1);
-        RegisterResult result1 = userService.registerUser(request1);
+        RegisterResult result1 = setup.userService.registerUser(request1);
         String authToken1 = result1.authToken();
 
-        assertThrows(AlreadyTakenException.class, () -> gameService.joinGame(authToken1, "BLACK", newGameID));
+        assertThrows(AlreadyTakenException.class, () -> setup.gameService.joinGame(authToken1, "BLACK", newGameID));
     }
 
     @ParameterizedTest
@@ -366,25 +321,20 @@ public class GameServiceTest {
                                         Class<? extends UserDAO> userDaoClassName)
             throws UnauthorizedException, DataAccessException, BadRequestException, AlreadyTakenException {
 
-        AuthDAO authDB = getAuthDataAccess(authDaoClassName);
-        GameDAO gameDB = getGameDataAccess(gameDaoClassName);
-        UserDAO userDB = getUserDataAccess(userDaoClassName);
-
-        GameService gameService = new GameService(authDB, gameDB);
-        UserService userService = new UserService(authDB, userDB);
+        GameServiceTestUtil setup = initializeTest(authDaoClassName, gameDaoClassName, userDaoClassName);
 
         String username = "kk";
         String password = "1234";
         String email = ".com";
 
         RegisterRequest request = new RegisterRequest(username, password, email);
-        RegisterResult result = userService.registerUser(request);
+        RegisterResult result = setup.userService.registerUser(request);
         String authToken = result.authToken();
 
         String gameName = "first";
-        int newGameID = gameService.createGame(authToken, gameName);
+        int newGameID = setup.gameService.createGame(authToken, gameName);
 
-        assertThrows(UnauthorizedException.class, () -> gameService.joinGame("", "BLACK",newGameID));
+        assertThrows(UnauthorizedException.class, () -> setup.gameService.joinGame("", "BLACK",newGameID));
     }
 
     private void addData(GameDAO gameDB) throws DataAccessException {
