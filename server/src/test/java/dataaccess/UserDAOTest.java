@@ -1,6 +1,4 @@
-package dataacess;
-
-import dataaccess.*;
+package dataaccess;
 
 // import model classes
 import model.UserData;
