@@ -49,7 +49,9 @@ public class UserServiceTest {
 
     @ParameterizedTest
     @MethodSource("providedClasses")
-    void doFindUser(Class<? extends AuthDAO> authDaoClassName, Class<? extends UserDAO> userDaoClassName) throws DataAccessException {
+    void doFindUser(Class<? extends AuthDAO> authDaoClassName,
+                    Class<? extends UserDAO> userDaoClassName)
+            throws DataAccessException {
 
         AuthDAO authDB = getAuthDataAccess(authDaoClassName);
         UserDAO userDB = getUserDataAccess(userDaoClassName);
@@ -67,7 +69,9 @@ public class UserServiceTest {
 
     @ParameterizedTest
     @MethodSource("providedClasses")
-    void noFindUser(Class<? extends AuthDAO> authDaoClassName, Class<? extends UserDAO> userDaoClassName) throws DataAccessException {
+    void noFindUser(Class<? extends AuthDAO> authDaoClassName,
+                    Class<? extends UserDAO> userDaoClassName)
+            throws DataAccessException {
 
         AuthDAO authDB = getAuthDataAccess(authDaoClassName);
         UserDAO userDB = getUserDataAccess(userDaoClassName);
@@ -84,7 +88,9 @@ public class UserServiceTest {
 
     @ParameterizedTest
     @MethodSource("providedClasses")
-    void doCreateUser(Class<? extends AuthDAO> authDaoClassName, Class<? extends UserDAO> userDaoClassName) throws DataAccessException {
+    void doCreateUser(Class<? extends AuthDAO> authDaoClassName,
+                      Class<? extends UserDAO> userDaoClassName)
+            throws DataAccessException {
 
         AuthDAO authDB = getAuthDataAccess(authDaoClassName);
         UserDAO userDB = getUserDataAccess(userDaoClassName);
@@ -99,7 +105,9 @@ public class UserServiceTest {
 
     @ParameterizedTest
     @MethodSource("providedClasses")
-    void doCreateAuth(Class<? extends AuthDAO> authDaoClassName, Class<? extends UserDAO> userDaoClassName) throws DataAccessException {
+    void doCreateAuth(Class<? extends AuthDAO> authDaoClassName,
+                      Class<? extends UserDAO> userDaoClassName)
+            throws DataAccessException {
 
         AuthDAO authDB = getAuthDataAccess(authDaoClassName);
         UserDAO userDB = getUserDataAccess(userDaoClassName);
@@ -114,7 +122,8 @@ public class UserServiceTest {
 
     @ParameterizedTest
     @MethodSource("providedClasses")
-    void doRegisterUser(Class<? extends AuthDAO> authDaoClassName, Class<? extends UserDAO> userDaoClassName)
+    void doRegisterUser(Class<? extends AuthDAO> authDaoClassName,
+                        Class<? extends UserDAO> userDaoClassName)
             throws AlreadyTakenException, BadRequestException, DataAccessException {
 
         AuthDAO authDB = getAuthDataAccess(authDaoClassName);
@@ -144,7 +153,9 @@ public class UserServiceTest {
 
     @ParameterizedTest
     @MethodSource("providedClasses")
-    void noRegisterUserBadRequestNoEmail(Class<? extends AuthDAO> authDaoClassName, Class<? extends UserDAO> userDaoClassName) throws DataAccessException {
+    void noRegisterUserBadRequestNoEmail(Class<? extends AuthDAO> authDaoClassName,
+                                         Class<? extends UserDAO> userDaoClassName)
+            throws DataAccessException {
 
         AuthDAO authDB = getAuthDataAccess(authDaoClassName);
         UserDAO userDB = getUserDataAccess(userDaoClassName);
@@ -162,7 +173,9 @@ public class UserServiceTest {
 
     @ParameterizedTest
     @MethodSource("providedClasses")
-    void noRegisterUserBadRequestNoUsername(Class<? extends AuthDAO> authDaoClassName, Class<? extends UserDAO> userDaoClassName) throws DataAccessException {
+    void noRegisterUserBadRequestNoUsername(Class<? extends AuthDAO> authDaoClassName,
+                                            Class<? extends UserDAO> userDaoClassName)
+            throws DataAccessException {
 
         AuthDAO authDB = getAuthDataAccess(authDaoClassName);
         UserDAO userDB = getUserDataAccess(userDaoClassName);
@@ -180,7 +193,9 @@ public class UserServiceTest {
 
     @ParameterizedTest
     @MethodSource("providedClasses")
-    void noRegisterUserBadRequestNoPassword(Class<? extends AuthDAO> authDaoClassName, Class<? extends UserDAO> userDaoClassName) throws DataAccessException {
+    void noRegisterUserBadRequestNoPassword(Class<? extends AuthDAO> authDaoClassName,
+                                            Class<? extends UserDAO> userDaoClassName)
+            throws DataAccessException {
 
         AuthDAO authDB = getAuthDataAccess(authDaoClassName);
         UserDAO userDB = getUserDataAccess(userDaoClassName);
@@ -198,7 +213,8 @@ public class UserServiceTest {
 
     @ParameterizedTest
     @MethodSource("providedClasses")
-    void noRegisterUserAlreadyTaken(Class<? extends AuthDAO> authDaoClassName, Class<? extends UserDAO> userDaoClassName)
+    void noRegisterUserAlreadyTaken(Class<? extends AuthDAO> authDaoClassName,
+                                    Class<? extends UserDAO> userDaoClassName)
             throws AlreadyTakenException, BadRequestException, DataAccessException {
 
         AuthDAO authDB = getAuthDataAccess(authDaoClassName);
@@ -218,7 +234,8 @@ public class UserServiceTest {
 
     @ParameterizedTest
     @MethodSource("providedClasses")
-    void doLoginUser(Class<? extends AuthDAO> authDaoClassName, Class<? extends UserDAO> userDaoClassName)
+    void doLoginUser(Class<? extends AuthDAO> authDaoClassName,
+                     Class<? extends UserDAO> userDaoClassName)
             throws AlreadyTakenException, BadRequestException, DataAccessException {
 
         AuthDAO authDB = getAuthDataAccess(authDaoClassName);
@@ -239,7 +256,8 @@ public class UserServiceTest {
 
     @ParameterizedTest
     @MethodSource("providedClasses")
-    void noLoginUserBadUsername(Class<? extends AuthDAO> authDaoClassName, Class<? extends UserDAO> userDaoClassName)
+    void noLoginUserBadUsername(Class<? extends AuthDAO> authDaoClassName,
+                                Class<? extends UserDAO> userDaoClassName)
             throws AlreadyTakenException, BadRequestException, DataAccessException {
 
         AuthDAO authDB = getAuthDataAccess(authDaoClassName);
@@ -260,7 +278,8 @@ public class UserServiceTest {
 
     @ParameterizedTest
     @MethodSource("providedClasses")
-    void noLoginUserBadPassword(Class<? extends AuthDAO> authDaoClassName, Class<? extends UserDAO> userDaoClassName)
+    void noLoginUserBadPassword(Class<? extends AuthDAO> authDaoClassName,
+                                Class<? extends UserDAO> userDaoClassName)
             throws AlreadyTakenException, BadRequestException, DataAccessException {
 
         AuthDAO authDB = getAuthDataAccess(authDaoClassName);
@@ -281,7 +300,8 @@ public class UserServiceTest {
 
     @ParameterizedTest
     @MethodSource("providedClasses")
-    void doLogoutUser(Class<? extends AuthDAO> authDaoClassName, Class<? extends UserDAO> userDaoClassName)
+    void doLogoutUser(Class<? extends AuthDAO> authDaoClassName,
+                      Class<? extends UserDAO> userDaoClassName)
             throws AlreadyTakenException, BadRequestException, DataAccessException {
 
         AuthDAO authDB = getAuthDataAccess(authDaoClassName);
@@ -303,7 +323,8 @@ public class UserServiceTest {
 
     @ParameterizedTest
     @MethodSource("providedClasses")
-    void noLogoutUser(Class<? extends AuthDAO> authDaoClassName, Class<? extends UserDAO> userDaoClassName)
+    void noLogoutUser(Class<? extends AuthDAO> authDaoClassName,
+                      Class<? extends UserDAO> userDaoClassName)
             throws AlreadyTakenException, BadRequestException, DataAccessException {
 
         AuthDAO authDB = getAuthDataAccess(authDaoClassName);
