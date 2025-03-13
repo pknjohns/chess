@@ -15,45 +15,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class ClearServiceTest {
 
-    private AuthDAO getAuthDataAccess(Class<? extends AuthDAO> databaseClass) throws DataAccessException {
-        AuthDAO db;
-
-        if (databaseClass.equals(MemoryAuthDAO.class)) {
-            db = new MemoryAuthDAO();
-        } else {
-            db = new MySqlAuthDAO(); // placeholder for when we add the MySqlDatabase
-        }
-
-        db.deleteAllAuths();
-        return db;
-    }
-
-    private GameDAO getGameDataAccess(Class<? extends GameDAO> gDAOclass) throws DataAccessException {
-        GameDAO db;
-
-        if (gDAOclass.equals(MemoryGameDAO.class)) {
-            db = new MemoryGameDAO();
-        } else {
-            db = new MySqlGameDAO(); // placeholder for when we add the MySqlDatabase
-        }
-
-        db.deleteAllGames();
-        return db;
-    }
-
-    private UserDAO getUserDataAccess(Class<? extends UserDAO> daoClass) throws DataAccessException {
-        UserDAO userDB;
-
-        if (daoClass.equals(MemoryUserDAO.class)) {
-            userDB = new MemoryUserDAO();
-        } else {
-            userDB = new MySqlUserDAO(); // placeholder for when we add the MySqlDatabase
-        }
-
-        userDB.deleteAllUsers();
-        return userDB;
-    }
-
     static Stream<Arguments> providedClasses() {
         return Stream.of(
                 Arguments.of(MySqlAuthDAO.class, MySqlGameDAO.class, MySqlUserDAO.class),
@@ -68,9 +29,9 @@ public class ClearServiceTest {
                    Class<? extends UserDAO> userDaoClassName)
             throws DataAccessException {
 
-        AuthDAO authDB = getAuthDataAccess(authDaoClassName);
-        GameDAO gameDB = getGameDataAccess(gameDaoClassName);
-        UserDAO userDB = getUserDataAccess(userDaoClassName);
+        AuthDAO authDB = ServiceTestUtil.getAuthDataAccess(authDaoClassName);
+        GameDAO gameDB = ServiceTestUtil.getGameDataAccess(gameDaoClassName);
+        UserDAO userDB = ServiceTestUtil.getUserDataAccess(userDaoClassName);
 
         // Sample users
         var user1 = new UserData("pk", "1234", "pk@cs.com");
