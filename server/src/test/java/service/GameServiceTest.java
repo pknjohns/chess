@@ -2,10 +2,7 @@ package service;
 
 import chess.ChessGame;
 import dataaccess.*;
-import model.GameData;
-import model.ListGameData;
-import model.RegisterRequest;
-import model.RegisterResult;
+import model.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -63,6 +60,18 @@ public class GameServiceTest {
         );
     }
 
+    private GameServiceTestUtil initializeTest(Class<? extends AuthDAO> authDaoClassName,
+                                               Class<? extends GameDAO> gameDaoClassName,
+                                               Class<? extends UserDAO> userDaoClassName)
+        throws DataAccessException {
+
+        AuthDAO authDB = getAuthDataAccess(authDaoClassName);
+        GameDAO gameDB = getGameDataAccess(gameDaoClassName);
+        UserDAO userDB = getUserDataAccess(userDaoClassName);
+
+        return new GameServiceTestUtil(authDB, gameDB, userDB);
+    }
+
     @ParameterizedTest
     @MethodSource("providedClasses")
     public void doListGames(Class<? extends AuthDAO> authDaoClassName,
@@ -70,24 +79,19 @@ public class GameServiceTest {
                             Class<? extends UserDAO> userDaoClassName)
             throws UnauthorizedException, DataAccessException, BadRequestException, AlreadyTakenException {
 
-        AuthDAO authDB = getAuthDataAccess(authDaoClassName);
-        GameDAO gameDB = getGameDataAccess(gameDaoClassName);
-        UserDAO userDB = getUserDataAccess(userDaoClassName);
+        GameServiceTestUtil setup = initializeTest(authDaoClassName, gameDaoClassName, userDaoClassName);
 
-        GameService gameService = new GameService(authDB, gameDB);
-        UserService userService = new UserService(authDB, userDB);
-
-        addData(gameDB);
+        addData(setup.gameDB);
 
         String username = "kk";
         String password = "1234";
         String email = ".com";
 
         RegisterRequest request = new RegisterRequest(username, password, email);
-        RegisterResult result = userService.registerUser(request);
+        RegisterResult result = setup.userService.registerUser(request);
 
-        Collection<ListGameData> gameList = gameService.listGames(result.authToken());
-        assertEquals(gameDB.listGames().size(), gameList.size());
+        Collection<ListGameData> gameList = setup.gameService.listGames(result.authToken());
+        assertEquals(setup.gameDB.listGames().size(), gameList.size());
     }
 
     @ParameterizedTest
