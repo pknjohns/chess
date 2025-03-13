@@ -24,7 +24,7 @@ public class MySqlAuthDAO implements AuthDAO {
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """
         };
-        configureAuthDatabase(createStatements);
+        configureDatabase(createStatements);
     }
 
     public AuthData getAuth(String authToken) throws DataAccessException {

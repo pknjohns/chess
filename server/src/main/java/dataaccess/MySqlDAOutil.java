@@ -1,6 +1,8 @@
 package dataaccess;
 
 import model.AuthData;
+import model.GameData;
+import model.UserData;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -27,13 +29,15 @@ public class MySqlDAOutil {
                 case String p -> ps.setString(i + 1, p);
                 case Integer p -> ps.setInt(i + 1, p);
                 case AuthData p -> ps.setString(i + 1, p.toString());
+                case GameData p -> ps.setString(i + 1, p.toString());
+                case UserData p -> ps.setString(i + 1, p.toString());
                 case null -> ps.setNull(i + 1, NULL);
                 default -> {}
             }
         }
     }
 
-    public static void configureAuthDatabase(String[] createStatements) throws DataAccessException {
+    public static void configureDatabase(String[] createStatements) throws DataAccessException {
         DatabaseManager.createDatabase();
         try (var conn = DatabaseManager.getConnection()) {
             for (var statement : createStatements) {
