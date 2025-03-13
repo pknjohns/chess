@@ -9,7 +9,6 @@ import model.UserData;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-//import javax.xml.crypto.Data;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -37,7 +36,6 @@ class UserDAOTest {
         assertEquals(new HashSet<>(expected), new HashSet<>(actual), "Expected and Actual elements are not the same");
     }
 
-
     @ParameterizedTest
     @ValueSource(classes = {MySqlUserDAO.class, MemoryUserDAO.class})
     void addUser(Class<? extends UserDAO> daoClass) throws DataAccessException {
@@ -45,6 +43,7 @@ class UserDAOTest {
 
         var user = new UserData("pk", "1234", "pk@cs.com");
         assertDoesNotThrow(() -> dataAccess.addUser(user));
+        dataAccess.deleteAllUsers();
     }
 
     @ParameterizedTest
@@ -58,6 +57,7 @@ class UserDAOTest {
 
         UserData result = dataAccess.getUser(username);
         assertEquals(result, user, "Successfully gets UserData");
+        dataAccess.deleteAllUsers();
     }
 
     @ParameterizedTest
@@ -68,6 +68,7 @@ class UserDAOTest {
         String username = "pk";
         UserData result = dataAccess.getUser(username);
         assertNull(result, "No user found");
+        dataAccess.deleteAllUsers();
     }
 
     @ParameterizedTest
@@ -90,6 +91,7 @@ class UserDAOTest {
 
         var actual = dataAccess.listUsers();
         assertUserCollectionEqual(expected, actual);
+        dataAccess.deleteAllUsers();
     }
 
     @ParameterizedTest

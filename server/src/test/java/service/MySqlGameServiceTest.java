@@ -6,6 +6,7 @@ import model.GameData;
 import model.ListGameData;
 import model.RegisterRequest;
 import model.RegisterResult;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,6 +38,13 @@ public class MySqlGameServiceTest {
         userDB.deleteAllUsers();
         gameService = new GameService(authDB, gameDB);
         userService = new UserService(authDB, userDB);
+    }
+
+    @AfterAll
+    public static void cleanup() throws DataAccessException {
+        authDB.deleteAllAuths();
+        gameDB.deleteAllGames();
+        userDB.deleteAllUsers();
     }
 
     @Test

@@ -44,6 +44,7 @@ class AuthDAOTest {
 
         var token = new AuthData("1234","PK");
         assertDoesNotThrow(()-> dataAccess.addAuth(token));
+        dataAccess.deleteAllAuths();
     }
 
     @ParameterizedTest
@@ -56,6 +57,7 @@ class AuthDAOTest {
         dataAccess.addAuth(auth);
         AuthData result = dataAccess.getAuth(token);
         assertEquals(auth, result);
+        dataAccess.deleteAllAuths();
     }
 
     @ParameterizedTest
@@ -74,6 +76,7 @@ class AuthDAOTest {
 
         var actual = dataAccess.listAuths();
         assertTokenCollectionEqual(expected, actual);
+        dataAccess.deleteAllAuths();
     }
 
     @ParameterizedTest
@@ -86,6 +89,7 @@ class AuthDAOTest {
 
         dataAccess.deleteAuth("1234");
         assertEquals(0, dataAccess.listAuths().size());
+        dataAccess.deleteAllAuths();
     }
 
     @ParameterizedTest

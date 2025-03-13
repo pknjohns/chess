@@ -45,6 +45,7 @@ class GameDAOTest {
 
         var game = new GameData(1234, "white", "black", "test", new ChessGame());
         assertDoesNotThrow(() -> dataAccess.addGame(game));
+        dataAccess.deleteAllGames();
     }
 
     @ParameterizedTest
@@ -57,6 +58,7 @@ class GameDAOTest {
 
         GameData actual = dataAccess.getGame(1234);
         assertEquals(game1, actual, "Successfully gets GameData");
+        dataAccess.deleteAllGames();
     }
 
     @ParameterizedTest
@@ -69,6 +71,7 @@ class GameDAOTest {
 
         GameData actual = dataAccess.getGame(2345);
         assertNull(actual, "No game found");
+        dataAccess.deleteAllGames();
     }
 
     @ParameterizedTest
@@ -87,6 +90,7 @@ class GameDAOTest {
 
         var actual = dataAccess.listGames();
         assertGameCollectionEqual(expected, actual);
+        dataAccess.deleteAllGames();
     }
 
     @ParameterizedTest
@@ -124,6 +128,7 @@ class GameDAOTest {
         GameData actualGame = dataAccess.getGame(1234);
         String actualWhiteName = actualGame.whiteUsername();
         assertEquals("white",actualWhiteName, "whiteUsername did not update");
+        dataAccess.deleteAllGames();
     }
 
     @ParameterizedTest
@@ -137,6 +142,7 @@ class GameDAOTest {
         int actualLen = dataAccess.listGames().size();
         assertEquals(expectedLen, actualLen);
         assertEquals("black",dataAccess.getGame(1234).blackUsername());
+        dataAccess.deleteAllGames();
     }
 
 }

@@ -2,6 +2,7 @@ package service;
 
 import dataaccess.*;
 import model.*;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,6 +24,12 @@ public class MySqlUserServiceTest {
 
     @BeforeEach
     public void setup() throws DataAccessException {
+        authDB.deleteAllAuths();
+        userDB.deleteAllUsers();
+    }
+
+    @AfterAll
+    public static void cleanup() throws DataAccessException {
         authDB.deleteAllAuths();
         userDB.deleteAllUsers();
     }
