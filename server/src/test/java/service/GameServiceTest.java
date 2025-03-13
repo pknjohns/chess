@@ -77,13 +77,7 @@ public class GameServiceTest {
         GameService gameService = new GameService(authDB, gameDB);
         UserService userService = new UserService(authDB, userDB);
 
-        var game1 = new GameData(1234, "white", "black", "test", new ChessGame());
-        var game2 = new GameData(5678, "white", "black", "test", new ChessGame());
-        var game3 = new GameData(2345, "white", "black", "test", new ChessGame());
-
-        gameDB.addGame(game1);
-        gameDB.addGame(game2);
-        gameDB.addGame(game3);
+        addData(gameDB);
 
         String username = "kk";
         String password = "1234";
@@ -110,13 +104,7 @@ public class GameServiceTest {
         GameService gameService = new GameService(authDB, gameDB);
         UserService userService = new UserService(authDB, userDB);
 
-        var game1 = new GameData(1234, "white", "black", "test", new ChessGame());
-        var game2 = new GameData(5678, "white", "black", "test", new ChessGame());
-        var game3 = new GameData(2345, "white", "black", "test", new ChessGame());
-
-        gameDB.addGame(game1);
-        gameDB.addGame(game2);
-        gameDB.addGame(game3);
+        addData(gameDB);
 
         String username = "kk";
         String password = "1234";
@@ -393,5 +381,15 @@ public class GameServiceTest {
         int newGameID = gameService.createGame(authToken, gameName);
 
         assertThrows(UnauthorizedException.class, () -> gameService.joinGame("", "BLACK",newGameID));
+    }
+
+    private void addData(GameDAO gameDB) throws DataAccessException {
+        var game1 = new GameData(1234, "white", "black", "test", new ChessGame());
+        var game2 = new GameData(5678, "white", "black", "test", new ChessGame());
+        var game3 = new GameData(2345, "white", "black", "test", new ChessGame());
+
+        gameDB.addGame(game1);
+        gameDB.addGame(game2);
+        gameDB.addGame(game3);
     }
 }
