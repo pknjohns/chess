@@ -11,14 +11,26 @@ import java.util.HashMap;
 
 public class Server {
 
-    private final AuthDAO authDB = new MemoryAuthDAO();
-    private final GameDAO gameDB = new MemoryGameDAO();
-    private final UserDAO userDB = new MemoryUserDAO();
-    ClearService clearService = new ClearService(authDB, gameDB, userDB);
-    GameService gameService = new GameService(authDB, gameDB);
-    UserService userService = new UserService(authDB, userDB);
+    private ClearService clearService;
+    private GameService gameService;
+    private UserService userService;
 
-    public int run(int desiredPort) { //exceptions should be caught before the Server (like in the handler)
+    public Server() {
+        try {
+            AuthDAO authDB = new MySqlAuthDAO();
+            GameDAO gameDB = new MySqlGameDAO();
+            UserDAO userDB = new MySqlUserDAO();
+
+            clearService = new ClearService(authDB, gameDB, userDB);
+            gameService = new GameService(authDB, gameDB);
+            userService = new UserService(authDB, userDB);
+        } catch(DataAccessException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public int run(int desiredPort){ //exceptions should be caught before the Server (like in the handler)
+
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("web");

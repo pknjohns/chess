@@ -107,18 +107,6 @@ public class MySqlGameDAO implements GameDAO {
         return new Gson().fromJson(json, GameData.class);
     }
 
-    private void deleteGame(int gameID) throws DataAccessException {
-        try (var conn = DatabaseManager.getConnection()) {
-            String statement = "DELETE FROM games WHERE gameID=?";
-            try (var ps = conn.prepareStatement(statement)) {
-                ps.setInt(1, gameID);
-                ps.executeUpdate();
-            }
-        } catch (Exception e) {
-            throw new DataAccessException("Unable to delete data: " + e.getMessage());
-        }
-    }
-
     private void executeUpdate(String statement, Object... params) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
             try (var ps = conn.prepareStatement(statement)) {
