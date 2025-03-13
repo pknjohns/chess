@@ -65,7 +65,10 @@ public class GameServiceTest {
 
     @ParameterizedTest
     @MethodSource("providedClasses")
-    public void doListGames(Class<? extends AuthDAO> authDaoClassName, Class<? extends GameDAO> gameDaoClassName, Class<? extends UserDAO> userDaoClassName) throws UnauthorizedException, DataAccessException, BadRequestException, AlreadyTakenException {
+    public void doListGames(Class<? extends AuthDAO> authDaoClassName,
+                            Class<? extends GameDAO> gameDaoClassName,
+                            Class<? extends UserDAO> userDaoClassName)
+            throws UnauthorizedException, DataAccessException, BadRequestException, AlreadyTakenException {
 
         AuthDAO authDB = getAuthDataAccess(authDaoClassName);
         GameDAO gameDB = getGameDataAccess(gameDaoClassName);
@@ -95,7 +98,10 @@ public class GameServiceTest {
 
     @ParameterizedTest
     @MethodSource("providedClasses")
-    public void noListGamesBadToken(Class<? extends AuthDAO> authDaoClassName, Class<? extends GameDAO> gameDaoClassName, Class<? extends UserDAO> userDaoClassName) throws UnauthorizedException, DataAccessException, BadRequestException, AlreadyTakenException {
+    public void noListGamesBadToken(Class<? extends AuthDAO> authDaoClassName,
+                                    Class<? extends GameDAO> gameDaoClassName,
+                                    Class<? extends UserDAO> userDaoClassName)
+            throws UnauthorizedException, DataAccessException, BadRequestException, AlreadyTakenException {
 
         AuthDAO authDB = getAuthDataAccess(authDaoClassName);
         GameDAO gameDB = getGameDataAccess(gameDaoClassName);
@@ -124,7 +130,10 @@ public class GameServiceTest {
 
     @ParameterizedTest
     @MethodSource("providedClasses")
-    public void doCreateGame(Class<? extends AuthDAO> authDaoClassName, Class<? extends GameDAO> gameDaoClassName, Class<? extends UserDAO> userDaoClassName) throws UnauthorizedException, DataAccessException, BadRequestException, AlreadyTakenException {
+    public void doCreateGame(Class<? extends AuthDAO> authDaoClassName,
+                             Class<? extends GameDAO> gameDaoClassName,
+                             Class<? extends UserDAO> userDaoClassName)
+            throws UnauthorizedException, DataAccessException, BadRequestException, AlreadyTakenException {
 
         AuthDAO authDB = getAuthDataAccess(authDaoClassName);
         GameDAO gameDB = getGameDataAccess(gameDaoClassName);
@@ -149,7 +158,10 @@ public class GameServiceTest {
 
     @ParameterizedTest
     @MethodSource("providedClasses")
-    public void noCreateGame(Class<? extends AuthDAO> authDaoClassName, Class<? extends GameDAO> gameDaoClassName, Class<? extends UserDAO> userDaoClassName) throws UnauthorizedException, DataAccessException, BadRequestException, AlreadyTakenException {
+    public void noCreateGame(Class<? extends AuthDAO> authDaoClassName,
+                             Class<? extends GameDAO> gameDaoClassName,
+                             Class<? extends UserDAO> userDaoClassName)
+            throws UnauthorizedException, DataAccessException, BadRequestException, AlreadyTakenException {
 
         AuthDAO authDB = getAuthDataAccess(authDaoClassName);
         GameDAO gameDB = getGameDataAccess(gameDaoClassName);
@@ -171,7 +183,10 @@ public class GameServiceTest {
 
     @ParameterizedTest
     @MethodSource("providedClasses")
-    public void doJoinGameWhite(Class<? extends AuthDAO> authDaoClassName, Class<? extends GameDAO> gameDaoClassName, Class<? extends UserDAO> userDaoClassName) throws UnauthorizedException, DataAccessException, BadRequestException, AlreadyTakenException {
+    public void doJoinGameWhite(Class<? extends AuthDAO> authDaoClassName,
+                                Class<? extends GameDAO> gameDaoClassName,
+                                Class<? extends UserDAO> userDaoClassName)
+            throws UnauthorizedException, DataAccessException, BadRequestException, AlreadyTakenException {
 
         AuthDAO authDB = getAuthDataAccess(authDaoClassName);
         GameDAO gameDB = getGameDataAccess(gameDaoClassName);
@@ -196,7 +211,10 @@ public class GameServiceTest {
 
     @ParameterizedTest
     @MethodSource("providedClasses")
-    public void noJoinGameWhiteAlreadyTaken(Class<? extends AuthDAO> authDaoClassName, Class<? extends GameDAO> gameDaoClassName, Class<? extends UserDAO> userDaoClassName) throws UnauthorizedException, DataAccessException, BadRequestException, AlreadyTakenException {
+    public void noJoinGameWhiteAlreadyTaken(Class<? extends AuthDAO> authDaoClassName,
+                                            Class<? extends GameDAO> gameDaoClassName,
+                                            Class<? extends UserDAO> userDaoClassName)
+            throws UnauthorizedException, DataAccessException, BadRequestException, AlreadyTakenException {
 
         AuthDAO authDB = getAuthDataAccess(authDaoClassName);
         GameDAO gameDB = getGameDataAccess(gameDaoClassName);
@@ -230,7 +248,10 @@ public class GameServiceTest {
 
     @ParameterizedTest
     @MethodSource("providedClasses")
-    public void noJoinGameWhiteBadToken(Class<? extends AuthDAO> authDaoClassName, Class<? extends GameDAO> gameDaoClassName, Class<? extends UserDAO> userDaoClassName) throws UnauthorizedException, DataAccessException, BadRequestException, AlreadyTakenException {
+    public void noJoinGameWhiteBadToken(Class<? extends AuthDAO> authDaoClassName,
+                                        Class<? extends GameDAO> gameDaoClassName,
+                                        Class<? extends UserDAO> userDaoClassName)
+            throws UnauthorizedException, DataAccessException, BadRequestException, AlreadyTakenException {
 
         AuthDAO authDB = getAuthDataAccess(authDaoClassName);
         GameDAO gameDB = getGameDataAccess(gameDaoClassName);
@@ -255,7 +276,10 @@ public class GameServiceTest {
 
     @ParameterizedTest
     @MethodSource("providedClasses")
-    public void noJoinGameBadColor(Class<? extends AuthDAO> authDaoClassName, Class<? extends GameDAO> gameDaoClassName, Class<? extends UserDAO> userDaoClassName) throws UnauthorizedException, DataAccessException, BadRequestException, AlreadyTakenException {
+    public void noJoinGameBadColor(Class<? extends AuthDAO> authDaoClassName,
+                                   Class<? extends GameDAO> gameDaoClassName,
+                                   Class<? extends UserDAO> userDaoClassName)
+            throws UnauthorizedException, DataAccessException, BadRequestException, AlreadyTakenException {
 
         AuthDAO authDB = getAuthDataAccess(authDaoClassName);
         GameDAO gameDB = getGameDataAccess(gameDaoClassName);
@@ -280,7 +304,10 @@ public class GameServiceTest {
 
     @ParameterizedTest
     @MethodSource("providedClasses")
-    public void doJoinGameBlack(Class<? extends AuthDAO> authDaoClassName, Class<? extends GameDAO> gameDaoClassName, Class<? extends UserDAO> userDaoClassName) throws UnauthorizedException, DataAccessException, BadRequestException, AlreadyTakenException {
+    public void doJoinGameBlack(Class<? extends AuthDAO> authDaoClassName,
+                                Class<? extends GameDAO> gameDaoClassName,
+                                Class<? extends UserDAO> userDaoClassName)
+            throws UnauthorizedException, DataAccessException, BadRequestException, AlreadyTakenException {
 
         AuthDAO authDB = getAuthDataAccess(authDaoClassName);
         GameDAO gameDB = getGameDataAccess(gameDaoClassName);
@@ -305,7 +332,10 @@ public class GameServiceTest {
 
     @ParameterizedTest
     @MethodSource("providedClasses")
-    public void noJoinGameBlackAlreadyTaken(Class<? extends AuthDAO> authDaoClassName, Class<? extends GameDAO> gameDaoClassName, Class<? extends UserDAO> userDaoClassName) throws UnauthorizedException, DataAccessException, BadRequestException, AlreadyTakenException {
+    public void noJoinGameBlackAlreadyTaken(Class<? extends AuthDAO> authDaoClassName,
+                                            Class<? extends GameDAO> gameDaoClassName,
+                                            Class<? extends UserDAO> userDaoClassName)
+            throws UnauthorizedException, DataAccessException, BadRequestException, AlreadyTakenException {
 
         AuthDAO authDB = getAuthDataAccess(authDaoClassName);
         GameDAO gameDB = getGameDataAccess(gameDaoClassName);
@@ -339,7 +369,10 @@ public class GameServiceTest {
 
     @ParameterizedTest
     @MethodSource("providedClasses")
-    public void noJoinGameBlackBadToken(Class<? extends AuthDAO> authDaoClassName, Class<? extends GameDAO> gameDaoClassName, Class<? extends UserDAO> userDaoClassName) throws UnauthorizedException, DataAccessException, BadRequestException, AlreadyTakenException {
+    public void noJoinGameBlackBadToken(Class<? extends AuthDAO> authDaoClassName,
+                                        Class<? extends GameDAO> gameDaoClassName,
+                                        Class<? extends UserDAO> userDaoClassName)
+            throws UnauthorizedException, DataAccessException, BadRequestException, AlreadyTakenException {
 
         AuthDAO authDB = getAuthDataAccess(authDaoClassName);
         GameDAO gameDB = getGameDataAccess(gameDaoClassName);

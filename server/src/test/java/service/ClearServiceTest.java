@@ -63,7 +63,10 @@ public class ClearServiceTest {
 
     @ParameterizedTest
     @MethodSource("providedClasses")
-    void doClearDB(Class<? extends AuthDAO> authDaoClassName, Class<? extends GameDAO> gameDaoClassName, Class<? extends UserDAO> userDaoClassName) throws DataAccessException {
+    void doClearDB(Class<? extends AuthDAO> authDaoClassName,
+                   Class<? extends GameDAO> gameDaoClassName,
+                   Class<? extends UserDAO> userDaoClassName)
+            throws DataAccessException {
 
         AuthDAO authDB = getAuthDataAccess(authDaoClassName);
         GameDAO gameDB = getGameDataAccess(gameDaoClassName);
