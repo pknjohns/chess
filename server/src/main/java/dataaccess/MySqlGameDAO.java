@@ -2,7 +2,6 @@ package dataaccess;
 
 import com.google.gson.Gson;
 import model.GameData;
-import chess.ChessGame;
 
 import java.util.Collection;
 
@@ -20,12 +19,21 @@ public class MySqlGameDAO implements GameDAO {
 
     public GameData addGame(GameData game) throws DataAccessException {
         String statement = "INSERT INTO games (gameID, whiteUsername, blackUsername, gameName, game, gameData) VALUES (?, ?, ?, ?, ?, ?)";
-        executeUpdate(statement, game.gameID(), game.whiteUsername(), game.blackUsername(), game.gameName(), game.game(), game);
+        executeUpdate(statement, game.gameID(), game.whiteUsername(), game.blackUsername(), game.gameName(), new Gson().toJson(game.game()), game);
         return game;
     }
 
     public void updateGameWhitePlayer(int gameID, String username) throws DataAccessException {
-
+//        try (var conn = DatabaseManager.getConnection()) {
+//            String statement = "UPDATE games SET whiteUsername=COALESCE(?, whiteUsername) WHERE gameID=?";
+//            try (var ps = conn.prepareStatement(statement)) {
+//                ps.setString(1, username);
+//                ps.setInt(2, gameID);
+//                ps.executeUpdate();
+//            }
+//        } catch (Exception e) {
+//            throw new DataAccessException("Unable to read data: " + e.getMessage());
+//        }
     }
 
     public void updateGameBlackPlayer(int gameID, String username) throws DataAccessException {
@@ -80,6 +88,18 @@ public class MySqlGameDAO implements GameDAO {
         return new Gson().fromJson(json, GameData.class);
     }
 
+    private void deleteGame(int gameID) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            String statement = "DELETE FROM games WHERE gameID=?";
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setInt(1, gameID);
+                ps.executeUpdate();
+            }
+        } catch (Exception e) {
+            throw new DataAccessException("Unable to delete data: " + e.getMessage());
+        }
+    }
+
     private void executeUpdate(String statement, Object... params) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
             try (var ps = conn.prepareStatement(statement)) {
@@ -88,7 +108,7 @@ public class MySqlGameDAO implements GameDAO {
                     switch (param) {
                         case String p -> ps.setString(i + 1, p);
                         case Integer p -> ps.setInt(i + 1, p);
-                        case ChessGame p -> ps.setString(i + 1, p.toString());
+                        //case ChessGame p -> ps.setString(i + 1, p.toString());
                         case GameData p -> ps.setString(i + 1, p.toString());
                         case null -> ps.setNull(i + 1, NULL);
                         default -> {

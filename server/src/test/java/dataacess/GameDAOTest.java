@@ -109,16 +109,21 @@ class GameDAOTest {
     }
 
     @ParameterizedTest
-    @ValueSource(classes = {MemoryGameDAO.class})
+    @ValueSource(classes = {MySqlGameDAO.class, MemoryGameDAO.class})
     void doUpdateGameWhitePlayer(Class<? extends GameDAO> dbClass) throws DataAccessException {
         GameDAO dataAccess = getGameDataAccess(dbClass);
         var game1 = new GameData(1234, null, "black", "test", new ChessGame());
         dataAccess.addGame(game1);
         int expectedLen = dataAccess.listGames().size();
+
         dataAccess.updateGameWhitePlayer(1234, "white");
+
         int actualLen = dataAccess.listGames().size();
         assertEquals(expectedLen, actualLen);
-        assertEquals("white",dataAccess.getGame(1234).whiteUsername());
+
+        GameData actualGame = dataAccess.getGame(1234);
+        String actualWhiteName = actualGame.whiteUsername();
+        assertEquals("white",actualWhiteName, "whiteUsername successfully updated");
     }
 
     @ParameterizedTest
