@@ -54,7 +54,7 @@ public class ClearServiceTest {
         return userDB;
     }
 
-    static Stream<Arguments> provideClasses() {
+    static Stream<Arguments> providedClasses() {
         return Stream.of(
                 Arguments.of(MySqlAuthDAO.class, MySqlGameDAO.class, MySqlUserDAO.class),
                 Arguments.of(MemoryAuthDAO.class, MemoryGameDAO.class, MemoryUserDAO.class)
@@ -62,7 +62,7 @@ public class ClearServiceTest {
     }
 
     @ParameterizedTest
-    @MethodSource("provideClasses")
+    @MethodSource("providedClasses")
     void doClearDB(Class<? extends AuthDAO> authDaoClassName, Class<? extends GameDAO> gameDaoClassName, Class<? extends UserDAO> userDaoClassName) throws DataAccessException {
 
         AuthDAO authDB = getAuthDataAccess(authDaoClassName);
