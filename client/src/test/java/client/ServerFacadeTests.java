@@ -57,19 +57,19 @@ public class ServerFacadeTests {
     }
 
     @Test
-    void noRegisterNoUsername() throws Exception {
+    void noRegisterNoUsername() {
         RegisterRequest req = new RegisterRequest(null, "password", "p1@email.com");
         assertThrows(ResponseException.class, () -> facade.register(req));
     }
 
     @Test
-    void noRegisterNoPassword() throws Exception {
+    void noRegisterNoPassword() {
         RegisterRequest req = new RegisterRequest("player1", null, "p1@email.com");
         assertThrows(ResponseException.class, () -> facade.register(req));
     }
 
     @Test
-    void noRegisterNoEmail() throws Exception {
+    void noRegisterNoEmail() {
         RegisterRequest req = new RegisterRequest("player1", "password", null);
         assertThrows(ResponseException.class, () -> facade.register(req));
     }
