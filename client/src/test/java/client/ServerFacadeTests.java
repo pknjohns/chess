@@ -47,4 +47,31 @@ public class ServerFacadeTests {
         assertTrue(authData.authToken().length() > 10);
     }
 
+    @Test
+    void noRegisterAlreadyTaken() throws Exception {
+        RegisterRequest req = new RegisterRequest("player1", "password", "p1@email.com");
+        facade.register(req);
+
+        RegisterRequest req1 = new RegisterRequest("player1", "password", "p1@email.com");
+        assertThrows(ResponseException.class, () -> facade.register(req1));
+    }
+
+    @Test
+    void noRegisterNoUsername() throws Exception {
+        RegisterRequest req = new RegisterRequest(null, "password", "p1@email.com");
+        assertThrows(ResponseException.class, () -> facade.register(req));
+    }
+
+    @Test
+    void noRegisterNoPassword() throws Exception {
+        RegisterRequest req = new RegisterRequest("player1", null, "p1@email.com");
+        assertThrows(ResponseException.class, () -> facade.register(req));
+    }
+
+    @Test
+    void noRegisterNoEmail() throws Exception {
+        RegisterRequest req = new RegisterRequest("player1", "password", null);
+        assertThrows(ResponseException.class, () -> facade.register(req));
+    }
+
 }
