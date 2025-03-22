@@ -1,6 +1,6 @@
 package client;
 
-import dataaccess.DataAccessException;
+import server.ResponseException;
 import server.Server;
 import server.ServerFacade;
 import model.*;
@@ -22,17 +22,22 @@ public class ServerFacadeTests {
     }
 
     @BeforeEach
-    void clearServer() {
-        try {
-            server.clearService.clearDB();
-        } catch (DataAccessException e) {
-            throw new RuntimeException("Failed to clear the server before test", e);
-        }
+    void clearServer() throws ResponseException {
+        facade.clear();
     }
 
     @AfterAll
-    static void stopServer() {
+    static void stopServer() throws ResponseException {
+        facade.clear();
         server.stop();
+    }
+
+    @Test
+    void doClear() throws Exception {
+        RegisterRequest req = new RegisterRequest("player1", "password", "p1@email.com");
+        facade.register(req);
+        assertDoesNotThrow(() -> facade.clear());
+
     }
 
     @Test

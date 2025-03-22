@@ -10,6 +10,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
+import java.util.Map;
 
 public class ServerFacade {
 
@@ -19,11 +20,15 @@ public class ServerFacade {
         this.port = desiredPort;
     }
 
+    public Map<String, Object> clear() throws ResponseException {
+        String path = "/db";
+        return this.makeRequest("DELETE", path, null, Map.class);
+    }
+
     public RegisterResult register(RegisterRequest req) throws ResponseException {
         String path = "/user";
         return this.makeRequest("POST", path, req, RegisterResult.class);
     }
-
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
         String serverUrl = "http://localhost:" + port + path;

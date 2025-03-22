@@ -11,7 +11,7 @@ import java.util.HashMap;
 
 public class Server {
 
-    public ClearService clearService;
+    private ClearService clearService;
     private GameService gameService;
     private UserService userService;
 
