@@ -35,10 +35,11 @@ public class ServerFacade {
 //        return this.makeRequest("POST", path, req, LoginResult.class);
 //    }
 
-//    public Map<String, Object> logout(String authToken) throws ResponseException {
-//        String path = "/session";
-//        return this.makeRequest("DELETE", path, authToken, Map.class);
-//    }
+    public Map logout(String authToken) throws ResponseException {
+        HttpURLConnection http = makeRequest("DELETE", "/session", authToken, null);
+        return getResponse(http, Map.class);
+        //return this.makeRequest("DELETE", path, authToken, Map.class);
+    }
 
     private HttpURLConnection makeRequest(String method, String path, String header, Object request) throws ResponseException {
         String serverUrl = "http://localhost:" + port + path;
