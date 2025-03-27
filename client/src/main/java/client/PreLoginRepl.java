@@ -29,7 +29,7 @@ public class PreLoginRepl {
     }
 
     private void printPrompt() {
-        System.out.print("\n" + RESET_TEXT_COLOR + ">>> " + SET_TEXT_COLOR_GREEN);
+        System.out.print("\n" + RESET_TEXT_COLOR + "[" + preLogClient.state + "] >>> " + SET_TEXT_COLOR_GREEN);
     }
 
 }

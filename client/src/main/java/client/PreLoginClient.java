@@ -9,8 +9,8 @@ import java.util.Arrays;
 public class PreLoginClient {
 
     private final ServerFacade facade;
-    private State state = State.SIGNEDOUT;
-    private String authToken;
+    public State state = State.SIGNEDOUT;
+    public String authToken;
 
     public PreLoginClient(int port) {
         facade = new ServerFacade(port);
