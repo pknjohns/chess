@@ -182,4 +182,19 @@ public class ServerFacadeTests {
 
         assertDoesNotThrow(() -> facade.joinGame(authToken, jReq));
     }
+
+    @Test
+    void noJoinGameBadAuth() throws Exception {
+        RegisterRequest req = new RegisterRequest("player1", "password", "p1@email.com");
+        RegisterResult authData = facade.register(req);
+        String authToken = authData.authToken();
+
+        CreateRequest cReq = new CreateRequest("game1");
+        facade.createGame(authToken, cReq);
+        ListGameResult gamesList = facade.listGames(authToken);
+
+        JoinRequest jReq = new JoinRequest("WHITE", gamesList.games()[0].gameID());
+
+        assertThrows(ResponseException.class, () -> facade.joinGame("1234", jReq));
+    }
 }
