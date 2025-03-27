@@ -150,4 +150,20 @@ public class ServerFacadeTests {
 
         assertDoesNotThrow(() -> facade.listGames(authToken));
     }
+
+    @Test
+    void noListGames() throws Exception {
+        RegisterRequest req = new RegisterRequest("player1", "password", "p1@email.com");
+        RegisterResult authData = facade.register(req);
+        String authToken = authData.authToken();
+
+        CreateRequest cReq = new CreateRequest("game1");
+        CreateRequest cReq1 = new CreateRequest("game2");
+
+        facade.createGame(authToken, cReq);
+        facade.createGame(authToken, cReq);
+        facade.createGame(authToken, cReq1);
+
+        assertThrows(ResponseException.class, () -> facade.listGames("1234"));
+    }
 }
