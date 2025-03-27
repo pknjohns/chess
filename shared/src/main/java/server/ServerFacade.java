@@ -3,6 +3,7 @@ package server;
 import model.*;
 
 import com.google.gson.Gson;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -20,7 +21,7 @@ public class ServerFacade {
         this.port = desiredPort;
     }
 
-    public Map clear() throws ResponseException {
+    public Object clear() throws ResponseException {
         HttpURLConnection http = makeRequest("DELETE", "/db", "", null);
         return getResponse(http, Map.class);
     }
@@ -33,11 +34,15 @@ public class ServerFacade {
     public LoginResult login(LoginRequest req) throws ResponseException {
         HttpURLConnection http = makeRequest("POST", "/session", "", req);
         return getResponse(http, LoginResult.class);
-        //return this.makeRequest("POST", path, req, LoginResult.class);
     }
 
-    public Map logout(String authToken) throws ResponseException {
+    public Object logout(String authToken) throws ResponseException {
         HttpURLConnection http = makeRequest("DELETE", "/session", authToken, null);
+        return getResponse(http, Map.class);
+    }
+
+    public Object createGame(String authToken, CreateRequest cReq) throws ResponseException {
+        HttpURLConnection http = makeRequest("POST", "/game", authToken, cReq);
         return getResponse(http, Map.class);
     }
 

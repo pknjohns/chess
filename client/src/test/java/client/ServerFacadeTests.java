@@ -116,4 +116,13 @@ public class ServerFacadeTests {
         LoginRequest lReq = new LoginRequest("player1", "passwor");
         assertThrows(ResponseException.class, () -> facade.login(lReq));
     }
+
+    @Test
+    void doCreateGame() throws Exception {
+        RegisterRequest req = new RegisterRequest("player1", "password", "p1@email.com");
+        RegisterResult authData = facade.register(req);
+
+        CreateRequest cReq = new CreateRequest("game1");
+        assertDoesNotThrow(() -> facade.createGame(authData.authToken(), cReq));
+    }
 }
