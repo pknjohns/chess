@@ -46,8 +46,13 @@ public class ServerFacade {
         return getResponse(http, Map.class);
     }
 
-    public Object listGames(String authToken) throws ResponseException {
+    public ListGameResult listGames(String authToken) throws ResponseException {
         HttpURLConnection http = makeRequest("GET", "/game", authToken, null);
+        return getResponse(http, ListGameResult.class);
+    }
+
+    public Object joinGame(String authToken, JoinRequest jReq) throws ResponseException {
+        HttpURLConnection http = makeRequest("PUT", "/game", authToken, jReq);
         return getResponse(http, Map.class);
     }
 

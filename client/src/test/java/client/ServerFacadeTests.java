@@ -6,6 +6,7 @@ import server.ServerFacade;
 import model.*;
 
 import org.junit.jupiter.api.*;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ServerFacadeTests {
@@ -165,5 +166,20 @@ public class ServerFacadeTests {
         facade.createGame(authToken, cReq1);
 
         assertThrows(ResponseException.class, () -> facade.listGames("1234"));
+    }
+
+    @Test
+    void doJoinGame() throws Exception {
+        RegisterRequest req = new RegisterRequest("player1", "password", "p1@email.com");
+        RegisterResult authData = facade.register(req);
+        String authToken = authData.authToken();
+
+        CreateRequest cReq = new CreateRequest("game1");
+        facade.createGame(authToken, cReq);
+        ListGameResult gamesList = facade.listGames(authToken);
+
+        JoinRequest jReq = new JoinRequest("WHITE", gamesList.games()[0].gameID());
+
+        assertDoesNotThrow(() -> facade.joinGame(authToken, jReq));
     }
 }
