@@ -125,4 +125,13 @@ public class ServerFacadeTests {
         CreateRequest cReq = new CreateRequest("game1");
         assertDoesNotThrow(() -> facade.createGame(authData.authToken(), cReq));
     }
+
+    @Test
+    void noCreateGame() throws Exception {
+        RegisterRequest req = new RegisterRequest("player1", "password", "p1@email.com");
+        facade.register(req);
+
+        CreateRequest cReq = new CreateRequest("game1");
+        assertThrows(ResponseException.class, () -> facade.createGame("1234", cReq));
+    }
 }
