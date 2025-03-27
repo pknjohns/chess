@@ -46,6 +46,11 @@ public class ServerFacade {
         return getResponse(http, Map.class);
     }
 
+    public Object listGames(String authToken) throws ResponseException {
+        HttpURLConnection http = makeRequest("GET", "/game", authToken, null);
+        return getResponse(http, Map.class);
+    }
+
     private HttpURLConnection makeRequest(String method, String path, String header, Object request) throws ResponseException {
         String serverUrl = "http://localhost:" + port + path;
         try {

@@ -134,4 +134,20 @@ public class ServerFacadeTests {
         CreateRequest cReq = new CreateRequest("game1");
         assertThrows(ResponseException.class, () -> facade.createGame("1234", cReq));
     }
+
+    @Test
+    void doListGames() throws Exception {
+        RegisterRequest req = new RegisterRequest("player1", "password", "p1@email.com");
+        RegisterResult authData = facade.register(req);
+        String authToken = authData.authToken();
+
+        CreateRequest cReq = new CreateRequest("game1");
+        CreateRequest cReq1 = new CreateRequest("game2");
+
+        facade.createGame(authToken, cReq);
+        facade.createGame(authToken, cReq);
+        facade.createGame(authToken, cReq1);
+
+        assertDoesNotThrow(() -> facade.listGames(authToken));
+    }
 }
