@@ -30,15 +30,15 @@ public class ServerFacade {
         return getResponse(http, RegisterResult.class);
     }
 
-//    public LoginResult login(LoginRequest req) throws ResponseException {
-//        String path = "/session";
-//        return this.makeRequest("POST", path, req, LoginResult.class);
-//    }
+    public LoginResult login(LoginRequest req) throws ResponseException {
+        HttpURLConnection http = makeRequest("POST", "/session", "", req);
+        return getResponse(http, LoginResult.class);
+        //return this.makeRequest("POST", path, req, LoginResult.class);
+    }
 
     public Map logout(String authToken) throws ResponseException {
         HttpURLConnection http = makeRequest("DELETE", "/session", authToken, null);
         return getResponse(http, Map.class);
-        //return this.makeRequest("DELETE", path, authToken, Map.class);
     }
 
     private HttpURLConnection makeRequest(String method, String path, String header, Object request) throws ResponseException {

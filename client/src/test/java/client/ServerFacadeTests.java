@@ -73,14 +73,6 @@ public class ServerFacadeTests {
         assertThrows(ResponseException.class, () -> facade.register(req));
     }
 
-//    @Test
-//    void doLogin() throws Exception {
-//        RegisterRequest req = new RegisterRequest("player1", "password", "p1@email.com");
-//        RegisterResult authData = facade.register(req);
-//
-//        assertTrue(authData.authToken().length() > 10);
-//    }
-
     @Test
     void doLogout() throws Exception {
         RegisterRequest req = new RegisterRequest("player1", "password", "p1@email.com");
@@ -93,5 +85,16 @@ public class ServerFacadeTests {
         RegisterRequest req = new RegisterRequest("player1", "password", "p1@email.com");
         facade.register(req);
         assertThrows(ResponseException.class, () -> facade.logout("1234"));
+    }
+
+    @Test
+    void doLogin() throws Exception {
+        RegisterRequest req = new RegisterRequest("player1", "password", "p1@email.com");
+        RegisterResult authData = facade.register(req);
+        facade.logout(authData.authToken());
+
+
+        LoginRequest lReq = new LoginRequest("player1", "password");
+        assertDoesNotThrow(() -> facade.login(lReq));
     }
 }
