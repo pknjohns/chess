@@ -93,8 +93,17 @@ public class ServerFacadeTests {
         RegisterResult authData = facade.register(req);
         facade.logout(authData.authToken());
 
-
         LoginRequest lReq = new LoginRequest("player1", "password");
         assertDoesNotThrow(() -> facade.login(lReq));
+    }
+
+    @Test
+    void noLogoutBadUsername() throws Exception {
+        RegisterRequest req = new RegisterRequest("player1", "password", "p1@email.com");
+        RegisterResult authData = facade.register(req);
+        facade.logout(authData.authToken());
+
+        LoginRequest lReq = new LoginRequest("player2", "password");
+        assertThrows(ResponseException.class, () -> facade.login(lReq));
     }
 }
