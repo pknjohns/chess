@@ -1,30 +1,32 @@
 package client;
 
 import java.util.Scanner;
+
 import static ui.EscapeSequences.*;
 
-public class PreLoginRepl {
-    private final PreLoginClient preLogClient;
-    private final int port;
+public class PostLoginRepl {
 
-    public PreLoginRepl(int port) {
-        this.port = port;
-        preLogClient = new PreLoginClient(port);
+    private final PreLoginClient preLogClient;
+    private final PostLoginClient postLogClient;
+
+    public PostLoginRepl(int port, PreLoginClient preLogClient) {
+        this.preLogClient = preLogClient;
+        this.postLogClient = new PostLoginClient(port, preLogClient);
     }
 
     public void run () {
         Scanner scanner = new Scanner(System.in);
         var result = "";
-        while (!result.equals("quit")) {
+        while (preLogClient.state != State.SIGNEDOUT) {
             printPrompt();
             String line = scanner.nextLine();
 
             try {
-                result = preLogClient.eval(line);
+                result = postLogClient.eval(line);
                 System.out.print(SET_TEXT_COLOR_BLUE + result);
-                if (preLogClient.state == State.SIGNEDIN) {
-                    new PostLoginRepl(port, preLogClient).run();
-                }
+                //if (preLogClient.state == State.GAMEPLAY) {
+                    //new GameplayRepl(port, preLogClient).run();
+                //}
             } catch (Throwable e) {
                 String msg = e.toString();
                 System.out.print(msg);
@@ -36,5 +38,4 @@ public class PreLoginRepl {
     private void printPrompt() {
         System.out.print("\n" + RESET_TEXT_COLOR + "[" + preLogClient.state + "] >>> " + SET_TEXT_COLOR_GREEN);
     }
-
 }

@@ -25,14 +25,14 @@ public class PreLoginClient {
                 case "register" -> register(params);
                 case "login" -> login(params);
                 case "quit" -> "quit";
-                default -> help();
+                default -> preLogHelp();
             };
         } catch (ResponseException ex) {
             return ex.getMessage();
         }
     }
 
-    public String register(String... params) throws ResponseException {
+    private String register(String... params) throws ResponseException {
         if (params.length == 3) {
             try {
                 RegisterRequest rReq = new RegisterRequest(params[0], params[1], params[2]);
@@ -48,7 +48,7 @@ public class PreLoginClient {
         }
     }
 
-    public String login(String... params) throws ResponseException {
+    private String login(String... params) throws ResponseException {
         if (params.length == 2) {
             try {
                 LoginRequest lReq = new LoginRequest(params[0], params[1]);
@@ -64,7 +64,7 @@ public class PreLoginClient {
         }
     }
 
-    public String help() {
+    private String preLogHelp() {
         return """
             - register <USERNAME> <PASSWORD> <EMAIL>: create an account
             - login <USERNAME> <PASSWORD>: login to an existing account
