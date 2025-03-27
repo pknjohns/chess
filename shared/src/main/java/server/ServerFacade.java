@@ -67,7 +67,7 @@ public class ServerFacade {
             http.connect(); // actually makes the request
             return http;
         } catch (Exception ex) {
-            throw new ResponseException(500, ex.getMessage());
+            throw new ResponseException(ex.getMessage());
         }
     }
 
@@ -93,7 +93,7 @@ public class ServerFacade {
             throwIfNotSuccessful(http);
             return readResponseBody(http, responseClass);
         } catch (Exception ex) {
-            throw new ResponseException(500, ex.getMessage());
+            throw new ResponseException(ex.getMessage());
         }
     }
 
@@ -115,7 +115,7 @@ public class ServerFacade {
                 }
             }
 
-            throw new ResponseException(status, "other failure: " + status);
+            throw new ResponseException("other failure: " + status);
         }
     }
 
