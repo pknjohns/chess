@@ -39,12 +39,12 @@ public class PreLoginClient {
                 RegisterResult authData = facade.register(rReq);
                 this.authToken = authData.authToken();
                 state = State.SIGNEDIN;
-                return String.format("You've registered and sign in as %s", authData.username());
+                return String.format("You've registered and signed in as %s \n", authData.username());
             } catch (ResponseException ex) {
                 return ex.getMessage();
             }
         } else {
-            return "You are missing some information. Please provide all required information to register";
+            return "You are missing some information. Please provide all required information to register\n";
         }
     }
 
@@ -55,12 +55,12 @@ public class PreLoginClient {
                 LoginResult authData = facade.login(lReq);
                 this.authToken = authData.authToken();
                 state = State.SIGNEDIN;
-                return String.format("You signed in as %s", authData.username());
+                return String.format("You signed in as %s \n", authData.username());
             } catch (ResponseException ex) {
                 return ex.getMessage();
             }
         } else {
-            return "Please provide both a correct username and password to login to an existing account";
+            return "Please provide both a correct username and password to login to an existing account \n";
         }
     }
 

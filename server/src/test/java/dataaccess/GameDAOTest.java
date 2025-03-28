@@ -37,7 +37,7 @@ class GameDAOTest {
     void addGame(Class<? extends GameDAO> dbClass) throws DataAccessException {
         GameDAO dataAccess = getGameDataAccess(dbClass);
 
-        var game = new GameData(1234, "white", "black", "test", new ChessGame());
+        var game = new GameData(1234,"white", "black", "test", new ChessGame());
         assertDoesNotThrow(() -> dataAccess.addGame(game));
         dataAccess.deleteAllGames();
     }
@@ -131,9 +131,12 @@ class GameDAOTest {
         GameDAO dataAccess = getGameDataAccess(dbClass);
         var game1 = new GameData(1234, "white", null, "test", new ChessGame());
         dataAccess.addGame(game1);
+
         int expectedLen = dataAccess.listGames().size();
+
         dataAccess.updateGameBlackPlayer(1234, "black");
         int actualLen = dataAccess.listGames().size();
+
         assertEquals(expectedLen, actualLen);
         assertEquals("black",dataAccess.getGame(1234).blackUsername());
         dataAccess.deleteAllGames();

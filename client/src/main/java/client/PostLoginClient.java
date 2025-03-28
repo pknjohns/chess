@@ -5,12 +5,14 @@ import server.ResponseException;
 import server.ServerFacade;
 
 import java.util.Arrays;
+import java.util.HashMap;
 
 public class PostLoginClient {
 
     private final ServerFacade facade;
     private final String authToken;
     private final PreLoginClient preLogClient;
+    private HashMap<Integer, ListGameData> gameMap;
 
     public PostLoginClient(int port, PreLoginClient preLogClient) {
         facade = new ServerFacade(port);
@@ -41,7 +43,7 @@ public class PostLoginClient {
             try {
                 CreateRequest cReq = new CreateRequest(params[0]);
                 facade.createGame(authToken, cReq);
-                return String.format("You created a new game: %s", params[0]);
+                return String.format("You created a new game: %s \n", params[0]);
             } catch (ResponseException e) {
                 throw new RuntimeException(e);
             }
@@ -53,36 +55,50 @@ public class PostLoginClient {
     private String listGames() throws ResponseException {
         try {
             ListGameResult gameList = facade.listGames(authToken);
-            StringBuilder sbGameList = new StringBuilder("Current Games:");
-            sbGameList.append('\n');
-            int i = 0;
-            for (ListGameData game : gameList.games()) {
-                sbGameList.append(i);
-                sbGameList.append(" - ");
-                sbGameList.append(game.gameName());
-                sbGameList.append(" [WHITE|");
-                if (game.whiteUsername() != null) {
-                    sbGameList.append(game.whiteUsername());
-                } else {
-                    sbGameList.append(" - ");
-                }
-
-                sbGameList.append("] [BLACK|");
-
-                if (game.blackUsername() != null) {
-                    sbGameList.append(game.blackUsername());
-                } else {
-                    sbGameList.append(" - ");
-                }
-
-                sbGameList.append("]");
-                sbGameList.append('\n');
-                i++;
-            }
-            return sbGameList.toString();
+            updateClientGameList(gameList);
+            return makeGameListString(gameMap);
         } catch (RuntimeException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void updateClientGameList(ListGameResult lgr) {
+        gameMap = new HashMap<>();
+        int i = 0;
+        for (ListGameData game : lgr.games()) {
+            gameMap.put(i, game);
+            i++;
+        }
+    }
+
+    private String makeGameListString(HashMap<Integer, ListGameData> gameMap) {
+        StringBuilder sbGameList = new StringBuilder("Current Games:");
+        sbGameList.append('\n');
+
+        for (int key : gameMap.keySet()) {
+            ListGameData game = gameMap.get(key);
+            sbGameList.append(key);
+            sbGameList.append(" - ");
+            sbGameList.append(game.gameName());
+            sbGameList.append(" [WHITE|");
+            if (game.whiteUsername() != null) {
+                sbGameList.append(game.whiteUsername());
+            } else {
+                sbGameList.append(" - ");
+            }
+
+            sbGameList.append("] [BLACK|");
+
+            if (game.blackUsername() != null) {
+                sbGameList.append(game.blackUsername());
+            } else {
+                sbGameList.append(" - ");
+            }
+
+            sbGameList.append("]");
+            sbGameList.append('\n');
+        }
+        return sbGameList.toString();
     }
 
     private String logout() throws ResponseException {
