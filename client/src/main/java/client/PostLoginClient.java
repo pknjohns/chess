@@ -29,10 +29,10 @@ public class PostLoginClient {
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
                 case "create" -> createGame(params);
-                case "list" -> listGames();
+                case "list" -> listGames(params);
                 case "join" -> joinGame(params);
                 case "observe" -> observeGame(params);
-                case "logout" -> logout();
+                case "logout" -> logout(params);
                 default -> postLogHelp();
             };
         } catch (Exception ex) {
@@ -54,13 +54,17 @@ public class PostLoginClient {
         }
     }
 
-    private String listGames() throws ResponseException {
-        try {
-            ListGameResult gameList = facade.listGames(authToken);
-            updateClientGameList(gameList);
-            return makeGameListString(gameMap);
-        } catch (RuntimeException e) {
-            throw new RuntimeException(e);
+    private String listGames(String... params) throws ResponseException {
+        if (params.length < 1) {
+            try {
+                ListGameResult gameList = facade.listGames(authToken);
+                updateClientGameList(gameList);
+                return makeGameListString(gameMap);
+            } catch (RuntimeException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            return "Please provide a valid command\n" + postLogHelp();
         }
     }
 
@@ -150,13 +154,17 @@ public class PostLoginClient {
         }
     }
 
-    private String logout() {
-        try {
-            facade.logout(authToken);
-            preLogClient.state = State.SIGNEDOUT;
-            return "You successfully signed out";
-        } catch (ResponseException e) {
-            throw new RuntimeException(e);
+    private String logout(String... params) {
+        if (params.length < 1) {
+            try {
+                facade.logout(authToken);
+                preLogClient.state = State.SIGNEDOUT;
+                return "You successfully signed out";
+            } catch (ResponseException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            return "Please provide a valid command\n" + postLogHelp();
         }
     }
 

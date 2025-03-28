@@ -10,9 +10,9 @@ public class MemoryGameDAO implements GameDAO {
     // key in this case is gameID (int)
     final private HashMap<Integer, GameData> games = new HashMap<>();
 
-    public GameData addGame(GameData game) {
+    public Integer addGame(GameData game) {
         games.put(game.gameID(), game);
-        return game;
+        return game.gameID();
     }
 
     public void updateGameWhitePlayer(int gameID, String username) {

@@ -31,10 +31,10 @@ public class MySqlGameDAO implements GameDAO {
         configureDatabase(createStatements);
     }
 
-    public GameData addGame(GameData game) throws DataAccessException {
-        String statement = "INSERT INTO games (gameID, whiteUsername, blackUsername, gameName, game, gameData) VALUES (?, ?, ?, ?, ?, ?)";
-        executeUpdate(statement, game.gameID(), game.whiteUsername(), game.blackUsername(), game.gameName(), new Gson().toJson(game.game()), game);
-        return game;
+    public Integer addGame(GameData game) throws DataAccessException {
+        String statement = "INSERT INTO games (whiteUsername, blackUsername, gameName, game, gameData) VALUES (?, ?, ?, ?, ?)";
+        return executeUpdate(statement, game.whiteUsername(), game.blackUsername(), game.gameName(), new Gson().toJson(game.game()), game);
+        //return game;
     }
 
     public void updateGameWhitePlayer(int gameID, String username) throws DataAccessException {

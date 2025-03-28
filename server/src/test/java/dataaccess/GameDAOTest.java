@@ -48,10 +48,12 @@ class GameDAOTest {
         GameDAO dataAccess = getGameDataAccess(dbClass);
 
         GameData game1 = new GameData(1234, "white", "black", "test", new ChessGame());
-        dataAccess.addGame(game1);
+        int newID = dataAccess.addGame(game1);
 
-        GameData actual = dataAccess.getGame(1234);
-        assertEquals(game1, actual, "Successfully gets GameData");
+        GameData actual = dataAccess.getGame(newID);
+        assertEquals(game1.gameName(), actual.gameName(), "Successfully gets GameData");
+        assertEquals(game1.whiteUsername(), actual.whiteUsername());
+        assertEquals(game1.blackUsername(), actual.blackUsername());
         dataAccess.deleteAllGames();
     }
 
@@ -78,9 +80,13 @@ class GameDAOTest {
         var game3 = new GameData(2345, "white", "black", "test", new ChessGame());
 
         List<GameData> expected = new ArrayList<>();
-        expected.add(dataAccess.addGame(game1));
-        expected.add(dataAccess.addGame(game2));
-        expected.add(dataAccess.addGame(game3));
+        expected.add(game1);
+        expected.add(game2);
+        expected.add(game3);
+
+        dataAccess.addGame(game1);
+        dataAccess.addGame(game2);
+        dataAccess.addGame(game3);
 
         var actual = dataAccess.listGames();
         assertCollectionEqual(expected, actual);
@@ -111,15 +117,15 @@ class GameDAOTest {
     void doUpdateGameWhitePlayer(Class<? extends GameDAO> dbClass) throws DataAccessException {
         GameDAO dataAccess = getGameDataAccess(dbClass);
         var game1 = new GameData(1234, null, "black", "test", new ChessGame());
-        dataAccess.addGame(game1);
+        int newID = dataAccess.addGame(game1);
         int expectedLen = dataAccess.listGames().size();
 
-        dataAccess.updateGameWhitePlayer(1234, "white");
+        dataAccess.updateGameWhitePlayer(newID, "white");
 
         int actualLen = dataAccess.listGames().size();
         assertEquals(expectedLen, actualLen);
 
-        GameData actualGame = dataAccess.getGame(1234);
+        GameData actualGame = dataAccess.getGame(newID);
         String actualWhiteName = actualGame.whiteUsername();
         assertEquals("white",actualWhiteName, "whiteUsername did not update");
         dataAccess.deleteAllGames();
@@ -130,15 +136,15 @@ class GameDAOTest {
     void doUpdateGameBlackPlayer(Class<? extends GameDAO> dbClass) throws DataAccessException {
         GameDAO dataAccess = getGameDataAccess(dbClass);
         var game1 = new GameData(1234, "white", null, "test", new ChessGame());
-        dataAccess.addGame(game1);
+        int newID = dataAccess.addGame(game1);
 
         int expectedLen = dataAccess.listGames().size();
 
-        dataAccess.updateGameBlackPlayer(1234, "black");
+        dataAccess.updateGameBlackPlayer(newID, "black");
         int actualLen = dataAccess.listGames().size();
 
         assertEquals(expectedLen, actualLen);
-        assertEquals("black",dataAccess.getGame(1234).blackUsername());
+        assertEquals("black",dataAccess.getGame(newID).blackUsername());
         dataAccess.deleteAllGames();
     }
 

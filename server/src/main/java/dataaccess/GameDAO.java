@@ -5,7 +5,7 @@ import model.GameData;
 import java.util.Collection;
 
 public interface GameDAO {
-    GameData addGame(GameData game) throws DataAccessException;
+    Integer addGame(GameData game) throws DataAccessException;
 
     void updateGameWhitePlayer(int gameID, String username) throws DataAccessException;
 

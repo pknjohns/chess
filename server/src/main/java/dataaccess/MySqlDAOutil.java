@@ -5,18 +5,28 @@ import model.GameData;
 import model.UserData;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import static java.sql.Types.NULL;
 
 public class MySqlDAOutil {
 
-    public static void executeUpdate(String statement, Object... params) throws DataAccessException {
+    public static Integer executeUpdate(String statement, Object... params) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection();
-             var ps = conn.prepareStatement(statement)) {
+             var ps = conn.prepareStatement(statement, PreparedStatement.RETURN_GENERATED_KEYS)) {
 
             setParameters(ps, params);
             ps.executeUpdate();
+            ResultSet rs = ps.getGeneratedKeys();
+
+            int genKey = 0; // dummy value
+
+            if (rs.next()) {
+                genKey = rs.getInt(1);
+            }
+
+            return genKey;
 
         } catch (SQLException e) {
             throw new DataAccessException("Unable to update database: " + statement + " " + e.getMessage());
