@@ -4,7 +4,7 @@ import dataaccess.*;
 
 import model.*;
 import org.mindrot.jbcrypt.BCrypt;
-import server.BadRequestException;
+import facade.BadRequestException;
 
 import java.util.UUID;
 

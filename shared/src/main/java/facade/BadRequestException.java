@@ -1,4 +1,4 @@
-package server;
+package facade;
 
 /**
  * indicates the user has made a bad request

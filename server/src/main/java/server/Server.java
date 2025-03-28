@@ -2,6 +2,7 @@ package server;
 
 import com.google.gson.Gson;
 import dataaccess.*;
+import facade.BadRequestException;
 import model.*;
 import spark.*;
 import service.*;

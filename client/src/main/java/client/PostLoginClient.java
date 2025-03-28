@@ -1,9 +1,8 @@
 package client;
 
 import model.*;
-import server.BadRequestException;
-import server.ResponseException;
-import server.ServerFacade;
+import facade.*;
+
 import static ui.EscapeSequences.*;
 
 import java.util.Arrays;
@@ -179,7 +178,7 @@ public class PostLoginClient {
             """;
     }
 
-    private static final String[][] startingBoard = {
+    private static final String[][] STARTING_BOARD = {
             {BLACK_ROOK, BLACK_KNIGHT, BLACK_BISHOP, BLACK_QUEEN, BLACK_KING, BLACK_BISHOP, BLACK_KNIGHT, BLACK_ROOK},
             {BLACK_PAWN, BLACK_PAWN,BLACK_PAWN,BLACK_PAWN,BLACK_PAWN,BLACK_PAWN,BLACK_PAWN,BLACK_PAWN},
             {EMPTY,EMPTY,EMPTY,EMPTY,EMPTY,EMPTY,EMPTY,EMPTY},
@@ -193,14 +192,16 @@ public class PostLoginClient {
     private String makeWhiteBoard() {
         StringBuilder sbChessBoard = new StringBuilder();
         String columns = "  a     b     c    d     e    f     g     h  ";
-        sbChessBoard.append(SET_BG_COLOR_BLUE).append("   ").append(SET_TEXT_COLOR_BLACK).append(columns).append("   ").append(RESET_BG_COLOR).append("\n");
+        sbChessBoard.append(SET_BG_COLOR_BLUE);
+        sbChessBoard.append("   ").append(SET_TEXT_COLOR_BLACK).append(columns).append("   ");
+        sbChessBoard.append(RESET_BG_COLOR).append("\n");
         for (int row = 0; row < 8; row++) {
             sbChessBoard.append(SET_BG_COLOR_BLUE).append(" ").append(8 - row).append(" "); // left row label
             for (int col = 0; col < 8; col++) {
                 boolean isLightSquare = (row + col) % 2 == 0;
                 String bgColor = isLightSquare ? SET_BG_COLOR_BROWN : SET_BG_COLOR_DARK_BROWN;
 
-                String piece = startingBoard[row][col];
+                String piece = STARTING_BOARD[row][col];
                 String textColor;
                 if (row >2) {
                     textColor = SET_TEXT_COLOR_WHITE;
@@ -211,21 +212,25 @@ public class PostLoginClient {
             }
             sbChessBoard.append(SET_BG_COLOR_BLUE).append(" ").append(SET_TEXT_COLOR_BLACK).append(8 - row).append(" ").append(RESET_BG_COLOR).append(" \n"); // Right row label
         }
-        sbChessBoard.append(SET_BG_COLOR_BLUE).append("   ").append(SET_TEXT_COLOR_BLACK).append(columns).append("   ").append(RESET_BG_COLOR);
+        sbChessBoard.append(SET_BG_COLOR_BLUE);
+        sbChessBoard.append("   ").append(SET_TEXT_COLOR_BLACK).append(columns).append("   ");
+        sbChessBoard.append(RESET_BG_COLOR);
         return sbChessBoard.toString();
     }
 
     private String makeBlackBoard() {
         StringBuilder sbChessBoard = new StringBuilder();
         String columns = "  h     g     f    e     d    c     b     a  ";
-        sbChessBoard.append(SET_BG_COLOR_BLUE).append("   ").append(SET_TEXT_COLOR_BLACK).append(columns).append("   ").append(RESET_BG_COLOR).append("\n");
+        sbChessBoard.append(SET_BG_COLOR_BLUE);
+        sbChessBoard.append("   ").append(SET_TEXT_COLOR_BLACK).append(columns).append("   ");
+        sbChessBoard.append(RESET_BG_COLOR).append("\n");
         for (int row = 0; row < 8; row++) {
             sbChessBoard.append(SET_BG_COLOR_BLUE).append(" ").append(row + 1).append(" "); // left row label
             for (int col = 0; col < 8; col++) {
                 boolean isLightSquare = (row + col) % 2 == 0;
                 String bgColor = isLightSquare ? SET_BG_COLOR_BROWN : SET_BG_COLOR_DARK_BROWN;
 
-                String piece = startingBoard[row][col];
+                String piece = STARTING_BOARD[row][col];
                 String textColor;
                 if (row <2) {
                     textColor = SET_TEXT_COLOR_WHITE;
@@ -236,7 +241,9 @@ public class PostLoginClient {
             }
             sbChessBoard.append(SET_BG_COLOR_BLUE).append(" ").append(SET_TEXT_COLOR_BLACK).append(row + 1).append(" ").append(RESET_BG_COLOR).append(" \n"); // Right row label
         }
-        sbChessBoard.append(SET_BG_COLOR_BLUE).append("   ").append(SET_TEXT_COLOR_BLACK).append(columns).append("   ").append(RESET_BG_COLOR);
+        sbChessBoard.append(SET_BG_COLOR_BLUE);
+        sbChessBoard.append("   ").append(SET_TEXT_COLOR_BLACK).append(columns).append("   ");
+        sbChessBoard.append(RESET_BG_COLOR);
         return sbChessBoard.toString();
     }
 }

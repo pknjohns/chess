@@ -4,7 +4,7 @@ import dataaccess.*;
 import model.AuthData;
 import model.GameData;
 import model.ListGameData;
-import server.BadRequestException;
+import facade.BadRequestException;
 
 import java.util.Collection;
 import java.util.HashSet;

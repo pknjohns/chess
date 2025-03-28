@@ -1,7 +1,7 @@
 package client;
 
-import server.ResponseException;
-import server.ServerFacade;
+import facade.ResponseException;
+import facade.ServerFacade;
 import model.*;
 
 import java.util.Arrays;

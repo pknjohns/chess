@@ -24,9 +24,6 @@ public class PostLoginRepl {
             try {
                 result = postLogClient.eval(line);
                 System.out.print(SET_TEXT_COLOR_BLUE + result);
-                //if (preLogClient.state == State.GAMEPLAY) {
-                    //new GameplayRepl(port, preLogClient).run();
-                //}
             } catch (Throwable e) {
                 String msg = e.toString();
                 System.out.print(msg);

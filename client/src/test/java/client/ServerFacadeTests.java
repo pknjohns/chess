@@ -1,8 +1,8 @@
 package client;
 
-import server.ResponseException;
+import facade.ResponseException;
 import server.Server;
-import server.ServerFacade;
+import facade.ServerFacade;
 import model.*;
 
 import org.junit.jupiter.api.*;
