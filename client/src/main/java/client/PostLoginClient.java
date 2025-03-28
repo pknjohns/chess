@@ -210,7 +210,9 @@ public class PostLoginClient {
                 }
                 sbChessBoard.append(bgColor).append(textColor).append(" ").append(piece).append(" ").append(RESET_TEXT_COLOR);
             }
-            sbChessBoard.append(SET_BG_COLOR_BLUE).append(" ").append(SET_TEXT_COLOR_BLACK).append(8 - row).append(" ").append(RESET_BG_COLOR).append(" \n"); // Right row label
+            sbChessBoard.append(SET_BG_COLOR_BLUE);
+            sbChessBoard.append(" ").append(SET_TEXT_COLOR_BLACK).append(8 - row).append(" ");
+            sbChessBoard.append(RESET_BG_COLOR).append(" \n"); // Right row label
         }
         sbChessBoard.append(SET_BG_COLOR_BLUE);
         sbChessBoard.append("   ").append(SET_TEXT_COLOR_BLACK).append(columns).append("   ");
@@ -239,7 +241,9 @@ public class PostLoginClient {
                 }
                 sbChessBoard.append(bgColor).append(textColor).append(" ").append(piece).append(" ").append(RESET_TEXT_COLOR);
             }
-            sbChessBoard.append(SET_BG_COLOR_BLUE).append(" ").append(SET_TEXT_COLOR_BLACK).append(row + 1).append(" ").append(RESET_BG_COLOR).append(" \n"); // Right row label
+            sbChessBoard.append(SET_BG_COLOR_BLUE);
+            sbChessBoard.append(" ").append(SET_TEXT_COLOR_BLACK).append(row + 1).append(" ");
+            sbChessBoard.append(RESET_BG_COLOR).append(" \n"); // Right row label
         }
         sbChessBoard.append(SET_BG_COLOR_BLUE);
         sbChessBoard.append("   ").append(SET_TEXT_COLOR_BLACK).append(columns).append("   ");
