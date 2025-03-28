@@ -1,4 +1,4 @@
-package dataaccess;
+package server;
 
 /**
  * indicates the user has made a bad request

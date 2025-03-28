@@ -1,6 +1,7 @@
 package client;
 
 import model.*;
+import server.BadRequestException;
 import server.ResponseException;
 import server.ServerFacade;
 
@@ -28,17 +29,17 @@ public class PostLoginClient {
             return switch (cmd) {
                 case "create" -> createGame(params);
                 case "list" -> listGames();
-                //case "join" -> joinGame(params);
+                case "join" -> joinGame(params);
                 //case "observe" -> observe(params);
                 case "logout" -> logout();
                 default -> postLogHelp();
             };
-        } catch (ResponseException ex) {
+        } catch (Exception ex) {
             return ex.getMessage();
         }
     }
 
-    private String createGame(String... params) throws ResponseException {
+    private String createGame(String... params) {
         if (params.length == 1) {
             try {
                 CreateRequest cReq = new CreateRequest(params[0]);
@@ -48,7 +49,7 @@ public class PostLoginClient {
                 throw new RuntimeException(e);
             }
         } else {
-            return "Please provide a game name to create a new game";
+            return "Please provide a game name to create a new game\n";
         }
     }
 
@@ -101,7 +102,30 @@ public class PostLoginClient {
         return sbGameList.toString();
     }
 
-    private String logout() throws ResponseException {
+    private String joinGame(String... params) throws ResponseException, BadRequestException {
+        if (params.length == 2) {
+            int clientGameId = Integer.parseInt(params[0]);
+            if (gameMap.containsKey(clientGameId)) {
+                try {
+                    String teamColor = params[1].toUpperCase();
+                    String gameName = gameMap.get(clientGameId).gameName();
+                    int serverGameId = gameMap.get(clientGameId).gameID();
+                    JoinRequest jReq = new JoinRequest(teamColor, serverGameId);
+                    facade.joinGame(authToken, jReq);
+                    preLogClient.state = State.GAMEPLAY;
+                    return String.format("You joined game '%s' as the %s player\n", gameName, params[1]);
+                } catch (RuntimeException e) {
+                    throw new RuntimeException(e);
+                }
+            } else {
+                throw new BadRequestException("Error: Invalid game ID\n");
+            }
+        } else {
+            return "Please provide a valid game ID and team color to join a game\n";
+        }
+    }
+
+    private String logout() {
         try {
             facade.logout(authToken);
             preLogClient.state = State.SIGNEDOUT;

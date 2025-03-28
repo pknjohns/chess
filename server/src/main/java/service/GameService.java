@@ -4,6 +4,7 @@ import dataaccess.*;
 import model.AuthData;
 import model.GameData;
 import model.ListGameData;
+import server.BadRequestException;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -46,28 +47,30 @@ public class GameService {
         }
     }
 
-    public void joinGame(
-            String authToken,
-            String teamColor,
-            int gameID) throws AlreadyTakenException, BadRequestException, UnauthorizedException, DataAccessException {
+    public void joinGame(String authToken, String teamColor, int gameID)
+            throws AlreadyTakenException,
+            BadRequestException,
+            UnauthorizedException,
+            DataAccessException {
 
         AuthData auth = authDB.getAuth(authToken);
+        GameData game = gameDB.getGame(gameID);
         if (auth == null) {
             throw new UnauthorizedException("Bad token");
-        } else if (gameID < 1) {
+        } else if (gameID < 1 || game == null) {
             throw new BadRequestException("Invalid gameID");
         } else {
             if (Objects.equals(teamColor, "WHITE")) {
-                if (gameDB.getGame(gameID).whiteUsername() == null) {
+                if (game.whiteUsername() == null) {
                     gameDB.updateGameWhitePlayer(gameID, auth.username());
                 } else {
-                    throw new AlreadyTakenException("Someone else is already white");
+                    throw new AlreadyTakenException("Someone else is already the white player");
                 }
             } else if (Objects.equals(teamColor, "BLACK")) {
-                if (gameDB.getGame(gameID).blackUsername() == null) {
+                if (game.blackUsername() == null) {
                     gameDB.updateGameBlackPlayer(gameID, auth.username());
                 } else {
-                    throw new AlreadyTakenException("Someone else is already black");
+                    throw new AlreadyTakenException("Someone else is already the black player");
                 }
             } else {
                 throw new BadRequestException("Invalid team color. Please choose white or black as your team color");
