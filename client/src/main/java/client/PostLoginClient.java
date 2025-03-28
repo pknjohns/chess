@@ -4,6 +4,7 @@ import model.*;
 import server.BadRequestException;
 import server.ResponseException;
 import server.ServerFacade;
+import static ui.EscapeSequences.*;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -30,7 +31,7 @@ public class PostLoginClient {
                 case "create" -> createGame(params);
                 case "list" -> listGames();
                 case "join" -> joinGame(params);
-                //case "observe" -> observe(params);
+                case "observe" -> observeGame(params);
                 case "logout" -> logout();
                 default -> postLogHelp();
             };
@@ -125,6 +126,25 @@ public class PostLoginClient {
         }
     }
 
+    private String observeGame(String... params) throws BadRequestException {
+        if (params.length == 1) {
+            int clientGameId = Integer.parseInt(params[0]);
+            if (gameMap.containsKey(clientGameId)) {
+                try {
+                    String gameName = gameMap.get(clientGameId).gameName();
+                    preLogClient.state = State.GAMEPLAY;
+                    return String.format("You are now observing '%s' \n%s\n", gameName, makeWhiteBoard());
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            } else {
+                throw new BadRequestException("Error: Invalid game ID\n");
+            }
+        } else {
+            return "Please provide a valid game ID to observe a game\n";
+        }
+    }
+
     private String logout() {
         try {
             facade.logout(authToken);
@@ -144,5 +164,66 @@ public class PostLoginClient {
             - logout: sign out of your account
             - help: get help on what commands you can run
             """;
+    }
+
+    private static final String[][] startingBoard = {
+            {BLACK_ROOK, BLACK_KNIGHT, BLACK_BISHOP, BLACK_QUEEN, BLACK_KING, BLACK_BISHOP, BLACK_KNIGHT, BLACK_ROOK},
+            {BLACK_PAWN, BLACK_PAWN,BLACK_PAWN,BLACK_PAWN,BLACK_PAWN,BLACK_PAWN,BLACK_PAWN,BLACK_PAWN},
+            {EMPTY,EMPTY,EMPTY,EMPTY,EMPTY,EMPTY,EMPTY,EMPTY},
+            {EMPTY,EMPTY,EMPTY,EMPTY,EMPTY,EMPTY,EMPTY,EMPTY},
+            {EMPTY,EMPTY,EMPTY,EMPTY,EMPTY,EMPTY,EMPTY,EMPTY},
+            {EMPTY,EMPTY,EMPTY,EMPTY,EMPTY,EMPTY,EMPTY,EMPTY},
+            {WHITE_PAWN,WHITE_PAWN,WHITE_PAWN,WHITE_PAWN,WHITE_PAWN,WHITE_PAWN,WHITE_PAWN,WHITE_PAWN},
+            {WHITE_ROOK, WHITE_KNIGHT, WHITE_BISHOP, WHITE_QUEEN, WHITE_KING, WHITE_BISHOP, WHITE_KNIGHT, WHITE_ROOK}
+    };
+
+    private String makeWhiteBoard() {
+        StringBuilder sbChessBoard = new StringBuilder();
+        String columns = "  a     b     c    d     e    f     g     h  ";
+        sbChessBoard.append(SET_BG_COLOR_BLUE).append("   ").append(SET_TEXT_COLOR_BLACK).append(columns).append("   ").append(RESET_BG_COLOR).append("\n");
+        for (int row = 0; row < 8; row++) {
+            sbChessBoard.append(SET_BG_COLOR_BLUE).append(" ").append(8 - row).append(" "); // left row label
+            for (int col = 0; col < 8; col++) {
+                boolean isLightSquare = (row + col) % 2 == 0;
+                String bgColor = isLightSquare ? SET_BG_COLOR_BROWN : SET_BG_COLOR_DARK_BROWN;
+
+                String piece = startingBoard[row][col];
+                String textColor;
+                if (row >2) {
+                    textColor = SET_TEXT_COLOR_WHITE;
+                } else {
+                    textColor = SET_TEXT_COLOR_BLACK;
+                }
+                sbChessBoard.append(bgColor).append(textColor).append(" ").append(piece).append(" ").append(RESET_TEXT_COLOR);
+            }
+            sbChessBoard.append(SET_BG_COLOR_BLUE).append(" ").append(SET_TEXT_COLOR_BLACK).append(8 - row).append(" ").append(RESET_BG_COLOR).append(" \n"); // Right row label
+        }
+        sbChessBoard.append(SET_BG_COLOR_BLUE).append("   ").append(SET_TEXT_COLOR_BLACK).append(columns).append("   ").append(RESET_BG_COLOR);
+        return sbChessBoard.toString();
+    }
+
+    private String makeBlackBoard() {
+        StringBuilder sbChessBoard = new StringBuilder();
+        String columns = "  h     g     f    e     d    c     b     a  ";
+        sbChessBoard.append(SET_BG_COLOR_BLUE).append("   ").append(SET_TEXT_COLOR_BLACK).append(columns).append("   ").append(RESET_BG_COLOR).append("\n");
+        for (int row = 0; row < 8; row++) {
+            sbChessBoard.append(SET_BG_COLOR_BLUE).append(" ").append(row + 1).append(" "); // left row label
+            for (int col = 0; col < 8; col++) {
+                boolean isLightSquare = (row + col) % 2 != 0;
+                String bgColor = isLightSquare ? SET_BG_COLOR_BROWN : SET_BG_COLOR_DARK_BROWN;
+
+                String piece = startingBoard[row][col];
+                String textColor;
+                if (row <2) {
+                    textColor = SET_TEXT_COLOR_WHITE;
+                } else {
+                    textColor = SET_TEXT_COLOR_BLACK;
+                }
+                sbChessBoard.append(bgColor).append(textColor).append(" ").append(piece).append(" ").append(RESET_TEXT_COLOR);
+            }
+            sbChessBoard.append(SET_BG_COLOR_BLUE).append(" ").append(SET_TEXT_COLOR_BLACK).append(row + 1).append(" ").append(RESET_BG_COLOR).append(" \n"); // Right row label
+        }
+        sbChessBoard.append(SET_BG_COLOR_BLUE).append("   ").append(SET_TEXT_COLOR_BLACK).append(columns).append("   ").append(RESET_BG_COLOR);
+        return sbChessBoard.toString();
     }
 }
