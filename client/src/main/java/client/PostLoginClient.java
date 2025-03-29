@@ -69,7 +69,7 @@ public class PostLoginClient {
 
     private void updateClientGameList(ListGameResult lgr) {
         gameMap = new HashMap<>();
-        int i = 0;
+        int i = 1;
         for (ListGameData game : lgr.games()) {
             gameMap.put(i, game);
             i++;
@@ -205,7 +205,7 @@ public class PostLoginClient {
         }
     }
 
-    private String makeWhiteBoard() {
+    private String makeWhiteBoard() { // need to loop through chessboard and print those pieces for phase6 (can pass board in as param)
         StringBuilder sbChessBoard = new StringBuilder();
         String columns = "  a     b     c    d     e    f     g     h  ";
         sbChessBoard.append(SET_BG_COLOR_BLUE);
@@ -242,15 +242,15 @@ public class PostLoginClient {
         sbChessBoard.append(SET_BG_COLOR_BLUE);
         sbChessBoard.append("   ").append(SET_TEXT_COLOR_BLACK).append(columns).append("   ");
         sbChessBoard.append(RESET_BG_COLOR).append("\n");
-        for (int row = 0; row < 8; row++) {
+        for (int row = 7; row >= 0; row--) {
             sbChessBoard.append(SET_BG_COLOR_BLUE).append(" ").append(row + 1).append(" "); // left row label
-            for (int col = 0; col < 8; col++) {
+            for (int col = 7; col >= 0; col--) {
                 boolean isLightSquare = (row + col) % 2 == 0;
                 String bgColor = isLightSquare ? SET_BG_COLOR_BROWN : SET_BG_COLOR_DARK_BROWN;
 
                 String piece = STARTING_BOARD[row][col];
                 String textColor;
-                if (row <2) {
+                if (row >2) {
                     textColor = SET_TEXT_COLOR_WHITE;
                 } else {
                     textColor = SET_TEXT_COLOR_BLACK;
