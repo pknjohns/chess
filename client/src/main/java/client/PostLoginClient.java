@@ -57,7 +57,7 @@ public class PostLoginClient {
         if (params.length < 1) {
             try {
                 ListGameResult gameList = facade.listGames(authToken);
-                updateClientGameList(gameList);
+                updateClientGameList(gameList); //updates client's gameMap based on gameList returned from server
                 return makeGameListString(gameMap);
             } catch (RuntimeException e) {
                 throw new RuntimeException(e);
@@ -107,49 +107,57 @@ public class PostLoginClient {
     }
 
     private String joinGame(String... params) throws ResponseException, BadRequestException {
-        if (params.length == 2) {
-            int clientGameId = Integer.parseInt(params[0]);
-            if (gameMap.containsKey(clientGameId)) {
-                try {
-                    String teamColor = params[1].toUpperCase();
-                    String gameName = gameMap.get(clientGameId).gameName();
-                    int serverGameId = gameMap.get(clientGameId).gameID();
-                    JoinRequest jReq = new JoinRequest(teamColor, serverGameId);
-                    facade.joinGame(authToken, jReq);
-                    preLogClient.state = State.GAMEPLAY;
-                    if (teamColor.equals("WHITE")) {
-                        return String.format("You joined game '%s' as the %s player\n%s\n", gameName, params[1], makeWhiteBoard());
-                    } else {
-                        return String.format("You joined game '%s' as the %s player\n%s\n", gameName, params[1], makeBlackBoard());
-                    }
-
-                } catch (RuntimeException e) {
-                    throw new RuntimeException(e);
-                }
-            } else {
-                throw new BadRequestException("Error: Invalid game ID\n");
-            }
-        } else {
+        if (params.length != 2) {
             return "Please provide a valid game ID and team color to join a game\n";
+        }
+
+        int clientGameId;
+        try {
+            clientGameId = Integer.parseInt(params[0]);
+        } catch (NumberFormatException e) {
+            throw new BadRequestException("Error: Invalid game ID\n");
+        }
+
+        if (!gameMap.containsKey(clientGameId)) {
+            throw new BadRequestException("Error: Invalid game ID\n");
+        }
+
+        String teamColor = params[1].toUpperCase();
+        String gameName = gameMap.get(clientGameId).gameName();
+        int serverGameId = gameMap.get(clientGameId).gameID();
+        JoinRequest jReq = new JoinRequest(teamColor, serverGameId);
+
+        try {
+            facade.joinGame(authToken, jReq);
+            preLogClient.state = State.GAMEPLAY;
+            return makeBoard(gameName, teamColor);
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e);
         }
     }
 
     private String observeGame(String... params) throws BadRequestException {
-        if (params.length == 1) {
-            int clientGameId = Integer.parseInt(params[0]);
-            if (gameMap.containsKey(clientGameId)) {
-                try {
-                    String gameName = gameMap.get(clientGameId).gameName();
-                    preLogClient.state = State.GAMEPLAY;
-                    return String.format("You are now observing '%s' \n%s\n", gameName, makeWhiteBoard());
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            } else {
-                throw new BadRequestException("Error: Invalid game ID\n");
-            }
-        } else {
-            return "Please provide a valid game ID to observe a game\n";
+        if (params.length != 1) {
+            return "Please provide a valid game ID and team color to join a game\n";
+        }
+
+        int clientGameId;
+        try {
+            clientGameId = Integer.parseInt(params[0]);
+        } catch (NumberFormatException e) {
+            throw new BadRequestException("Error: Invalid game ID\n");
+        }
+
+        if (!gameMap.containsKey(clientGameId)) {
+            throw new BadRequestException("Error: Invalid game ID\n");
+        }
+
+        try {
+            String gameName = gameMap.get(clientGameId).gameName();
+            preLogClient.state = State.GAMEPLAY;
+            return String.format("You are now observing '%s' \n%s\n", gameName, makeWhiteBoard());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -188,6 +196,14 @@ public class PostLoginClient {
             {WHITE_PAWN,WHITE_PAWN,WHITE_PAWN,WHITE_PAWN,WHITE_PAWN,WHITE_PAWN,WHITE_PAWN,WHITE_PAWN},
             {WHITE_ROOK, WHITE_KNIGHT, WHITE_BISHOP, WHITE_QUEEN, WHITE_KING, WHITE_BISHOP, WHITE_KNIGHT, WHITE_ROOK}
     };
+
+    private String makeBoard(String gameName, String teamColor) {
+        if (teamColor.equals("WHITE")) {
+            return String.format("You joined game '%s' as the %s player\n%s\n", gameName, teamColor, makeWhiteBoard());
+        } else {
+            return String.format("You joined game '%s' as the %s player\n%s\n", gameName, teamColor, makeBlackBoard());
+        }
+    }
 
     private String makeWhiteBoard() {
         StringBuilder sbChessBoard = new StringBuilder();

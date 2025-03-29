@@ -47,7 +47,7 @@ class GameDAOTest {
     void doGetGame(Class<? extends GameDAO> dbClass) throws DataAccessException {
         GameDAO dataAccess = getGameDataAccess(dbClass);
 
-        GameData game1 = new GameData(1234, "white", "black", "test", new ChessGame());
+        GameData game1 = new GameData(1, null, null, "test", null);
         int newID = dataAccess.addGame(game1);
 
         GameData actual = dataAccess.getGame(newID);
@@ -75,9 +75,9 @@ class GameDAOTest {
     void listGames(Class<? extends GameDAO> dbClass) throws DataAccessException {
         GameDAO dataAccess = getGameDataAccess(dbClass);
 
-        var game1 = new GameData(1234, "white", "black", "test", new ChessGame());
-        var game2 = new GameData(5678, "white", "black", "test", new ChessGame());
-        var game3 = new GameData(2345, "white", "black", "test", new ChessGame());
+        var game1 = new GameData(1, null, null, "test", new ChessGame());
+        var game2 = new GameData(2, null, null, "test", new ChessGame());
+        var game3 = new GameData(3, null, null, "test", new ChessGame());
 
         List<GameData> expected = new ArrayList<>();
         expected.add(game1);

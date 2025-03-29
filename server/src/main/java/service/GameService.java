@@ -41,9 +41,9 @@ public class GameService {
             throw new UnauthorizedException("Bad token");
         } else {
             GameData game = new GameData(1, null, null, gameName, null);
-            //gameDB.addGame(game);
-            //return nextID++;
+            //CreateRequest cReq = new CreateRequest(gameName);
             return gameDB.addGame(game);
+            //return gameDB.addGame(cReq);
         }
     }
 
