@@ -243,7 +243,7 @@ public class PostLoginClient {
         sbChessBoard.append("   ").append(SET_TEXT_COLOR_BLACK).append(columns).append("   ");
         sbChessBoard.append(RESET_BG_COLOR).append("\n");
         for (int row = 7; row >= 0; row--) {
-            sbChessBoard.append(SET_BG_COLOR_BLUE).append(" ").append(row + 1).append(" "); // left row label
+            sbChessBoard.append(SET_BG_COLOR_BLUE).append(" ").append(-(row - 8)).append(" "); // left row label
             for (int col = 7; col >= 0; col--) {
                 boolean isLightSquare = (row + col) % 2 == 0;
                 String bgColor = isLightSquare ? SET_BG_COLOR_BROWN : SET_BG_COLOR_DARK_BROWN;
@@ -258,7 +258,7 @@ public class PostLoginClient {
                 sbChessBoard.append(bgColor).append(textColor).append(" ").append(piece).append(" ").append(RESET_TEXT_COLOR);
             }
             sbChessBoard.append(SET_BG_COLOR_BLUE);
-            sbChessBoard.append(" ").append(SET_TEXT_COLOR_BLACK).append(row + 1).append(" ");
+            sbChessBoard.append(" ").append(SET_TEXT_COLOR_BLACK).append(-(row - 8)).append(" ");
             sbChessBoard.append(RESET_BG_COLOR).append(" \n"); // Right row label
         }
         sbChessBoard.append(SET_BG_COLOR_BLUE);
