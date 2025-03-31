@@ -40,12 +40,7 @@ public class MySqlGameDAO implements GameDAO {
         try (var conn = DatabaseManager.getConnection()) {
             String statement = "UPDATE games SET whiteUsername=? WHERE gameID=?";
             try (var ps = conn.prepareStatement(statement)) {
-                // update gameData
-                //GameData oldGame = getGame(gameID);
-                //GameData newGame = new GameData(gameID, username, oldGame.blackUsername(), oldGame.gameName(), oldGame.game());
-
                 ps.setString(1, username);
-                //ps.setString(2, newGame.toString());
                 ps.setInt(2, gameID);
                 ps.executeUpdate();
             }
@@ -58,12 +53,7 @@ public class MySqlGameDAO implements GameDAO {
         try (var conn = DatabaseManager.getConnection()) {
             String statement = "UPDATE games SET blackUsername=? WHERE gameID=?";
             try (var ps = conn.prepareStatement(statement)) {
-                // update gameData
-                //GameData oldGame = getGame(gameID);
-                //GameData newGame = new GameData(gameID, oldGame.whiteUsername(), username, oldGame.gameName(), oldGame.game());
-
                 ps.setString(1, username);
-                //ps.setString(2, newGame.toString());
                 ps.setInt(2, gameID);
                 ps.executeUpdate();
             }
@@ -79,7 +69,6 @@ public class MySqlGameDAO implements GameDAO {
                 ps.setInt(1, gameID);
                 try (var rs = ps.executeQuery()) {
                     if (rs.next()) {
-                        //return readGame(rs);
                         return makeGameData(gameID, rs);
                     }
                 }
@@ -97,7 +86,6 @@ public class MySqlGameDAO implements GameDAO {
             try (var ps = conn.prepareStatement(statement)) {
                 try (ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
-                        //games.add(readGame(rs));
                         games.add(makeGameData(Integer.parseInt(rs.getString("gameID")), rs));
                     }
                 }
