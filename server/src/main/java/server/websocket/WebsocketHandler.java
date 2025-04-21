@@ -47,11 +47,14 @@ public class WebsocketHandler {
                 case LEAVE -> leaveGame(session, username, cmd);
                 case RESIGN -> resign(session, username, cmd);
             }
-        } catch (UnauthorizedException ex) {
-            throw new UnauthorizedException(ex.getMessage());
-        } catch (DataAccessException e) {
-            throw new RuntimeException(e.getMessage());
+        }  catch (UnauthorizedException ex) {
+            // Serializes and sends the error message
+            sendMessage(session.getRemote(), new ErrorMessage("Error: unauthorized"));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            sendMessage(session.getRemote(), new ErrorMessage("Error: " + ex.getMessage()));
         }
+
     }
 
     private void connect(String username, UserGameCommand cmd) {
@@ -87,6 +90,14 @@ public class WebsocketHandler {
     }
 
     private void resign(Session session, String username, UserGameCommand cmd) {
+    }
+
+    private void sendMessage(org.eclipse.jetty.websocket.api.RemoteEndpoint remote, ErrorMessage msg) {
+        try {
+            remote.sendString(msg.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private String getTeamColor(String username, GameData gData) {
