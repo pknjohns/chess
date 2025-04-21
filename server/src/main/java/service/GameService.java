@@ -1,5 +1,6 @@
 package service;
 
+import chess.ChessGame;
 import dataaccess.*;
 import model.AuthData;
 import model.GameData;
@@ -78,5 +79,9 @@ public class GameService {
 
     public GameData getGame(int gameID) throws DataAccessException {
         return gameDB.getGame(gameID); //gameDB.getGame() already deserializes ChessGame object
+    }
+
+    public void updateGame(int gameID, ChessGame game) throws DataAccessException {
+        gameDB.updateGame(gameID, game);
     }
 }

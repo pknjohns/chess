@@ -363,7 +363,7 @@ public class ChessGame {
      * @param clr color of current team
      * @return color of opponent
      */
-    private TeamColor getOpponentsColor(TeamColor clr) {
+    public TeamColor getOpponentsColor(TeamColor clr) {
         return TeamColor.values()[(clr.ordinal() + 1) % 2];
     }
 

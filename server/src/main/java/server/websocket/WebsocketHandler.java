@@ -1,9 +1,8 @@
 package server.websocket;
 
-import chess.ChessGame;
+import chess.*;
 import model.*;
 import com.google.gson.Gson;
-import dataaccess.DataAccessException;
 import dataaccess.UnauthorizedException;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
@@ -11,6 +10,7 @@ import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 
 import service.GameService;
 import service.UserService;
+import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
@@ -43,7 +43,7 @@ public class WebsocketHandler {
 
             switch (cmd.getCommandType()) {
                 case CONNECT -> connect(username, cmd);
-                case MAKE_MOVE -> makeMove(session, username, cmd);
+                case MAKE_MOVE -> makeMove(session, username, msg);
                 case LEAVE -> leaveGame(session, username, cmd);
                 case RESIGN -> resign(session, username, cmd);
             }
@@ -83,7 +83,50 @@ public class WebsocketHandler {
         }
     }
 
-    private void makeMove(Session session, String username, UserGameCommand cmd) {
+    private void makeMove(Session session, String username, String rawMsg) {
+        try {
+            MakeMoveCommand cmd = new Gson().fromJson(rawMsg, MakeMoveCommand.class);
+
+            ChessMove move = cmd.getMove();
+            int gameID = cmd.getGameID();
+            GameData gData= gameService.getGame(gameID);
+            ChessGame game = gData.game();
+
+            // update and send load_game msg to ALL clients
+            game.makeMove(move);
+            gameService.updateGame(gameID, game);
+            LoadGameMessage updateMsg = new LoadGameMessage(game);
+            connections.broadcastAll(gameID, updateMsg);
+
+            // send notification to all OTHER clients about move made
+            ChessPosition start = move.getStartPosition();
+            ChessPosition end = move.getEndPosition();
+            ChessPiece movedPiece = game.getBoard().getPiece(end);
+            String moveMade = "%sfrom %sto %s".formatted(movedPiece.toString(), start.toString(), end.toString());
+            NotificationMessage nMsg = new NotificationMessage(username + "moved " + moveMade);
+            connections.broadcastExcept(gameID, username, nMsg);
+
+            // send notification about check, checkmate, or stalemate to ALL clients
+            ChessGame.TeamColor teamClr = ChessGame.TeamColor.valueOf(getTeamColor(username, gData).toUpperCase());
+            ChessGame.TeamColor opponent = game.getOpponentsColor(teamClr);
+            if (game.isInCheck(opponent)) {
+                NotificationMessage notifMsg = new NotificationMessage(opponent + " is in check");
+                connections.broadcastAll(gameID, notifMsg);
+            } else if (game.isInCheckmate(opponent)) {
+                NotificationMessage notifMsg = new NotificationMessage(opponent + " is in checkmate");
+                connections.broadcastAll(gameID, notifMsg);
+            } else if (game.isInStalemate(opponent)) {
+                NotificationMessage notifMsg = new NotificationMessage(opponent + " is in stalemate");
+                connections.broadcastAll(gameID, notifMsg);
+            }
+        } catch (InvalidMoveException e) {
+            sendMessage(session.getRemote(), new ErrorMessage("Error: invalid move - " + e.getMessage()));
+        } catch (UnauthorizedException e) {
+            sendMessage(session.getRemote(), new ErrorMessage("Error: unauthorized"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            sendMessage(session.getRemote(), new ErrorMessage("Error: " + e.getMessage()));
+        }
     }
 
     private void leaveGame(Session session, String username, UserGameCommand cmd) {
