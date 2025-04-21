@@ -1,6 +1,7 @@
 package server.websocket;
 
 import chess.*;
+import dataaccess.DataAccessException;
 import model.*;
 import com.google.gson.Gson;
 import dataaccess.UnauthorizedException;
@@ -44,7 +45,7 @@ public class WebsocketHandler {
             switch (cmd.getCommandType()) {
                 case CONNECT -> connect(username, cmd);
                 case MAKE_MOVE -> makeMove(session, username, msg);
-                case LEAVE -> leaveGame(session, username, cmd);
+                case LEAVE -> leaveGame(username, cmd);
                 case RESIGN -> resign(session, username, cmd);
             }
         }  catch (UnauthorizedException ex) {
@@ -135,7 +136,28 @@ public class WebsocketHandler {
         }
     }
 
-    private void leaveGame(Session session, String username, UserGameCommand cmd) {
+    private void leaveGame(String username, UserGameCommand cmd) {
+        try {
+            int gameID = cmd.getGameID();
+            GameData gData = gameService.getGame(gameID);
+            String white = gData.whiteUsername();
+            String black = gData.blackUsername();
+            if (username.equals(white)) {
+                white = null;
+                gameService.updateWhite(gameID, white);
+            } else if (username.equals(black)) {
+                black = null;
+                gameService.updateBlack(gameID, black);
+            }
+            connections.remove(username); // unsubscrine
+            NotificationMessage notification = new NotificationMessage(username + " has left the game");
+            connections.broadcastExcept(gameID, username, notification);
+        } catch (DataAccessException e) {
+            connections.sendTo(username, new ErrorMessage("Error: " + e.getMessage()));
+        } catch (Exception e) {
+            e.printStackTrace();
+            connections.sendTo(username, new ErrorMessage("Error: " + e.getMessage()));
+        }
     }
 
     private void resign(Session session, String username, UserGameCommand cmd) {

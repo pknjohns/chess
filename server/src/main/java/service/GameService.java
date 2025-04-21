@@ -84,4 +84,12 @@ public class GameService {
     public void updateGame(int gameID, ChessGame game) throws DataAccessException {
         gameDB.updateGame(gameID, game);
     }
+
+    public void updateWhite(int gameID, String username) throws DataAccessException {
+        gameDB.updateGameWhitePlayer(gameID, username);
+    }
+
+    public void updateBlack(int gameID, String username) throws DataAccessException {
+        gameDB.updateGameBlackPlayer(gameID, username);
+    }
 }
