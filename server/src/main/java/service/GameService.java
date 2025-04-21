@@ -41,9 +41,7 @@ public class GameService {
             throw new UnauthorizedException("Bad token");
         } else {
             GameData game = new GameData(1, null, null, gameName, null);
-            //CreateRequest cReq = new CreateRequest(gameName);
             return gameDB.addGame(game);
-            //return gameDB.addGame(cReq);
         }
     }
 
@@ -76,5 +74,9 @@ public class GameService {
                 throw new BadRequestException("Invalid team color. Please choose white or black as your team color");
             }
         }
+    }
+
+    public GameData getGame(int gameID) throws DataAccessException {
+        return gameDB.getGame(gameID); //gameDB.getGame() already deserializes ChessGame object
     }
 }

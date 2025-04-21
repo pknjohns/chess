@@ -49,7 +49,6 @@ public class UserService {
         String password = request.password();
 
         UserData user = userDB.getUser(username);
-        //String safePassword = encryptPassword(password);
         if (user == null) {
             throw new UnauthorizedException("Unregistered username");
         } else if (!BCrypt.checkpw(password, user.password())) {//Objects.equals(user.password(), safePassword)) {
@@ -88,7 +87,11 @@ public class UserService {
         authDB.addAuth(auth);
     }
 
-    String encryptPassword(String password) {
+    public AuthData getAuth(String authToken) throws DataAccessException {
+        return authDB.getAuth(authToken);
+    }
+
+    private String encryptPassword(String password) {
         return BCrypt.hashpw(password, BCrypt.gensalt());
     }
 

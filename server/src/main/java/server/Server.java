@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import dataaccess.*;
 import facade.BadRequestException;
 import model.*;
+import server.websocket.WebsocketHandler;
 import spark.*;
 import service.*;
 
@@ -15,6 +16,7 @@ public class Server {
     private ClearService clearService;
     private GameService gameService;
     private UserService userService;
+    private WebsocketHandler websocketHandler;
 
     public Server() {
         try {
@@ -25,6 +27,7 @@ public class Server {
             clearService = new ClearService(authDB, gameDB, userDB);
             gameService = new GameService(authDB, gameDB);
             userService = new UserService(authDB, userDB);
+            websocketHandler = new WebsocketHandler(userService, gameService);
         } catch(DataAccessException e) {
             System.out.println(e.getMessage());
         }
@@ -37,6 +40,8 @@ public class Server {
         Spark.staticFiles.location("web");
 
         // Register your endpoints and handle exceptions here.
+        Spark.webSocket("/ws", websocketHandler);
+
         Spark.delete("/db", this::clearHandler);
         Spark.post("/user", this::registerHandler);
         Spark.post("/session", this::loginHandler);
