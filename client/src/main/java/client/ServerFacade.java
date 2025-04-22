@@ -1,5 +1,6 @@
-package facade;
+package client;
 
+import facade.ResponseException;
 import model.*;
 
 import com.google.gson.Gson;

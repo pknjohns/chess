@@ -2,7 +2,6 @@ package client;
 
 import facade.ResponseException;
 import server.Server;
-import facade.ServerFacade;
 import model.*;
 
 import org.junit.jupiter.api.*;
