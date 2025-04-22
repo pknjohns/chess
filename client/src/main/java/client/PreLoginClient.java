@@ -1,7 +1,6 @@
 package client;
 
 import facade.ResponseException;
-import facade.ServerFacade;
 import model.*;
 
 import java.util.Arrays;
@@ -10,10 +9,12 @@ public class PreLoginClient {
 
     private final ServerFacade facade;
     public State state = State.SIGNEDOUT;
+    public String username;
     public String authToken;
+    public int gameID;
 
     public PreLoginClient(int port) {
-        facade = new ServerFacade(port);
+        facade = new ServerFacade(port, new GameplayClient(port, this));
     }
 
     public String eval(String input) {
@@ -37,6 +38,7 @@ public class PreLoginClient {
             try {
                 RegisterRequest rReq = new RegisterRequest(params[0], params[1], params[2]);
                 RegisterResult authData = facade.register(rReq);
+                this.username = params[0];
                 this.authToken = authData.authToken();
                 state = State.SIGNEDIN;
                 return String.format("You've registered and signed in as %s \n", authData.username());
@@ -53,6 +55,7 @@ public class PreLoginClient {
             try {
                 LoginRequest lReq = new LoginRequest(params[0], params[1]);
                 LoginResult authData = facade.login(lReq);
+                this.username = params[0];
                 this.authToken = authData.authToken();
                 state = State.SIGNEDIN;
                 return String.format("You signed in as %s \n", authData.username());

@@ -1,5 +1,7 @@
 package client;
 
+import client.websocket.ServerMessageObserver;
+import client.websocket.WebsocketCommunicator;
 import facade.ResponseException;
 import model.*;
 
@@ -17,9 +19,12 @@ import java.util.Map;
 public class ServerFacade {
 
     private final int port;
+    private ServerMessageObserver observer;
+    private WebsocketCommunicator communicator;
 
-    public ServerFacade(int desiredPort) {
+    public ServerFacade(int desiredPort, ServerMessageObserver serverMsgObserver) {
         this.port = desiredPort;
+        this.observer = serverMsgObserver;
     }
 
     public Object clear() throws ResponseException {

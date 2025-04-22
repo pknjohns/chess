@@ -8,8 +8,10 @@ public class PostLoginRepl {
 
     private final PreLoginClient preLogClient;
     private final PostLoginClient postLogClient;
+    private final int port;
 
     public PostLoginRepl(int port, PreLoginClient preLogClient) {
+        this.port = port;
         this.preLogClient = preLogClient;
         this.postLogClient = new PostLoginClient(port, preLogClient);
     }
@@ -24,6 +26,9 @@ public class PostLoginRepl {
             try {
                 result = postLogClient.eval(line);
                 System.out.print(SET_TEXT_COLOR_BLUE + result);
+                if (preLogClient.state == State.GAMEPLAY) {
+                    new GameplayRepl(port, preLogClient).run();
+                }
             } catch (Throwable e) {
                 String msg = e.toString();
                 System.out.print(msg);

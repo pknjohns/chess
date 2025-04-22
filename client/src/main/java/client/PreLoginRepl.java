@@ -4,8 +4,9 @@ import java.util.Scanner;
 import static ui.EscapeSequences.*;
 
 public class PreLoginRepl {
-    private final PreLoginClient preLogClient;
+
     private final int port;
+    private final PreLoginClient preLogClient;
 
     public PreLoginRepl(int port) {
         this.port = port;
