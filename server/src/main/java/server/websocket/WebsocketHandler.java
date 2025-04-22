@@ -91,41 +91,46 @@ public class WebsocketHandler {
             ChessMove move = cmd.getMove();
             int gameID = cmd.getGameID();
             GameData gData= gameService.getGame(gameID);
-            ChessGame game = gData.game();
 
             // check if move is valid
-            ChessGame.TeamColor teamClr = ChessGame.TeamColor.valueOf(Objects.requireNonNull(getTeamColor(username, gData)).toUpperCase());
-            ChessPosition start = move.getStartPosition();
-            ChessPosition end = move.getEndPosition();
-            ChessPiece movedPiece = game.getBoard().getPiece(start);
-            if (movedPiece.getTeamColor() == teamClr) {
-                game.makeMove(move);
-                gameService.updateGame(gameID, game);
-                LoadGameMessage updateMsg = new LoadGameMessage(game);
-                connections.broadcastAll(gameID, updateMsg);
-
-                // send notification to all OTHER clients about move made
-                String moveMade = "%sfrom %sto %s".formatted(movedPiece.toString(), start.toString(), end.toString());
-                NotificationMessage nMsg = new NotificationMessage(username + "moved " + moveMade);
-                connections.broadcastExcept(gameID, username, nMsg);
-
-                // send notification about check, checkmate, or stalemate to ALL clients
-                ChessGame.TeamColor opponent = game.getOpponentsColor(teamClr);
-                if (game.isInCheck(opponent)) {
-                    NotificationMessage notifMsg = new NotificationMessage(opponent + " is in check");
-                    connections.broadcastAll(gameID, notifMsg);
-                } else if (game.isInCheckmate(opponent)) {
-                    NotificationMessage notifMsg = new NotificationMessage(opponent + " is in checkmate - GAME OVER");
-                    connections.broadcastAll(gameID, notifMsg);
-                } else if (game.isInStalemate(opponent)) {
-                    NotificationMessage notifMsg = new NotificationMessage(opponent + " is in stalemate - GAME OVER");
-                    connections.broadcastAll(gameID, notifMsg);
-                }
+            if (gData.gameOver()) {
+                connections.sendTo(username, new ErrorMessage("Error: GAME OVER - cannot make any more moves in this game"));
             } else {
-                //sendMessage(session.getRemote(), new ErrorMessage("Error: invalid move - can only move your own pieces"));
-                connections.sendTo(username, new ErrorMessage("Error: invalid move - can only move your own pieces"));
-            }
+                ChessGame game = gData.game();
+                ChessGame.TeamColor teamClr = ChessGame.TeamColor.valueOf(Objects.requireNonNull(getTeamColor(username, gData)).toUpperCase());
+                ChessPosition start = move.getStartPosition();
+                ChessPosition end = move.getEndPosition();
+                ChessPiece movedPiece = game.getBoard().getPiece(start);
+                if (movedPiece.getTeamColor() == teamClr) {
+                    game.makeMove(move);
+                    gameService.updateGame(gameID, game);
+                    LoadGameMessage updateMsg = new LoadGameMessage(game);
+                    connections.broadcastAll(gameID, updateMsg);
 
+                    // send notification to all OTHER clients about move made
+                    String moveMade = "%sfrom %sto %s".formatted(movedPiece.toString(), start.toString(), end.toString());
+                    NotificationMessage nMsg = new NotificationMessage(username + "moved " + moveMade);
+                    connections.broadcastExcept(gameID, username, nMsg);
+
+                    // send notification about check, checkmate, or stalemate to ALL clients
+                    ChessGame.TeamColor opponent = game.getOpponentsColor(teamClr);
+                    if (game.isInCheck(opponent)) {
+                        NotificationMessage notifMsg = new NotificationMessage(opponent + " is in check");
+                        connections.broadcastAll(gameID, notifMsg);
+                    } else if (game.isInCheckmate(opponent)) {
+                        gameService.markGameOver(gameID);
+                        NotificationMessage notifMsg = new NotificationMessage(opponent + " is in checkmate - GAME OVER");
+                        connections.broadcastAll(gameID, notifMsg);
+                    } else if (game.isInStalemate(opponent)) {
+                        gameService.markGameOver(gameID);
+                        NotificationMessage notifMsg = new NotificationMessage(opponent + " is in stalemate - GAME OVER");
+                        connections.broadcastAll(gameID, notifMsg);
+                    }
+                } else {
+                    //sendMessage(session.getRemote(), new ErrorMessage("Error: invalid move - can only move your own pieces"));
+                    connections.sendTo(username, new ErrorMessage("Error: invalid move - can only move your own pieces"));
+                }
+            }
         } catch (InvalidMoveException e) {
             sendMessage(session.getRemote(), new ErrorMessage("Error: invalid move - " + e.getMessage()));
         } catch (UnauthorizedException e) {

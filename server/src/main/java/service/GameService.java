@@ -92,4 +92,8 @@ public class GameService {
     public void updateBlack(int gameID, String username) throws DataAccessException {
         gameDB.updateGameBlackPlayer(gameID, username);
     }
+
+    public void markGameOver(int gameID) throws DataAccessException {
+        gameDB.updateGameOver(gameID);
+    }
 }
