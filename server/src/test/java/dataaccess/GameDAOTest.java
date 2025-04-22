@@ -37,7 +37,7 @@ class GameDAOTest {
     void addGame(Class<? extends GameDAO> dbClass) throws DataAccessException {
         GameDAO dataAccess = getGameDataAccess(dbClass);
 
-        var game = new GameData(1234,"white", "black", "test", new ChessGame());
+        var game = new GameData(1234,"white", "black", "test", new ChessGame(), false);
         assertDoesNotThrow(() -> dataAccess.addGame(game));
         dataAccess.deleteAllGames();
     }
@@ -47,7 +47,7 @@ class GameDAOTest {
     void doGetGame(Class<? extends GameDAO> dbClass) throws DataAccessException {
         GameDAO dataAccess = getGameDataAccess(dbClass);
 
-        GameData game1 = new GameData(1, null, null, "test", null);
+        GameData game1 = new GameData(1, null, null, "test", null, false);
         int newID = dataAccess.addGame(game1);
 
         GameData actual = dataAccess.getGame(newID);
@@ -62,7 +62,7 @@ class GameDAOTest {
     void noGetGame(Class<? extends GameDAO> dbClass) throws DataAccessException {
         GameDAO dataAccess = getGameDataAccess(dbClass);
 
-        GameData game1 = new GameData(1234, "white", "black", "test", null);
+        GameData game1 = new GameData(1234, "white", "black", "test", null, false);
         dataAccess.addGame(game1);
 
         GameData actual = dataAccess.getGame(2345);
@@ -75,9 +75,9 @@ class GameDAOTest {
     void listGames(Class<? extends GameDAO> dbClass) throws DataAccessException {
         GameDAO dataAccess = getGameDataAccess(dbClass);
 
-        var game1 = new GameData(1, null, null, "test", new ChessGame());
-        var game2 = new GameData(2, null, null, "test", new ChessGame());
-        var game3 = new GameData(3, null, null, "test", new ChessGame());
+        var game1 = new GameData(1, null, null, "test", new ChessGame(), false);
+        var game2 = new GameData(2, null, null, "test", new ChessGame(), false);
+        var game3 = new GameData(3, null, null, "test", new ChessGame(), false);
 
         List<GameData> expected = new ArrayList<>();
         expected.add(game1);
@@ -98,9 +98,9 @@ class GameDAOTest {
     void deleteAllGames(Class<? extends GameDAO> dbClass) throws DataAccessException {
         GameDAO dataAccess = getGameDataAccess(dbClass);
 
-        var game1 = new GameData(1234, "white", "black", "test", new ChessGame());
-        var game2 = new GameData(5678, "white", "black", "test", new ChessGame());
-        var game3 = new GameData(2345, "white", "black", "test", new ChessGame());
+        var game1 = new GameData(1234, "white", "black", "test", new ChessGame(), false);
+        var game2 = new GameData(5678, "white", "black", "test", new ChessGame(), false);
+        var game3 = new GameData(2345, "white", "black", "test", new ChessGame(), false);
 
         dataAccess.addGame(game1);
         dataAccess.addGame(game2);
@@ -116,7 +116,7 @@ class GameDAOTest {
     @ValueSource(classes = {MySqlGameDAO.class, MemoryGameDAO.class})
     void doUpdateGameWhitePlayer(Class<? extends GameDAO> dbClass) throws DataAccessException {
         GameDAO dataAccess = getGameDataAccess(dbClass);
-        var game1 = new GameData(1234, null, "black", "test", new ChessGame());
+        var game1 = new GameData(1234, null, "black", "test", new ChessGame(), false);
         int newID = dataAccess.addGame(game1);
         int expectedLen = dataAccess.listGames().size();
 
@@ -135,7 +135,7 @@ class GameDAOTest {
     @ValueSource(classes = {MySqlGameDAO.class, MemoryGameDAO.class})
     void doUpdateGameBlackPlayer(Class<? extends GameDAO> dbClass) throws DataAccessException {
         GameDAO dataAccess = getGameDataAccess(dbClass);
-        var game1 = new GameData(1234, "white", null, "test", new ChessGame());
+        var game1 = new GameData(1234, "white", null, "test", new ChessGame(), false);
         int newID = dataAccess.addGame(game1);
 
         int expectedLen = dataAccess.listGames().size();

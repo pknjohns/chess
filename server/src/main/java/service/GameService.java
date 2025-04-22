@@ -41,7 +41,7 @@ public class GameService {
         if (auth == null) {
             throw new UnauthorizedException("Bad token");
         } else {
-            GameData game = new GameData(1, null, null, gameName, null);
+            GameData game = new GameData(1, null, null, gameName, null, false);
             return gameDB.addGame(game);
         }
     }

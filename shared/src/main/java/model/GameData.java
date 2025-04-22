@@ -9,7 +9,8 @@ public record GameData(
         String whiteUsername,
         String blackUsername,
         String gameName,
-        ChessGame game
+        ChessGame game,
+        boolean gameOver
 ) {
     @Override
     public String toString() {
@@ -26,11 +27,12 @@ public record GameData(
                 && Objects.equals(game, gameData.game)
                 && Objects.equals(gameName, gameData.gameName)
                 && Objects.equals(whiteUsername, gameData.whiteUsername)
-                && Objects.equals(blackUsername, gameData.blackUsername);
+                && Objects.equals(blackUsername, gameData.blackUsername)
+                && Objects.equals(gameOver, gameData.gameOver);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(gameID, whiteUsername, blackUsername, gameName, game);
+        return Objects.hash(gameID, whiteUsername, blackUsername, gameName, game, gameOver);
     }
 }

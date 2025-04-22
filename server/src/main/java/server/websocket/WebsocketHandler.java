@@ -115,10 +115,10 @@ public class WebsocketHandler {
                     NotificationMessage notifMsg = new NotificationMessage(opponent + " is in check");
                     connections.broadcastAll(gameID, notifMsg);
                 } else if (game.isInCheckmate(opponent)) {
-                    NotificationMessage notifMsg = new NotificationMessage(opponent + " is in checkmate");
+                    NotificationMessage notifMsg = new NotificationMessage(opponent + " is in checkmate - GAME OVER");
                     connections.broadcastAll(gameID, notifMsg);
                 } else if (game.isInStalemate(opponent)) {
-                    NotificationMessage notifMsg = new NotificationMessage(opponent + " is in stalemate");
+                    NotificationMessage notifMsg = new NotificationMessage(opponent + " is in stalemate - GAME OVER");
                     connections.broadcastAll(gameID, notifMsg);
                 }
             } else {

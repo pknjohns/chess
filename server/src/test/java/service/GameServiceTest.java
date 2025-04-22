@@ -300,9 +300,9 @@ public class GameServiceTest {
     }
 
     private void addData(GameDAO gameDB) throws DataAccessException {
-        var game1 = new GameData(1234, "white", "black", "test", new ChessGame());
-        var game2 = new GameData(5678, "white", "black", "test", new ChessGame());
-        var game3 = new GameData(2345, "white", "black", "test", new ChessGame());
+        var game1 = new GameData(1234, "white", "black", "test", new ChessGame(), false);
+        var game2 = new GameData(5678, "white", "black", "test", new ChessGame(), false);
+        var game3 = new GameData(2345, "white", "black", "test", new ChessGame(), false);
 
         gameDB.addGame(game1);
         gameDB.addGame(game2);

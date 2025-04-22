@@ -23,6 +23,7 @@ public class MySqlGameDAO implements GameDAO {
               `blackUsername` VARCHAR(255),
               `gameName` VARCHAR(255) NOT NULL,
               `game` TEXT,
+              `gameOver` BOOLEAN DEFAULT FALSE,
               PRIMARY KEY (`gameID`),
               INDEX(gameID)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
@@ -75,9 +76,22 @@ public class MySqlGameDAO implements GameDAO {
         }
     }
 
+    public void updateGameOver(int gameID) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            String statement = "UPDATE games SET game=? WHERE gameID=?";
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setString(1, "true");
+                ps.setInt(2, gameID);
+                ps.executeUpdate();
+            }
+        } catch (Exception e) {
+            throw new DataAccessException("Unable to update game: " + e.getMessage());
+        }
+    }
+
     public GameData getGame(int gameID) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
-            String statement = "SELECT whiteUsername, blackUsername, gameName, game FROM games WHERE gameID=?";
+            String statement = "SELECT whiteUsername, blackUsername, gameName, game, gameOver FROM games WHERE gameID=?";
             try (var ps = conn.prepareStatement(statement)) {
                 ps.setInt(1, gameID);
                 try (var rs = ps.executeQuery()) {
@@ -95,7 +109,7 @@ public class MySqlGameDAO implements GameDAO {
     public Collection<GameData> listGames() throws DataAccessException {
         Collection<GameData> games = new ArrayList<>();
         try (var conn = DatabaseManager.getConnection()) {
-            String statement = "SELECT gameID, whiteUsername, blackUsername, gameName, game FROM games";
+            String statement = "SELECT gameID, whiteUsername, blackUsername, gameName, game, gameOver FROM games";
             try (var ps = conn.prepareStatement(statement)) {
                 try (ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
@@ -124,6 +138,7 @@ public class MySqlGameDAO implements GameDAO {
         String gameName = rs.getString("gameName");
         String gameJson = rs.getString("game");
         ChessGame game = new Gson().fromJson(gameJson, ChessGame.class);
-        return new GameData(gameID, white, black, gameName, game);
+        boolean gameOver = rs.getBoolean("gameOver");
+        return new GameData(gameID, white, black, gameName, game, gameOver);
     }
 }
