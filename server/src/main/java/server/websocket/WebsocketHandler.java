@@ -170,10 +170,16 @@ public class WebsocketHandler {
         // send notification message to all clients that root client resigned
         try {
             int gameID = cmd.getGameID();
-            gameService.markGameOver(gameID);
+            GameData gData = gameService.getGame(gameID);
+            String teamColor = getTeamColor(username, gData);
+            if (teamColor == null) {
+                sendMessage(session.getRemote(), new ErrorMessage("Error: cannot resign as observer "));
+            } else {
+                gameService.markGameOver(gameID);
 
-            NotificationMessage msg = new NotificationMessage(username + " has resigned. GAME OVER.");
-            connections.broadcastAll(gameID, msg);
+                NotificationMessage msg = new NotificationMessage(username + " has resigned. GAME OVER.");
+                connections.broadcastAll(gameID, msg);
+            }
         } catch (DataAccessException e) {
             sendMessage(session.getRemote(), new ErrorMessage("Error: " + e.getMessage()));
         } catch (Exception e) {
