@@ -166,6 +166,20 @@ public class WebsocketHandler {
     }
 
     private void resign(Session session, String username, UserGameCommand cmd) {
+        //mark game as over and update in database
+        // send notification message to all clients that root client resigned
+        try {
+            int gameID = cmd.getGameID();
+            gameService.markGameOver(gameID);
+
+            NotificationMessage msg = new NotificationMessage(username + " has resigned. GAME OVER.");
+            connections.broadcastAll(gameID, msg);
+        } catch (DataAccessException e) {
+            sendMessage(session.getRemote(), new ErrorMessage("Error: " + e.getMessage()));
+        } catch (Exception e) {
+            e.printStackTrace();
+            sendMessage(session.getRemote(), new ErrorMessage("Error: " + e.getMessage()));
+        }
     }
 
     private void sendMessage(org.eclipse.jetty.websocket.api.RemoteEndpoint remote, ErrorMessage msg) {
