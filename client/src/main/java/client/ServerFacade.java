@@ -19,7 +19,7 @@ import java.util.Map;
 public class ServerFacade {
 
     private final int port;
-    private ServerMessageObserver observer;
+    private final ServerMessageObserver observer;
     private WebsocketCommunicator communicator;
 
     public ServerFacade(int desiredPort, ServerMessageObserver serverMsgObserver) {
@@ -27,6 +27,13 @@ public class ServerFacade {
         this.observer = serverMsgObserver;
     }
 
+    //wsCommunicator
+    public void connect(String authToken, int gameID) throws ResponseException {
+        communicator = new WebsocketCommunicator(port, observer);
+        communicator.connect(authToken, gameID);
+    }
+
+    // httpCommunicator
     public Object clear() throws ResponseException {
         HttpURLConnection http = makeRequest("DELETE", "/db", "", null);
         return getResponse(http, Map.class);
