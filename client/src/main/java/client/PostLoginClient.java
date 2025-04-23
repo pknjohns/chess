@@ -135,7 +135,7 @@ public class PostLoginClient {
             facade.connect(authToken, serverGameId); //open ws connection and send connect wsMsg to server
             preLogClient.gameID = clientGameId;
             preLogClient.state = State.GAMEPLAY; //transition to gameplayUI
-            return String.format("You joined game '%s' as the %s player\n%s\n", gameName, teamColor, makeBoard(teamColor));//makeBoard(gameName, teamColor);
+            return String.format("You joined game '%s' as the %s player\n%s\n", gameName, teamColor, makeBoard(teamColor));
         } catch (RuntimeException e) {
             throw new RuntimeException(e);
         } catch (Exception e) {

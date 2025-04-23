@@ -128,39 +128,6 @@ public class GameplayClient implements ServerMessageObserver {
         return sb.toString();
     }
 
-    private String makeBlackBoard(ChessBoard board) {
-        StringBuilder sb = new StringBuilder();
-        String columns = "  h     g     f    e     d    c     b     a  ";
-        sb.append(SET_BG_COLOR_BLUE)
-                .append("   ").append(SET_TEXT_COLOR_BLACK).append(columns).append("   ")
-                .append(RESET_BG_COLOR).append("\n");
-
-        for (int row = 7; row >= 0; row--) {
-            sb.append(SET_BG_COLOR_BLUE).append(" ").append(8 - row).append(" ");
-            for (int col = 7; col >= 0; col--) {
-                boolean isLightSquare = (row + col) % 2 == 0;
-                String bgColor = isLightSquare ? SET_BG_COLOR_BROWN : SET_BG_COLOR_DARK_BROWN;
-
-                ChessPosition pstn = new ChessPosition(row, col);
-                ChessPiece piece = board.getPiece(pstn);
-                String pieceStr = convertPieceToSymbol(piece);
-                String textColor = (piece != null && piece.getTeamColor() == ChessGame.TeamColor.WHITE)
-                        ? SET_TEXT_COLOR_WHITE
-                        : SET_TEXT_COLOR_BLACK;
-
-                sb.append(bgColor).append(textColor).append(" ").append(pieceStr).append(" ").append(RESET_TEXT_COLOR);
-            }
-            sb.append(SET_BG_COLOR_BLUE).append(" ").append(SET_TEXT_COLOR_BLACK).append(8 - row).append(" ");
-            sb.append(RESET_BG_COLOR).append(" \n");
-        }
-
-        sb.append(SET_BG_COLOR_BLUE)
-                .append("   ").append(SET_TEXT_COLOR_BLACK).append(columns).append("   ")
-                .append(RESET_BG_COLOR);
-
-        return sb.toString();
-    }
-
     private String convertPieceToSymbol(ChessPiece piece) {
         if (piece == null) {
             return EMPTY;
