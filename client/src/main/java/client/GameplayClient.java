@@ -14,14 +14,9 @@ import static ui.EscapeSequences.*;
 
 public class GameplayClient implements ServerMessageObserver {
 
-    private final ServerFacade facade;
-    private final String authToken;
-    private final PreLoginClient preLogClient;
-
     public GameplayClient(int port, PreLoginClient preLogClient) {
-        facade = new ServerFacade(port, this);
-        this.preLogClient = preLogClient;
-        this.authToken = preLogClient.authToken;
+        ServerFacade facade = new ServerFacade(port, this);
+        String authToken = preLogClient.authToken;
     }
 
     public String eval(String input) {
@@ -30,11 +25,11 @@ public class GameplayClient implements ServerMessageObserver {
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
-                //case "redraw" -> redrawBoard();
-                //case "leave" -> leaveGame(params);
-                //case "make move" -> makeChessMove(params);
-                //case "highlight" -> highlightValidMoves(params);
-                //case "resign" -> resignGame(params);
+                case "redraw" -> redrawBoard();
+                case "leave" -> leaveGame(params);
+                case "make move" -> makeChessMove(params);
+                case "highlight" -> highlightValidMoves(params);
+                case "resign" -> resignGame(params);
                 default -> gameplayHelp();
             };
         } catch (Exception ex) {
@@ -42,9 +37,25 @@ public class GameplayClient implements ServerMessageObserver {
         }
     }
 
-//    public String redrawBoard() {
-//
-//    }
+    private String redrawBoard() {
+        return "Not implemented";
+    }
+
+    private String leaveGame(String[] params) {
+        return "Not implemented";
+    }
+
+    private String makeChessMove(String[] params) {
+        return "Not implemented";
+    }
+
+    private String highlightValidMoves(String[] params) {
+        return "Not implemented";
+    }
+
+    private String resignGame(String[] params) {
+        return "Not implemented";
+    }
 
     private String gameplayHelp() {
         return """
@@ -94,6 +105,39 @@ public class GameplayClient implements ServerMessageObserver {
         for (int row = 0; row < 8; row++) {
             sb.append(SET_BG_COLOR_BLUE).append(" ").append(8 - row).append(" ");
             for (int col = 0; col < 8; col++) {
+                boolean isLightSquare = (row + col) % 2 == 0;
+                String bgColor = isLightSquare ? SET_BG_COLOR_BROWN : SET_BG_COLOR_DARK_BROWN;
+
+                ChessPosition pstn = new ChessPosition(row, col);
+                ChessPiece piece = board.getPiece(pstn);
+                String pieceStr = convertPieceToSymbol(piece);
+                String textColor = (piece != null && piece.getTeamColor() == ChessGame.TeamColor.WHITE)
+                        ? SET_TEXT_COLOR_WHITE
+                        : SET_TEXT_COLOR_BLACK;
+
+                sb.append(bgColor).append(textColor).append(" ").append(pieceStr).append(" ").append(RESET_TEXT_COLOR);
+            }
+            sb.append(SET_BG_COLOR_BLUE).append(" ").append(SET_TEXT_COLOR_BLACK).append(8 - row).append(" ");
+            sb.append(RESET_BG_COLOR).append(" \n");
+        }
+
+        sb.append(SET_BG_COLOR_BLUE)
+                .append("   ").append(SET_TEXT_COLOR_BLACK).append(columns).append("   ")
+                .append(RESET_BG_COLOR);
+
+        return sb.toString();
+    }
+
+    private String makeBlackBoard(ChessBoard board) {
+        StringBuilder sb = new StringBuilder();
+        String columns = "  h     g     f    e     d    c     b     a  ";
+        sb.append(SET_BG_COLOR_BLUE)
+                .append("   ").append(SET_TEXT_COLOR_BLACK).append(columns).append("   ")
+                .append(RESET_BG_COLOR).append("\n");
+
+        for (int row = 7; row >= 0; row--) {
+            sb.append(SET_BG_COLOR_BLUE).append(" ").append(8 - row).append(" ");
+            for (int col = 7; col >= 0; col--) {
                 boolean isLightSquare = (row + col) % 2 == 0;
                 String bgColor = isLightSquare ? SET_BG_COLOR_BROWN : SET_BG_COLOR_DARK_BROWN;
 

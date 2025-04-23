@@ -8,13 +8,12 @@ public class GameplayRepl {
     private final GameplayClient gameplayClient;
     private final PreLoginClient preLoginClient;
 
-    public GameplayRepl(int port, PreLoginClient preLoginClient) {
+    public GameplayRepl(int port, PreLoginClient preLoginClient, GameplayClient gameplayClient) {
         this.preLoginClient = preLoginClient;
-        this.gameplayClient = new GameplayClient(port, preLoginClient);
+        this.gameplayClient = gameplayClient;
     }
 
     public void run() {
-        //gameplayClient.redrawBoard();
         Scanner scanner = new Scanner(System.in);
         String result;
         while (preLoginClient.state == State.GAMEPLAY) {

@@ -6,6 +6,7 @@ import facade.*;
 import static ui.EscapeSequences.*;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 
 public class PostLoginClient {
@@ -13,10 +14,12 @@ public class PostLoginClient {
     private final ServerFacade facade;
     private final String authToken;
     private final PreLoginClient preLogClient;
+    public final GameplayClient gameplayClient;
     private HashMap<Integer, ListGameData> gameMap;
 
     public PostLoginClient(int port, PreLoginClient preLogClient) {
-        facade = new ServerFacade(port, new GameplayClient(port, preLogClient));
+        gameplayClient = new GameplayClient(port, preLogClient);
+        facade = new ServerFacade(port, gameplayClient);
         this.preLogClient = preLogClient;
         this.authToken = preLogClient.authToken;
     }
@@ -106,7 +109,7 @@ public class PostLoginClient {
         return sbGameList.toString();
     }
 
-    private String joinGame(String... params) throws ResponseException, BadRequestException {
+    private String joinGame(String... params) throws BadRequestException {
         if (params.length != 2) {
             return "Please provide a valid game ID and team color to join a game\n";
         }
@@ -132,9 +135,11 @@ public class PostLoginClient {
             facade.connect(authToken, serverGameId); //open ws connection and send connect wsMsg to server
             preLogClient.gameID = clientGameId;
             preLogClient.state = State.GAMEPLAY; //transition to gameplayUI
-            return makeBoard(gameName, teamColor);
+            return String.format("You joined game '%s' as the %s player\n%s\n", gameName, teamColor, makeBoard(teamColor));//makeBoard(gameName, teamColor);
         } catch (RuntimeException e) {
             throw new RuntimeException(e);
+        } catch (Exception e) {
+            return e.getMessage();
         }
     }
 
@@ -158,7 +163,7 @@ public class PostLoginClient {
             String gameName = gameMap.get(clientGameId).gameName();
             preLogClient.gameID = clientGameId;
             preLogClient.state = State.GAMEPLAY;
-            return String.format("You are now observing '%s' \n%s\n", gameName, makeWhiteBoard());
+            return String.format("You are now observing '%s' \n%s\n", gameName, makeBoard("WHITE"));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -191,124 +196,74 @@ public class PostLoginClient {
 
     private static final String[][] STARTING_BOARD = {
             {BLACK_ROOK, BLACK_KNIGHT, BLACK_BISHOP, BLACK_QUEEN, BLACK_KING, BLACK_BISHOP, BLACK_KNIGHT, BLACK_ROOK},
-            {BLACK_PAWN, BLACK_PAWN,BLACK_PAWN,BLACK_PAWN,BLACK_PAWN,BLACK_PAWN,BLACK_PAWN,BLACK_PAWN},
-            {EMPTY,EMPTY,EMPTY,EMPTY,EMPTY,EMPTY,EMPTY,EMPTY},
-            {EMPTY,EMPTY,EMPTY,EMPTY,EMPTY,EMPTY,EMPTY,EMPTY},
-            {EMPTY,EMPTY,EMPTY,EMPTY,EMPTY,EMPTY,EMPTY,EMPTY},
-            {EMPTY,EMPTY,EMPTY,EMPTY,EMPTY,EMPTY,EMPTY,EMPTY},
-            {WHITE_PAWN,WHITE_PAWN,WHITE_PAWN,WHITE_PAWN,WHITE_PAWN,WHITE_PAWN,WHITE_PAWN,WHITE_PAWN},
+            {BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN},
+            {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY},
+            {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY},
+            {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY},
+            {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY},
+            {WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN},
             {WHITE_ROOK, WHITE_KNIGHT, WHITE_BISHOP, WHITE_QUEEN, WHITE_KING, WHITE_BISHOP, WHITE_KNIGHT, WHITE_ROOK}
     };
 
-    private String makeBoard(String gameName, String teamColor) {
-        if (teamColor.equals("WHITE")) {
-            return String.format("You joined game '%s' as the %s player\n%s\n", gameName, teamColor, makeWhiteBoard());
-        } else {
-            return String.format("You joined game '%s' as the %s player\n%s\n", gameName, teamColor, makeBlackBoard());
-        }
+    private String makeBoard(String teamColor) {
+        boolean isWhite = teamColor.equalsIgnoreCase("WHITE");
+        return makeBoardView(isWhite);
     }
 
-//    private String makeBoard(String gameName, String teamColor, ChessGame game) {
-//        if (teamColor.equals("WHITE")) {
-//            return String.format("You joined game '%s' as the %s player\n%s\n", gameName, teamColor, makeWhiteBoard(game.getBoard()));
-//        } else {
-//            return String.format("You joined game '%s' as the %s player\n%s\n", gameName, teamColor, makeBlackBoard(game.getBoard()));
-//        }
-//    }
+    private String makeBoardView(boolean isWhitePerspective) {
+        StringBuilder sb = new StringBuilder();
 
-    private String makeWhiteBoard() { // need to loop through chessboard and print those pieces for phase6 (can pass board in as param)
-        StringBuilder sbChessBoard = new StringBuilder();
-        String columns = "  a     b     c    d     e    f     g     h  ";
-        sbChessBoard.append(SET_BG_COLOR_BLUE);
-        sbChessBoard.append("   ").append(SET_TEXT_COLOR_BLACK).append(columns).append("   ");
-        sbChessBoard.append(RESET_BG_COLOR).append("\n");
-        for (int row = 0; row < 8; row++) {
-            sbChessBoard.append(SET_BG_COLOR_BLUE).append(" ").append(8 - row).append(" "); // left row label
-            for (int col = 0; col < 8; col++) {
-                boolean isLightSquare = (row + col) % 2 == 0;
+        // Column labels
+        String[] cols = {"a", " b", " c", "d", " e", " f", "g", " h"};
+        if (!isWhitePerspective) {
+            Collections.reverse(Arrays.asList(cols));
+        }
+        String colHeader = String.join("    ", cols);
+
+        // Row labels
+        String[] rowLabels = {"8", "7", "6", "5", "4", "3", "2", "1"};
+        if (!isWhitePerspective) {
+            Collections.reverse(Arrays.asList(rowLabels));
+        }
+
+        // Draw top column header
+        sb.append(SET_BG_COLOR_BLUE)
+                .append("   ")
+                .append(SET_TEXT_COLOR_BLACK)
+                .append("  ").append(colHeader).append("     ")
+                .append(RESET_BG_COLOR).append("\n");
+
+        for (int i = 0; i < 8; i++) {
+            int rowIndex = isWhitePerspective ? i : 7 - i;
+            String label = rowLabels[i];
+
+            // Left label
+            sb.append(SET_BG_COLOR_BLUE).append(" ").append(label).append(" ");
+
+            for (int j = 0; j < 8; j++) {
+                int colIndex = isWhitePerspective ? j : 7 - j;
+
+                boolean isLightSquare = (rowIndex + colIndex) % 2 == 0;
                 String bgColor = isLightSquare ? SET_BG_COLOR_BROWN : SET_BG_COLOR_DARK_BROWN;
 
-                String piece = STARTING_BOARD[row][col];
-                String textColor;
-                if (row >2) {
-                    textColor = SET_TEXT_COLOR_WHITE;
-                } else {
-                    textColor = SET_TEXT_COLOR_BLACK;
-                }
-                sbChessBoard.append(bgColor).append(textColor).append(" ").append(piece).append(" ").append(RESET_TEXT_COLOR);
+                String piece = STARTING_BOARD[rowIndex][colIndex];
+                String textColor = rowIndex > 2 ? SET_TEXT_COLOR_WHITE : SET_TEXT_COLOR_BLACK;
+
+                sb.append(bgColor).append(textColor).append(" ").append(piece).append(" ").append(RESET_TEXT_COLOR);
             }
-            sbChessBoard.append(SET_BG_COLOR_BLUE);
-            sbChessBoard.append(" ").append(SET_TEXT_COLOR_BLACK).append(8 - row).append(" ");
-            sbChessBoard.append(RESET_BG_COLOR).append(" \n"); // Right row label
+
+            // Right label
+            sb.append(SET_BG_COLOR_BLUE).append(" ").append(SET_TEXT_COLOR_BLACK).append(label).append(" ");
+            sb.append(RESET_BG_COLOR).append(" \n");
         }
-        sbChessBoard.append(SET_BG_COLOR_BLUE);
-        sbChessBoard.append("   ").append(SET_TEXT_COLOR_BLACK).append(columns).append("   ");
-        sbChessBoard.append(RESET_BG_COLOR);
-        return sbChessBoard.toString();
+
+        // Bottom column header
+        sb.append(SET_BG_COLOR_BLUE)
+                .append("   ")
+                .append(SET_TEXT_COLOR_BLACK)
+                .append("  ").append(colHeader).append("     ")
+                .append(RESET_BG_COLOR);
+
+        return sb.toString();
     }
-
-    private String makeBlackBoard() {
-        StringBuilder sbChessBoard = new StringBuilder();
-        String columns = "  h     g     f    e     d    c     b     a  ";
-        sbChessBoard.append(SET_BG_COLOR_BLUE);
-        sbChessBoard.append("   ").append(SET_TEXT_COLOR_BLACK).append(columns).append("   ");
-        sbChessBoard.append(RESET_BG_COLOR).append("\n");
-        for (int row = 7; row >= 0; row--) {
-            sbChessBoard.append(SET_BG_COLOR_BLUE).append(" ").append(-(row - 8)).append(" "); // left row label
-            for (int col = 7; col >= 0; col--) {
-                boolean isLightSquare = (row + col) % 2 == 0;
-                String bgColor = isLightSquare ? SET_BG_COLOR_BROWN : SET_BG_COLOR_DARK_BROWN;
-
-                String piece = STARTING_BOARD[row][col];
-                String textColor;
-                if (row >2) {
-                    textColor = SET_TEXT_COLOR_WHITE;
-                } else {
-                    textColor = SET_TEXT_COLOR_BLACK;
-                }
-                sbChessBoard.append(bgColor).append(textColor).append(" ").append(piece).append(" ").append(RESET_TEXT_COLOR);
-            }
-            sbChessBoard.append(SET_BG_COLOR_BLUE);
-            sbChessBoard.append(" ").append(SET_TEXT_COLOR_BLACK).append(-(row - 8)).append(" ");
-            sbChessBoard.append(RESET_BG_COLOR).append(" \n"); // Right row label
-        }
-        sbChessBoard.append(SET_BG_COLOR_BLUE);
-        sbChessBoard.append("   ").append(SET_TEXT_COLOR_BLACK).append(columns).append("   ");
-        sbChessBoard.append(RESET_BG_COLOR);
-        return sbChessBoard.toString();
-    }
-
-//    private String makeBlackBoard(ChessBoard board) {
-//        StringBuilder sb = new StringBuilder();
-//        String columns = "  h     g     f    e     d    c     b     a  ";
-//        sb.append(SET_BG_COLOR_BLUE)
-//                .append("   ").append(SET_TEXT_COLOR_BLACK).append(columns).append("   ")
-//                .append(RESET_BG_COLOR).append("\n");
-//
-//        for (int row = 7; row >= 0; row--) {
-//            sb.append(SET_BG_COLOR_BLUE).append(" ").append(8 - row).append(" ");
-//            for (int col = 7; col >= 0; col--) {
-//                boolean isLightSquare = (row + col) % 2 == 0;
-//                String bgColor = isLightSquare ? SET_BG_COLOR_BROWN : SET_BG_COLOR_DARK_BROWN;
-//
-//                ChessPosition pstn = new ChessPosition(row, col);
-//                ChessPiece piece = board.getPiece(pstn);
-//                String pieceStr = convertPieceToSymbol(piece);
-//                String textColor = (piece != null && piece.getTeamColor() == ChessGame.TeamColor.WHITE)
-//                        ? SET_TEXT_COLOR_WHITE
-//                        : SET_TEXT_COLOR_BLACK;
-//
-//                sb.append(bgColor).append(textColor).append(" ").append(pieceStr).append(" ").append(RESET_TEXT_COLOR);
-//            }
-//            sb.append(SET_BG_COLOR_BLUE).append(" ").append(SET_TEXT_COLOR_BLACK).append(8 - row).append(" ");
-//            sb.append(RESET_BG_COLOR).append(" \n");
-//        }
-//
-//        sb.append(SET_BG_COLOR_BLUE)
-//                .append("   ").append(SET_TEXT_COLOR_BLACK).append(columns).append("   ")
-//                .append(RESET_BG_COLOR);
-//
-//        return sb.toString();
-//    }
-
 }

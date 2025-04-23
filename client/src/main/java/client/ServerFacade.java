@@ -19,17 +19,19 @@ import java.util.Map;
 public class ServerFacade {
 
     private final int port;
-    private final ServerMessageObserver observer;
-    private WebsocketCommunicator communicator;
+    private final WebsocketCommunicator communicator;
 
     public ServerFacade(int desiredPort, ServerMessageObserver serverMsgObserver) {
         this.port = desiredPort;
-        this.observer = serverMsgObserver;
+        try {
+            this.communicator = new WebsocketCommunicator(port, serverMsgObserver);
+        } catch (ResponseException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     //wsCommunicator
-    public void connect(String authToken, int gameID) throws ResponseException {
-        communicator = new WebsocketCommunicator(port, observer);
+    public void connect(String authToken, int gameID) {
         communicator.connect(authToken, gameID);
     }
 
